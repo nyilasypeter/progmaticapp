@@ -21,6 +21,7 @@ public class Role extends BaseEntity{
     public static final String ROLE_ADMIN = "admin";
     public static final String ROLE_TEACHER = "teacher";
     public static final String ROLE_OFFICE = "office";
+    public static final String ROLE_STUDENT = "student";
 
     public Role() {
     }

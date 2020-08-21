@@ -74,6 +74,8 @@ public class DataLoader implements ApplicationRunner {
                     Privilige.PRIV_CREATE_QUESTION, 
                     Privilige.PRIV_CREATE_TEST,
                     Privilige.PRIV_READ_QUESTION);
+            createRole(Role.ROLE_STUDENT,
+                    Privilige.PRIV_READ_QUESTION);
             LOG.debug("Roles created.");
         }
     }
