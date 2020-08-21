@@ -10,6 +10,7 @@ import com.progmatic.progmappbe.entities.PossibleAnswer;
 import com.progmatic.progmappbe.entities.PossibleAnswerValue;
 import com.progmatic.progmappbe.entities.Privilige;
 import com.progmatic.progmappbe.entities.Question;
+import com.progmatic.progmappbe.exceptions.UnauthorizedException;
 import com.progmatic.progmappbe.helpers.SecHelper;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,6 +110,7 @@ public class TestService {
     @Transactional(propagation = Propagation.MANDATORY)
     public void checkHasPermissionToReadQuestion(Question q) {
         if(!SecHelper.hasAuthority(Privilige.PRIV_CREATE_QUESTION)){
+            throw new UnauthorizedException("TODO check that the logged in user has an active test which contains this question");
             //TODO check that the logged in user has an active test which contains this question
         }
     }
