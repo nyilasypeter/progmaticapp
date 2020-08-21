@@ -8,14 +8,8 @@ package com.progmatic.progmappbe.entities;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
-import javax.persistence.NamedSubgraph;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,20 +37,24 @@ public class User extends BaseEntity implements UserDetails {
 
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String loginName;
-
+    @Column(nullable = false)
     private String emailAddress;
 
+    @Column(nullable = false)
     private String password;
 
     private Boolean accountNonLocked = true;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users",fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
     
     @OneToMany(mappedBy = "student")
     private Set<ActualTest> actualTests = new HashSet<>();
+
+    @ManyToMany(mappedBy = "students")
+    private Set<SchoolClass> classes = new HashSet<>();
+
+    private boolean isEnabled = true;
 
     public String getName() {
         return name;
@@ -67,11 +65,11 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     public String getLoginName() {
-        return loginName;
+        return getId();
     }
 
     public void setLoginName(String loginName) {
-        this.loginName = loginName;
+        setId(loginName);
     }
 
     public String getEmailAddress() {
@@ -135,7 +133,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return loginName;
+        return getId();
     }
 
     @Override
@@ -155,7 +153,18 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    public Set<SchoolClass> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(Set<SchoolClass> classes) {
+        this.classes = classes;
+    }
 }

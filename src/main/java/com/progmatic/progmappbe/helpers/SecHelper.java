@@ -29,10 +29,35 @@ public class SecHelper {
     }
 
     public static boolean hasAuthority(String authority) {
-        Collection<? extends GrantedAuthority> authorities
+        return  hasAuthority((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(), authority);
+        /*Collection<? extends GrantedAuthority> authorities
                 = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         for (GrantedAuthority auth : authorities) {
             if (auth.getAuthority().equals(authority)) {
+                return true;
+            }
+        }
+        return false;*/
+    }
+
+    public static boolean hasAuthority(User u, String authority) {
+
+        Collection<? extends GrantedAuthority> authorities
+                = u.getAuthorities();
+        for (GrantedAuthority auth : authorities) {
+            if (auth.getAuthority().equals(authority)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasRole(User u, String authority) {
+
+        Collection<? extends GrantedAuthority> authorities
+                = u.getAuthorities();
+        for (GrantedAuthority auth : authorities) {
+            if (auth.getAuthority().equals("ROLE_" + authority)) {
                 return true;
             }
         }

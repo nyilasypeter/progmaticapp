@@ -13,5 +13,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author peti
  */
 public interface UserAutoDao extends JpaRepository<User, String>{
-    public User findByLoginName(String loginName);
 }

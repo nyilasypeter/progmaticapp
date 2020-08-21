@@ -61,6 +61,9 @@ public class DataLoader implements ApplicationRunner {
             priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_TEST));
             priviligeAutoDao.save(new Privilige(Privilige.PRIV_START_TEST));
             priviligeAutoDao.save(new Privilige(Privilige.PRIV_READ_QUESTION));
+            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_CLASS));
+            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_STUDENT));
+            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_USER));
             LOG.debug("Priviliges created.");
         }
     }
@@ -69,7 +72,9 @@ public class DataLoader implements ApplicationRunner {
         long priviliges = roleAutoDao.count();
         if(priviliges == 0){
             createRole(Role.ROLE_ADMIN);
-            createRole(Role.ROLE_OFFICE);
+            createRole(Role.ROLE_OFFICE,
+                    Privilige.PRIV_CREATE_CLASS,
+                    Privilige.PRIV_CREATE_STUDENT);
             createRole(Role.ROLE_TEACHER, 
                     Privilige.PRIV_CREATE_QUESTION, 
                     Privilige.PRIV_CREATE_TEST,
@@ -95,10 +100,15 @@ public class DataLoader implements ApplicationRunner {
         
         if (nrOfUsers == 0) {
             Role teacherRole = roleAutoDao.findByName(Role.ROLE_TEACHER);
+            Role adminRole = roleAutoDao.findByName(Role.ROLE_ADMIN);
+            Role officeRole = roleAutoDao.findByName(Role.ROLE_OFFICE);
             User admin = new User();
             admin.setLoginName("admin");
             admin.setPassword(passwordEncoder.encode("admin"));
+            admin.setEmailAddress("admin@progmatic.hu");
             teacherRole.addUser(admin);
+            adminRole.addUser(admin);
+            officeRole.addUser(admin);
             userAutoDao.save(admin);
             LOG.debug("Admin user created.");
         }

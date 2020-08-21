@@ -25,7 +25,7 @@ public class TestController {
     @Autowired
     TestService testService;
     
-    @PutMapping(path = "/question")
+    @PostMapping(path = "/question")
     public String createQuestion(@RequestBody QuestionDTO q){
         return testService.createQuestion(q);
     }
