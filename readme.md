@@ -18,6 +18,7 @@ Properties to configure:
 ```
 MYSQL_USER_FOR_PROGMAPPBE=<Username for your local MySQL>
 MYSQL_PWD_FOR_PROGMAPPBE=<Password for your local MySQL>
+PROGMAPP_DEFAULT_ADMIN_PASSWORD=<Password for the initial admin user created during the first deoloy>
 //These ones are only needed for e-mail sending
 GMAIL_PROGMATIC_USERNAME=<A valid Gmail username>
 GMAIL_PROGMATIC_PASSWORD=<A valid Gmail password for the above username>

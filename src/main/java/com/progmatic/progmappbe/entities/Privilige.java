@@ -25,6 +25,7 @@ public class Privilige extends BaseEntity{
     public static final String PRIV_CREATE_CLASS = "createClass" ;
     public static final String PRIV_CREATE_STUDENT = "createStudent" ;
     public static final String PRIV_CREATE_USER = "createUser" ;
+    public static final String PRIV_CRUD_ETERNAL_QUIZ = "crudEternalQuiz" ;
 
     public Privilige() {
     }

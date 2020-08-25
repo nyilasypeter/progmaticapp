@@ -16,6 +16,7 @@ import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,17 +35,25 @@ public class DataLoader implements ApplicationRunner {
     @PersistenceContext
     EntityManager em;
 
-    @Autowired
-    UserAutoDao userAutoDao;
+    private UserAutoDao userAutoDao;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    PriviligeAutoDao priviligeAutoDao;
-    
-    @Autowired
-    RoleAutoDao roleAutoDao;
+    private PriviligeAutoDao priviligeAutoDao;
+
+    private RoleAutoDao roleAutoDao;
+
+    private String adminPassword;
+
+    public DataLoader(UserAutoDao userAutoDao, PasswordEncoder passwordEncoder,
+                      PriviligeAutoDao priviligeAutoDao, RoleAutoDao roleAutoDao,
+                      @Value("progmatic.admin.default.password") String adminPassword) {
+        this.userAutoDao = userAutoDao;
+        this.passwordEncoder = passwordEncoder;
+        this.priviligeAutoDao = priviligeAutoDao;
+        this.roleAutoDao = roleAutoDao;
+        this.adminPassword = adminPassword;
+    }
 
     @Override
     @Transactional
@@ -64,6 +73,7 @@ public class DataLoader implements ApplicationRunner {
             priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_CLASS));
             priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_STUDENT));
             priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_USER));
+            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CRUD_ETERNAL_QUIZ));
             LOG.debug("Priviliges created.");
         }
     }
@@ -78,7 +88,8 @@ public class DataLoader implements ApplicationRunner {
             createRole(Role.ROLE_TEACHER, 
                     Privilige.PRIV_CREATE_QUESTION, 
                     Privilige.PRIV_CREATE_TEST,
-                    Privilige.PRIV_READ_QUESTION);
+                    Privilige.PRIV_READ_QUESTION,
+                    Privilige.PRIV_CRUD_ETERNAL_QUIZ);
             createRole(Role.ROLE_STUDENT,
                     Privilige.PRIV_READ_QUESTION);
             LOG.debug("Roles created.");
