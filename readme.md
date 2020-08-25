@@ -1,6 +1,6 @@
-#Pogmatic app backend
+# Pogmatic app backend
 
-##Config
+## Config
 
 Before you build or deploy this app locally, you should start a local MySQL server, and create a MySQL schema.
 
@@ -22,7 +22,7 @@ MYSQL_PWD_FOR_PROGMAPPBE=<Password for your local MySQL>
 GMAIL_PROGMATIC_USERNAME=<A valid Gmail username>
 GMAIL_PROGMATIC_PASSWORD=<A valid Gmail password for the above username>
 ```
-##Build, deploy
+## Build, deploy
 
 Run
 ```
@@ -32,5 +32,5 @@ this will create a jar file in target direcotry, which you can run with `java -j
 
 You can also run the class `com.progmatic.progmappbe.ProgmappbeApplication` directly from your preferred IDE.
 
-##Test
+## Test
 Use the Postman collection file whithin /doc directory to test the application.
