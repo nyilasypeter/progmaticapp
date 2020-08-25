@@ -5,12 +5,11 @@
  */
 package com.progmatic.progmappbe.entities;
 
+import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
+
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 /**
  *
@@ -21,13 +20,15 @@ public class ActualAnswer extends BaseEntity{
     
     private String answerText;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ActualTest actualTest;
     
     @OneToMany(cascade = {CascadeType.PERSIST})
     private Set<PossibleAnswerValue> selectedAnswerValues = new HashSet<>();
         
     private Integer actualScore;
+
+    private AnswerEvaulationResult answerEvaulationResult;
 
     public String getAnswerText() {
         return answerText;
@@ -60,6 +61,12 @@ public class ActualAnswer extends BaseEntity{
     public void setActualScore(Integer actualScore) {
         this.actualScore = actualScore;
     }
-    
-    
+
+    public AnswerEvaulationResult getAnswerEvaulationResult() {
+        return answerEvaulationResult;
+    }
+
+    public void setAnswerEvaulationResult(AnswerEvaulationResult answerEvaulationResult) {
+        this.answerEvaulationResult = answerEvaulationResult;
+    }
 }

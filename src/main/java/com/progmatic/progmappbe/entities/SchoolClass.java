@@ -1,5 +1,7 @@
 package com.progmatic.progmappbe.entities;
 
+import com.progmatic.progmappbe.entities.enums.SemesterType;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import java.util.HashSet;
@@ -12,10 +14,13 @@ public class SchoolClass extends BaseEntity{
 
     private Integer year;
     private SemesterType semester;
-    private Boolean isActive;
+    private Boolean isActive = true;
 
     @ManyToMany
     private Set<User> students = new HashSet<>();
+
+    @ManyToMany(mappedBy = "schoolClasses")
+    private Set<EternalQuiz> eternalQuizes = new HashSet<>();
 
     public void addStudent(User u){
         students.add(u);
@@ -51,5 +56,13 @@ public class SchoolClass extends BaseEntity{
 
     public void setStudents(Set<User> students) {
         this.students = students;
+    }
+
+    public Set<EternalQuiz> getEternalQuizes() {
+        return eternalQuizes;
+    }
+
+    public void setEternalQuizes(Set<EternalQuiz> eternalQuizes) {
+        this.eternalQuizes = eternalQuizes;
     }
 }

@@ -5,11 +5,12 @@
  */
 package com.progmatic.progmappbe.entities;
 
+import com.progmatic.progmappbe.entities.enums.ScoreMechanism;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 /**
  * A question in a test with score and order number.

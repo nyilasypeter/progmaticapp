@@ -5,6 +5,8 @@
  */
 package com.progmatic.progmappbe.entities;
 
+import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
+
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;

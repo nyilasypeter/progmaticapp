@@ -5,15 +5,15 @@
  */
 package com.progmatic.progmappbe.services;
 
+import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.QuestionDTO;
-import com.progmatic.progmappbe.entities.PossibleAnswer;
-import com.progmatic.progmappbe.entities.PossibleAnswerValue;
-import com.progmatic.progmappbe.entities.Privilige;
-import com.progmatic.progmappbe.entities.Question;
+import com.progmatic.progmappbe.entities.*;
+import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 import com.progmatic.progmappbe.exceptions.UnauthorizedException;
 import com.progmatic.progmappbe.helpers.SecHelper;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -32,18 +32,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TestService {
 
-    @Autowired
-    DozerBeanMapper mapper;
+    private static final int PROBABILITY_TO_CHOOSE_NEW_QUESTION = 40;
+    private static final int PROBABILITY_TO_CHOOSE_WRONGLY_ANSWERED_QUESTION = 40;
+    private static final int PROBABILITY_TO_CHOOSE_WELL_ANSWERED_QUESTION = 20;
+
+    private Random random = new Random();
+
+    private DozerBeanMapper mapper;
     
     @Autowired
-    TestService self;
+    private TestService self;
 
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
+
+    @Autowired
+    public TestService(DozerBeanMapper mapper) {
+        this.mapper = mapper;
+    }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
     @Transactional
-    public String createQuestion(QuestionDTO q) {
+    public EntityCreationResult createQuestion(QuestionDTO q) {
         Question question = mapper.map(q, Question.class);
         for (PossibleAnswer possibleAnswer : question.getPossibleAnswers()) {
             possibleAnswer.setQuestion(question);
@@ -52,7 +62,7 @@ public class TestService {
             }
         }
         em.persist(question);
-        return question.getId();
+        return new EntityCreationResult(true, question.getId(), null);
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
@@ -113,5 +123,61 @@ public class TestService {
             throw new UnauthorizedException("TODO check that the logged in user has an active test which contains this question");
             //TODO check that the logged in user has an active test which contains this question
         }
+    }
+
+    @Transactional
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_READ_QUESTION + "')")
+    public QuestionDTO getNextEternalQuizQuestion(){
+        User loggedInUser = SecHelper.getLoggedInUser();
+        List<EternalQuizAnswer> quizes =
+                em.createQuery("select  eq from EternalQuizAnswer eq join fetch eq.actualAnswer where eq.student.id = :studentId",
+                        EternalQuizAnswer.class)
+                .setParameter("studentId", loggedInUser.getId())
+                .getResultList();
+        EternalQuizAnswer randomAnswer = getRandomAnswer(quizes);
+        QuestionDTO qdto = null;
+        if(randomAnswer != null){
+            Question question = randomAnswer.getQuestion();
+            qdto = mapper.map(question, QuestionDTO.class);
+        }
+        return qdto;
+    }
+
+    private EternalQuizAnswer getRandomAnswer(List<EternalQuizAnswer> quizes){
+        if(quizes.isEmpty()){
+            return null;
+        }
+        int ran = random.nextInt(100);
+        EternalQuizAnswer selectedQuiz = null;
+        if(ran < PROBABILITY_TO_CHOOSE_NEW_QUESTION){
+            List<EternalQuizAnswer> notAnsweredOnes = quizes.stream()
+                    .filter(q -> ! q.getHasAnswer())
+                    .collect(Collectors.toList());
+            if(!notAnsweredOnes.isEmpty()) {
+                selectedQuiz = notAnsweredOnes.get(random.nextInt(notAnsweredOnes.size()));
+            }
+        }
+        else if( ran < PROBABILITY_TO_CHOOSE_NEW_QUESTION + PROBABILITY_TO_CHOOSE_WRONGLY_ANSWERED_QUESTION){
+            List<EternalQuizAnswer> notAnsweredOnes = quizes.stream()
+                    .filter(q -> q.getHasAnswer())
+                    .filter(q -> (q.getActualAnswer().getAnswerEvaulationResult().isWrongAnswer()))
+                    .collect(Collectors.toList());
+            if(!notAnsweredOnes.isEmpty()) {
+                selectedQuiz = notAnsweredOnes.get(random.nextInt(notAnsweredOnes.size()));
+            }
+        }
+        else if(ran < PROBABILITY_TO_CHOOSE_NEW_QUESTION + PROBABILITY_TO_CHOOSE_WRONGLY_ANSWERED_QUESTION + PROBABILITY_TO_CHOOSE_WELL_ANSWERED_QUESTION){
+            List<EternalQuizAnswer> notAnsweredOnes = quizes.stream()
+                    .filter(q -> q.getHasAnswer())
+                    .filter(q -> (!q.getActualAnswer().getAnswerEvaulationResult().isWrongAnswer()))
+                    .collect(Collectors.toList());
+            if(!notAnsweredOnes.isEmpty()) {
+                selectedQuiz = notAnsweredOnes.get(random.nextInt(notAnsweredOnes.size()));
+            }
+        }
+        if(selectedQuiz == null){
+            selectedQuiz = quizes.get(random.nextInt(quizes.size()));
+        }
+        return selectedQuiz;
     }
 }

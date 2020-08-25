@@ -5,6 +5,8 @@
  */
 package com.progmatic.progmappbe.entities;
 
+import com.progmatic.progmappbe.entities.enums.ActualTestStatus;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

@@ -1,5 +1,6 @@
 package com.progmatic.progmappbe.controllers;
 
+import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.SchoolClassDTO;
 import com.progmatic.progmappbe.dtos.StudentListDto;
 import com.progmatic.progmappbe.dtos.UserDTO;
@@ -28,7 +29,7 @@ public class OfficeAdminController {
     }
 
     @PutMapping("/class/{classId}/students")
-    public void assigntStudentsToClass(@PathVariable("classId") String classId, @RequestBody StudentListDto students){
-        officeAdminService.assignStudentToClass(students, classId);
+    public BasicResult assigntStudentsToClass(@PathVariable("classId") String classId, @RequestBody StudentListDto students){
+        return officeAdminService.assignStudentToClass(students, classId);
     }
 }

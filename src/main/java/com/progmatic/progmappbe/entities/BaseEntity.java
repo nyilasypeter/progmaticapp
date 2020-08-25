@@ -8,6 +8,7 @@ package com.progmatic.progmappbe.entities;
 import com.progmatic.progmappbe.helpers.SecHelper;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -97,7 +98,4 @@ public class BaseEntity implements Serializable{
         this.lastModifiedBy = lastModifiedBy;
     }
 
-   
-    
-    
 }

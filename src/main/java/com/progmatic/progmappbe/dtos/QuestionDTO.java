@@ -44,7 +44,9 @@ import java.util.List;
 public class QuestionDTO extends BaseEntityDTO {
     private String text;
         
-    private byte[] image;   
+    private byte[] image;
+
+    private Integer answerTimeInSec;
     
     private List<PossibleAnswerDTO> possibleAnswers = new ArrayList<>();
 
@@ -71,6 +73,12 @@ public class QuestionDTO extends BaseEntityDTO {
     public void setPossibleAnswers(List<PossibleAnswerDTO> possibleAnswers) {
         this.possibleAnswers = possibleAnswers;
     }
-    
-    
+
+    public Integer getAnswerTimeInSec() {
+        return answerTimeInSec;
+    }
+
+    public void setAnswerTimeInSec(Integer answerTimeInSec) {
+        this.answerTimeInSec = answerTimeInSec;
+    }
 }

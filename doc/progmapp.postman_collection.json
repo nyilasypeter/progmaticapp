@@ -166,9 +166,43 @@
 							"});",
 							"",
 							"",
+							"",
+							"pm.test(\"successFullResult == true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.successFullResult).to.eql(true);",
+							"});",
 							"pm.test(\"Body is correct\", function () {",
-							"    pm.response.to.have.body(\"micimackokedvence\");",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.idOfCreatedEntity).to.eql(pm.environment.get('progmappbe_question_id'));",
 							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "524ad69f-2493-4a10-a6d2-c6f3f5f2d7a3",
+						"exec": [
+							"if (!pm.environment.has(\"question_create_count\")) {",
+							"    console.log(\"Setting counter now\");",
+							"    pm.environment.set(\"question_create_count\", 0);",
+							" }",
+							" ",
+							"let currentCount = parseInt(pm.environment.get(\"question_create_count\")); ",
+							"let numberOfLoops = 100;",
+							"",
+							"if (currentCount < numberOfLoops) {",
+							"    pm.environment.set(\"progmappbe_question_id\", \"micimackokedvence_\" + currentCount);",
+							"    postman.setNextRequest(\"Create question\");",
+							"}",
+							"else{",
+							"    pm.environment.set(\"progmappbe_question_id\", \"micimackokedvence\");",
+							"}",
+							"",
+							"// increment the counter and re-save the value as an environment variable",
+							"currentCount++;",
+							"pm.environment.set(\"question_create_count\", currentCount);"
 						],
 						"type": "text/javascript"
 					}
@@ -188,7 +222,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t \"id\":\"micimackokedvence\",\n\t\"text\": \"Melyik Micimackó két legkedvesebb étele?\",\n\t\"possibleAnswers\": [{\n\t\t\"textBefore\": \"Első legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}, {\n\t\t\"textBefore\": \"Második legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}]\n}"
+					"raw": "{\n\t \"id\":\"{{progmappbe_question_id}}\",\n\t\"text\": \"Melyik Micimackó két legkedvesebb étele?\",\n\t\"possibleAnswers\": [{\n\t\t\"textBefore\": \"Első legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}, {\n\t\t\"textBefore\": \"Második legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}]\n}"
 				},
 				"url": {
 					"raw": "{{progmappbe_host}}/question",
@@ -209,7 +243,6 @@
 					"listen": "test",
 					"script": {
 						"id": "99049aea-63e4-449f-a0cc-3c46af280e4f",
-						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -226,7 +259,18 @@
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.possibleAnswers[0].possibleAnswerValues.length).to.eql(3);",
 							"});"
-						]
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "50b56807-aff0-4370-8d06-f40ac665c349",
+						"exec": [
+							"pm.environment.set(\"question_create_count\", 0);"
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -357,7 +401,7 @@
 			"response": []
 		},
 		{
-			"name": "Create student",
+			"name": "Create student (Mézga Aladár)",
 			"event": [
 				{
 					"listen": "test",
@@ -403,6 +447,52 @@
 			"response": []
 		},
 		{
+			"name": "Create student (Mézga Kriszta)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b83b107e-26cf-4355-be1d-c88fbddfdf8e",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"value": "{{csrf_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Mézga Kriszta\",\n    \"loginName\": \"mezgakriszta\",\n    \"emailAddress\": \"mezgakriszta@gmail.com\",\n    \"password\": \"mezgakriszta\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{progmappbe_host}}/student",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"student"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Add student to class",
 			"event": [
 				{
@@ -412,6 +502,11 @@
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"successFullResult == true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.successFullResult).to.eql(true);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -429,7 +524,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"idList\": [\n        \"mezgaaladar\"\n    ]\n}",
+					"raw": "{\n    \"idList\": [\n        \"mezgaaladar\",\n        \"mezgakriszta\"\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -445,6 +540,267 @@
 						"class",
 						"progmatic2020-ősz",
 						"students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create eternal quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b2e7338d-472e-48fb-ac8f-f1ac042272b8",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"successFullResult == true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.successFullResult).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"value": "{{csrf_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"Örökkvíz_1\",\n    \"questionIds\": [\n        \"micimackokedvence\",\n        \"micimackokedvence_0\",\n        \"micimackokedvence_1\",\n        \"micimackokedvence_2\",\n        \"micimackokedvence_3\",\n        \"micimackokedvence_4\",\n        \"micimackokedvence_5\",\n        \"micimackokedvence_6\",\n        \"micimackokedvence_7\",\n        \"micimackokedvence_8\",\n        \"micimackokedvence_9\",\n        \"micimackokedvence_10\",\n        \"micimackokedvence_11\",\n        \"micimackokedvence_12\",\n        \"micimackokedvence_13\",\n        \"micimackokedvence_14\",\n        \"micimackokedvence_15\",\n        \"micimackokedvence_16\",\n        \"micimackokedvence_17\",\n        \"micimackokedvence_18\",\n        \"micimackokedvence_19\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{progmappbe_host}}/eternalquiz",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"eternalquiz"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create another eternal quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "12b31606-b0fb-4734-b4dc-0191241f5bad",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"successFullResult == true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.successFullResult).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"value": "{{csrf_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"Örökkvíz_2\",\n    \"questionIds\": [\n        \"micimackokedvence_21\",\n        \"micimackokedvence_22\",\n        \"micimackokedvence_23\",\n        \"micimackokedvence_24\",\n        \"micimackokedvence_25\",\n        \"micimackokedvence_26\",\n        \"micimackokedvence_27\",\n        \"micimackokedvence_28\",\n        \"micimackokedvence_29\",\n        \"micimackokedvence_30\",\n        \"micimackokedvence_31\",\n        \"micimackokedvence_32\",\n        \"micimackokedvence_33\",\n        \"micimackokedvence_34\",\n        \"micimackokedvence_35\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{progmappbe_host}}/eternalquiz",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"eternalquiz"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign question to Eternail Quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f9c1b663-7507-4828-a6f9-1ba2dbd71713",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"successFullResult == true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.successFullResult).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"value": "{{csrf_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_1\",\n   \"questionId\": \"micimackokedvence_20\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{progmappbe_host}}/eternalquiz/quiz/question",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"eternalquiz",
+						"quiz",
+						"question"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign class to Eternal Quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b5038e43-eb5b-4ff2-8bb7-74215ab28563",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"successFullResult == true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.successFullResult).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"type": "text",
+						"value": "{{csrf_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_1\",\n   \"schoolClassId\": \"progmatic2020-ősz\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{progmappbe_host}}/eternalquiz/quiz/class",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"eternalquiz",
+						"quiz",
+						"class"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Assign class to another Eternal Quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b14d9f01-91ea-4ae2-8699-5fa8460dda8c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"successFullResult == true\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.successFullResult).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"type": "text",
+						"value": "{{csrf_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_2\",\n   \"schoolClassId\": \"progmatic2020-ősz\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{progmappbe_host}}/eternalquiz/quiz/class",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"eternalquiz",
+						"quiz",
+						"class"
 					]
 				}
 			},

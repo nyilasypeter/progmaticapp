@@ -7,16 +7,7 @@ package com.progmatic.progmappbe.entities;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
-import javax.persistence.NamedSubgraph;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 /**
  * Represents a question of a test.
@@ -72,13 +63,18 @@ public class Question extends BaseEntity {
         
     @Lob
     @Column(length=100000)
-    private byte[] image;   
+    private byte[] image;
+
+    private Integer answerTimeInSec;
     
     @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST})
     private Set<PossibleAnswer> possibleAnswers = new HashSet<>();
     
     @OneToMany(mappedBy = "question")
     private Set<QuestionInTest> questionInTests = new HashSet<>();
+
+    @ManyToMany(mappedBy = "questions")
+    private Set<EternalQuiz> eternalQuizs = new HashSet<>();
 
     public String getText() {
         return text;
@@ -94,6 +90,14 @@ public class Question extends BaseEntity {
 
     public void setImage(byte[] image) {
         this.image = image;
+    }
+
+    public Integer getAnswerTimeInSec() {
+        return answerTimeInSec;
+    }
+
+    public void setAnswerTimeInSec(Integer answerTimeInSec) {
+        this.answerTimeInSec = answerTimeInSec;
     }
 
     public Set<PossibleAnswer> getPossibleAnswers() {
@@ -115,5 +119,12 @@ public class Question extends BaseEntity {
     public void setQuestionInTests(Set<QuestionInTest> questionInTests) {
         this.questionInTests = questionInTests;
     }
-    
+
+    public Set<EternalQuiz> getEternalQuizs() {
+        return eternalQuizs;
+    }
+
+    public void setEternalQuizs(Set<EternalQuiz> eternalQuizs) {
+        this.eternalQuizs = eternalQuizs;
+    }
 }

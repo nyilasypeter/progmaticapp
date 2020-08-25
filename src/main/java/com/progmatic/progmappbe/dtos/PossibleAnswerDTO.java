@@ -5,7 +5,7 @@
  */
 package com.progmatic.progmappbe.dtos;
 
-import com.progmatic.progmappbe.entities.PossibleAnswerType;
+import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import java.util.ArrayList;
 import java.util.List;
 

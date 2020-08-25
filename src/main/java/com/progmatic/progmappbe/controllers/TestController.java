@@ -5,6 +5,7 @@
  */
 package com.progmatic.progmappbe.controllers;
 
+import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.QuestionDTO;
 import com.progmatic.progmappbe.services.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class TestController {
     TestService testService;
     
     @PostMapping(path = "/question")
-    public String createQuestion(@RequestBody QuestionDTO q){
+    public EntityCreationResult createQuestion(@RequestBody QuestionDTO q){
         return testService.createQuestion(q);
     }
     

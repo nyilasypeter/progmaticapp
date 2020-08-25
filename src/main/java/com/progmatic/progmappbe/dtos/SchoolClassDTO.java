@@ -1,7 +1,7 @@
 package com.progmatic.progmappbe.dtos;
 
 
-import com.progmatic.progmappbe.entities.SemesterType;
+import com.progmatic.progmappbe.entities.enums.SemesterType;
 
 
 public class SchoolClassDTO extends BaseEntityDTO {

@@ -5,7 +5,7 @@
  */
 package com.progmatic.progmappbe.dtos;
 
-import com.progmatic.progmappbe.entities.ScoreMechanism;
+import com.progmatic.progmappbe.entities.enums.ScoreMechanism;
 
 
 /**
