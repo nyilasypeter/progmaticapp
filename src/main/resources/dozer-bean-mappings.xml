@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mappings xmlns="http://dozer.sourceforge.net"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<mappings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://dozer.sourceforge.net"
           xsi:schemaLocation="http://dozer.sourceforge.net
           http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
 
     <configuration>
         <custom-converters>
@@ -44,4 +45,29 @@
             </converter>
         </custom-converters>
     </configuration>
+
+    <mapping map-id="omitIsRightAnswerInfo">
+        <class-a>com.progmatic.progmappbe.entities.Question</class-a>
+        <class-b>com.progmatic.progmappbe.dtos.QuestionDTO</class-b>
+        <field map-id="omitIsRightAnswerInfo2" type="one-way" >
+            <a>possibleAnswers</a>
+            <b>possibleAnswers</b>
+        </field>
+    </mapping>
+    <mapping map-id="omitIsRightAnswerInfo2">
+        <class-a>com.progmatic.progmappbe.entities.PossibleAnswer</class-a>
+        <class-b>com.progmatic.progmappbe.dtos.PossibleAnswerDTO</class-b>
+        <field map-id="omitIsRightAnswerInfo3" type="one-way" >
+            <a>possibleAnswerValues</a>
+            <b>possibleAnswerValues</b>
+        </field>
+    </mapping>
+    <mapping map-id="omitIsRightAnswerInfo3">
+        <class-a>com.progmatic.progmappbe.entities.PossibleAnswerValue</class-a>
+        <class-b>com.progmatic.progmappbe.dtos.PossibleAnswerValueDTO</class-b>
+        <field-exclude type="one-way">
+            <a>isRightAnswer</a>
+            <b>isRightAnswer</b>
+        </field-exclude>
+    </mapping>
 </mappings>
