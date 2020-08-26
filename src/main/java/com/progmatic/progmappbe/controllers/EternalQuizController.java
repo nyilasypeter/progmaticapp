@@ -29,4 +29,9 @@ public class EternalQuizController {
             @RequestBody EternalQuizToClassDTO eqcDTO){
         return eternalQuizService.assignQuestionToEternalSchoolClass(eqcDTO.getEternalQuizId(), eqcDTO.getSchoolClassId());
     }
+
+    @GetMapping(path = "/eternalquiz/question")
+    public QuestionDTO getNextEternalQiuzQuestion(){
+        return eternalQuizService.getNextEternalQuizQuestion();
+    }
 }

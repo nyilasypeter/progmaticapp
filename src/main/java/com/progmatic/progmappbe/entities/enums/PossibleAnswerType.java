@@ -10,5 +10,5 @@ package com.progmatic.progmappbe.entities.enums;
  * @author peti
  */
 public enum PossibleAnswerType {
-    shortText, longText, dropdown, selectOptions, checkbox;
+    shortText, longText, dropdown, radioButtons, trueFalseCheckbox, checkboxList;
 }

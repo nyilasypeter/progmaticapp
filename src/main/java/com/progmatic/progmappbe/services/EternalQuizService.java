@@ -3,7 +3,10 @@ package com.progmatic.progmappbe.services;
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.EternalQuizDTO;
+import com.progmatic.progmappbe.dtos.QuestionDTO;
 import com.progmatic.progmappbe.entities.*;
+import com.progmatic.progmappbe.helpers.SecHelper;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -12,16 +15,32 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class EternalQuizService {
+
+    public static final int PROBABILITY_TO_CHOOSE_NEW_QUESTION = 40;
+    public static final int PROBABILITY_TO_CHOOSE_WRONGLY_ANSWERED_QUESTION = 40;
+    public static final int PROBABILITY_TO_CHOOSE_WELL_ANSWERED_QUESTION = 20;
+
+    private Random random = new Random();
+
 
     @Autowired
     EternalQuizService self;
 
     @PersistenceContext
     EntityManager em;
+
+    private DozerBeanMapper mapper;
+
+    @Autowired
+    public EternalQuizService(DozerBeanMapper mapper) {
+        this.mapper = mapper;
+    }
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CRUD_ETERNAL_QUIZ + "')")
@@ -118,5 +137,59 @@ public class EternalQuizService {
                 }
             }
         }
+    }
+
+    @Transactional
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_READ_QUESTION + "')")
+    public QuestionDTO getNextEternalQuizQuestion() {
+        User loggedInUser = SecHelper.getLoggedInUser();
+        List<EternalQuizAnswer> quizes =
+                em.createQuery("select  eq from EternalQuizAnswer eq left join  eq.actualAnswer where eq.student.id = :studentId",
+                        EternalQuizAnswer.class)
+                        .setParameter("studentId", loggedInUser.getId())
+                        .getResultList();
+        EternalQuizAnswer randomAnswer = getRandomAnswer(quizes);
+        QuestionDTO qdto = null;
+        if (randomAnswer != null) {
+            Question question = randomAnswer.getQuestion();
+            qdto = mapper.map(question, QuestionDTO.class, "omitIsRightAnswerInfo");
+        }
+        return qdto;
+    }
+
+    private EternalQuizAnswer getRandomAnswer(List<EternalQuizAnswer> quizes) {
+        if (quizes.isEmpty()) {
+            return null;
+        }
+        int ran = random.nextInt(100);
+        EternalQuizAnswer selectedQuiz = null;
+        if (ran < PROBABILITY_TO_CHOOSE_NEW_QUESTION) {
+            List<EternalQuizAnswer> notAnsweredOnes = quizes.stream()
+                    .filter(q -> !q.getHasAnswer())
+                    .collect(Collectors.toList());
+            if (!notAnsweredOnes.isEmpty()) {
+                selectedQuiz = notAnsweredOnes.get(random.nextInt(notAnsweredOnes.size()));
+            }
+        } else if (ran < PROBABILITY_TO_CHOOSE_NEW_QUESTION + PROBABILITY_TO_CHOOSE_WRONGLY_ANSWERED_QUESTION) {
+            List<EternalQuizAnswer> notAnsweredOnes = quizes.stream()
+                    .filter(q -> q.getHasAnswer())
+                    .filter(q -> (q.getActualAnswer().getAnswerEvaulationResult().isWrongAnswer()))
+                    .collect(Collectors.toList());
+            if (!notAnsweredOnes.isEmpty()) {
+                selectedQuiz = notAnsweredOnes.get(random.nextInt(notAnsweredOnes.size()));
+            }
+        } else if (ran < PROBABILITY_TO_CHOOSE_NEW_QUESTION + PROBABILITY_TO_CHOOSE_WRONGLY_ANSWERED_QUESTION + PROBABILITY_TO_CHOOSE_WELL_ANSWERED_QUESTION) {
+            List<EternalQuizAnswer> notAnsweredOnes = quizes.stream()
+                    .filter(q -> q.getHasAnswer())
+                    .filter(q -> (!q.getActualAnswer().getAnswerEvaulationResult().isWrongAnswer()))
+                    .collect(Collectors.toList());
+            if (!notAnsweredOnes.isEmpty()) {
+                selectedQuiz = notAnsweredOnes.get(random.nextInt(notAnsweredOnes.size()));
+            }
+        }
+        if (selectedQuiz == null) {
+            selectedQuiz = quizes.get(random.nextInt(quizes.size()));
+        }
+        return selectedQuiz;
     }
 }

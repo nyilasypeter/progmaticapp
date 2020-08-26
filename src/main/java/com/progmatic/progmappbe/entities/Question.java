@@ -60,6 +60,10 @@ import javax.persistence.*;
 public class Question extends BaseEntity {
     @Lob
     private String text;
+
+    private String adminDescription;
+
+    private String explanationAfter;
         
     @Lob
     @Column(length=100000)
@@ -75,6 +79,14 @@ public class Question extends BaseEntity {
 
     @ManyToMany(mappedBy = "questions")
     private Set<EternalQuiz> eternalQuizs = new HashSet<>();
+
+    public String getAdminDescription() {
+        return adminDescription;
+    }
+
+    public void setAdminDescription(String adminDescription) {
+        this.adminDescription = adminDescription;
+    }
 
     public String getText() {
         return text;
@@ -126,5 +138,13 @@ public class Question extends BaseEntity {
 
     public void setEternalQuizs(Set<EternalQuiz> eternalQuizs) {
         this.eternalQuizs = eternalQuizs;
+    }
+
+    public String getExplanationAfter() {
+        return explanationAfter;
+    }
+
+    public void setExplanationAfter(String explanationAfter) {
+        this.explanationAfter = explanationAfter;
     }
 }

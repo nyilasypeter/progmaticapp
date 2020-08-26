@@ -43,7 +43,11 @@ import java.util.List;
  */
 public class QuestionDTO extends BaseEntityDTO {
     private String text;
-        
+
+    private String adminDescription;
+
+    private String explanationAfter;
+
     private byte[] image;
 
     private Integer answerTimeInSec;
@@ -80,5 +84,21 @@ public class QuestionDTO extends BaseEntityDTO {
 
     public void setAnswerTimeInSec(Integer answerTimeInSec) {
         this.answerTimeInSec = answerTimeInSec;
+    }
+
+    public String getAdminDescription() {
+        return adminDescription;
+    }
+
+    public void setAdminDescription(String adminDescription) {
+        this.adminDescription = adminDescription;
+    }
+
+    public String getExplanationAfter() {
+        return explanationAfter;
+    }
+
+    public void setExplanationAfter(String explanationAfter) {
+        this.explanationAfter = explanationAfter;
     }
 }
