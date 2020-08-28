@@ -1065,6 +1065,53 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Admin gets students' statistics",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "42949cf5-58c3-48d3-b627-7e404172cba6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"id is not null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).not.equal(null);",
+							"});",
+							"",
+							"pm.test(\"possibleAnswers is not empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.possibleAnswers.length).to.be.above(0);",
+							"});",
+							"",
+							"pm.variables.set(\"questionToAnswer\", JSON.stringify(pm.response.json()));",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{progmappbe_host}}/eternalquiz/statistics/progmatic2020-ősz",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"eternalquiz",
+						"statistics",
+						"progmatic2020-ősz"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
