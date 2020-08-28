@@ -23,12 +23,23 @@ public class ActualAnswer extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     private ActualTest actualTest;
     
-    @OneToMany(cascade = {CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.PERSIST})
     private Set<PossibleAnswerValue> selectedAnswerValues = new HashSet<>();
+
+    @ManyToOne
+    private Question question;
         
     private Integer actualScore;
 
+    @Enumerated(EnumType.STRING)
     private AnswerEvaulationResult answerEvaulationResult;
+
+    @ManyToOne
+    private EternalQuizAnswer eternalQuizAnswer;
+
+    public void addSelectedAnswerValue(PossibleAnswerValue possibleAnswerValue){
+        selectedAnswerValues.add(possibleAnswerValue);
+    }
 
     public String getAnswerText() {
         return answerText;
@@ -68,5 +79,21 @@ public class ActualAnswer extends BaseEntity{
 
     public void setAnswerEvaulationResult(AnswerEvaulationResult answerEvaulationResult) {
         this.answerEvaulationResult = answerEvaulationResult;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public EternalQuizAnswer getEternalQuizAnswer() {
+        return eternalQuizAnswer;
+    }
+
+    public void setEternalQuizAnswer(EternalQuizAnswer eternalQuizAnswer) {
+        this.eternalQuizAnswer = eternalQuizAnswer;
     }
 }

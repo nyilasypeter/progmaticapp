@@ -5,6 +5,8 @@
  */
 package com.progmatic.progmappbe.entities;
 
+import com.progmatic.progmappbe.entities.enums.FeedbackType;
+
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
@@ -64,12 +66,24 @@ public class Question extends BaseEntity {
     private String adminDescription;
 
     private String explanationAfter;
+
+    private String evaluationAlogrithm;
+
+    @Enumerated(EnumType.STRING)
+    private FeedbackType feedbackType;
         
     @Lob
     @Column(length=100000)
     private byte[] image;
 
     private Integer answerTimeInSec;
+
+    public Integer calculatedAnswerTimeInSec(){
+        if(answerTimeInSec == null){
+            return null;
+        }
+        return answerTimeInSec + 5;
+    }
     
     @OneToMany(mappedBy = "question", cascade = {CascadeType.PERSIST})
     private Set<PossibleAnswer> possibleAnswers = new HashSet<>();
@@ -146,5 +160,21 @@ public class Question extends BaseEntity {
 
     public void setExplanationAfter(String explanationAfter) {
         this.explanationAfter = explanationAfter;
+    }
+
+    public String getEvaluationAlogrithm() {
+        return evaluationAlogrithm;
+    }
+
+    public void setEvaluationAlogrithm(String evaluationAlogrithm) {
+        this.evaluationAlogrithm = evaluationAlogrithm;
+    }
+
+    public FeedbackType getFeedbackType() {
+        return feedbackType;
+    }
+
+    public void setFeedbackType(FeedbackType feedbackType) {
+        this.feedbackType = feedbackType;
     }
 }

@@ -2,9 +2,10 @@ package com.progmatic.progmappbe.dtos.quizresponse;
 
 import java.util.List;
 
-public class EternalQuizAnswerResponseDTO {
+public class AnswerResponseDTO {
     private String questionId;
     private List<PossibleAnswerResponseDTO> answers;
+    private String answerText;
 
     public String getQuestionId() {
         return questionId;
@@ -20,5 +21,13 @@ public class EternalQuizAnswerResponseDTO {
 
     public void setAnswers(List<PossibleAnswerResponseDTO> answers) {
         this.answers = answers;
+    }
+
+    public String getAnswerText() {
+        return answerText;
+    }
+
+    public void setAnswerText(String answerText) {
+        this.answerText = answerText;
     }
 }

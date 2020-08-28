@@ -3,6 +3,8 @@ package com.progmatic.progmappbe.entities;
 import com.progmatic.progmappbe.entities.enums.SemesterType;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToMany;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +15,10 @@ public class SchoolClass extends BaseEntity{
     public static final String SEMESTER_SPRING = "SEMESTER_SPRING";
 
     private Integer year;
+
+    @Enumerated(EnumType.STRING)
     private SemesterType semester;
+
     private Boolean isActive = true;
 
     @ManyToMany

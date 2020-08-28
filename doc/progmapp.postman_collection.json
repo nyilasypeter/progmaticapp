@@ -222,7 +222,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t \"id\":\"{{progmappbe_question_id}}\",\n\t\"text\": \"Melyik Micimackó két legkedvesebb étele?\",\n\t\"possibleAnswers\": [{\n\t\t\"textBefore\": \"Első legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}, {\n\t\t\"textBefore\": \"Második legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}]\n}"
+					"raw": "{\n\t \"id\":\"{{progmappbe_question_id}}\",\n\t\"text\": \"Melyik Micimackó két legkedvesebb étele?\",\n    \"explanationAfter\": \"Nem muszáj, hogy a két legkedevesebb különbözzön...\",\n    \"feedbackType\": \"trueFalseFeedback\",\n\t\"possibleAnswers\": [{\n\t\t\"textBefore\": \"Első legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}, {\n\t\t\"textBefore\": \"Második legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}]\n}"
 				},
 				"url": {
 					"raw": "{{progmappbe_host}}/question",
@@ -803,6 +803,207 @@
 						"class"
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login as Aladár",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ddf6ef60-2a0e-422f-98f0-d72581cf1f3a",
+						"exec": [
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.name).to.eql(\"mezgaaladar\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"value": "{{csrf_token}}"
+					},
+					{
+						"key": "",
+						"value": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "mezgaaladar",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "mezgaaladar",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{progmappbe_host}}/login",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get CSRF value after login Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "87476440-b7c2-4349-99dd-3490e5cf3f2b",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "ad79c695-a113-45b3-9d65-34210be3ee43",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.environment.set(\"csrf_token\", pm.response.text());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{progmappbe_host}}/csrf",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"csrf"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get next eternal quiz",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "95c64ebf-39e7-4436-b1fb-5fafba35cf23",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"id is not null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).not.equal(null);",
+							"});",
+							"",
+							"pm.test(\"possibleAnswers is not empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.possibleAnswers.length).to.be.above(0);",
+							"});",
+							"",
+							"pm.variables.set(\"questionToAnswer\", JSON.stringify(pm.response.json()));",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{progmappbe_host}}/eternalquiz/question",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"eternalquiz",
+						"question"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "quizanswer",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7b6b70c7-3e03-4286-8997-ff0f975821da",
+						"exec": [
+							"//let question = JSON.parse(pm.variables.get('questionToAnswer')).id;",
+							"//pm.variables.set(\"questionId\",question.id);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-CSRF-TOKEN",
+						"value": "{{csrf_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"questionId\": \"micimackokedvence_33\",\n    \"answers\": [\n        {\n            \"id\": \"0e453335-74fe-4927-97d5-b6f05681e6f6\",\n            \"selectedAnswerIds\": [\n                \"71858411-036b-4737-b2b3-6e09fd1c8e52\"\n            ]\n        },\n        {\n            \"id\": \"67b95568-87d0-4419-9406-6c6c9e72ffdf\",\n            \"selectedAnswerIds\": [\n                \"987709bd-b5a3-4102-88dc-bd757d7ad0d2\"\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{progmappbe_host}}/eternalquiz/answer",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"eternalquiz",
+						"answer"
+					]
+				},
+				"description": "Modify it according to Get next eternal quiz's result."
 			},
 			"response": []
 		}

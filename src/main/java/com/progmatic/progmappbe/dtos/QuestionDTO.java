@@ -5,6 +5,8 @@
  */
 package com.progmatic.progmappbe.dtos;
 
+import com.progmatic.progmappbe.entities.enums.FeedbackType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,10 @@ public class QuestionDTO extends BaseEntityDTO {
     private byte[] image;
 
     private Integer answerTimeInSec;
+
+    private String evaluationAlogrithm;
+
+    private FeedbackType feedbackType;
     
     private List<PossibleAnswerDTO> possibleAnswers = new ArrayList<>();
 
@@ -100,5 +106,21 @@ public class QuestionDTO extends BaseEntityDTO {
 
     public void setExplanationAfter(String explanationAfter) {
         this.explanationAfter = explanationAfter;
+    }
+
+    public String getEvaluationAlogrithm() {
+        return evaluationAlogrithm;
+    }
+
+    public void setEvaluationAlogrithm(String evaluationAlogrithm) {
+        this.evaluationAlogrithm = evaluationAlogrithm;
+    }
+
+    public FeedbackType getFeedbackType() {
+        return feedbackType;
+    }
+
+    public void setFeedbackType(FeedbackType feedbackType) {
+        this.feedbackType = feedbackType;
     }
 }

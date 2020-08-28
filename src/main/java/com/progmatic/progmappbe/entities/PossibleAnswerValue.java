@@ -6,7 +6,10 @@
 package com.progmatic.progmappbe.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Possible value of an answer. 
@@ -22,6 +25,9 @@ public class PossibleAnswerValue extends BaseEntity{
     
     @ManyToOne
     private PossibleAnswer possibleAnswer;
+
+    @ManyToMany(mappedBy = "selectedAnswerValues")
+    private Set<ActualAnswer> actualAnswers = new HashSet<>();
 
     public String getText() {
         return text;
@@ -45,6 +51,21 @@ public class PossibleAnswerValue extends BaseEntity{
 
     public void setPossibleAnswer(PossibleAnswer possibleAnswer) {
         this.possibleAnswer = possibleAnswer;
-    }    
-    
+    }
+
+    public Boolean getRightAnswer() {
+        return isRightAnswer;
+    }
+
+    public void setRightAnswer(Boolean rightAnswer) {
+        isRightAnswer = rightAnswer;
+    }
+
+    public Set<ActualAnswer> getActualAnswers() {
+        return actualAnswers;
+    }
+
+    public void setActualAnswers(Set<ActualAnswer> actualAnswers) {
+        this.actualAnswers = actualAnswers;
+    }
 }
