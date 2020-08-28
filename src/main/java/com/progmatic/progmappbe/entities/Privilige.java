@@ -6,6 +6,7 @@
 package com.progmatic.progmappbe.entities;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +27,8 @@ public class Privilige extends BaseEntity{
     public static final String PRIV_CREATE_STUDENT = "createStudent" ;
     public static final String PRIV_CREATE_USER = "createUser" ;
     public static final String PRIV_CRUD_ETERNAL_QUIZ = "crudEternalQuiz" ;
+    public static final String PRIV_OWN_ETERNAL_QUIZ_STATISTICS = "privOwnEternalQuizStatistics" ;
+    public static final String PRIV_ETERNAL_QUIZ_STATISTICS_OF_ANY_STUDENT = "privEternalQuizStatisticsOfAnyStudent" ;
 
     public Privilige() {
     }

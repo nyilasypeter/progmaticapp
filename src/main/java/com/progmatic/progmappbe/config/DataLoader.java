@@ -13,6 +13,9 @@ import com.progmatic.progmappbe.entities.Role;
 import com.progmatic.progmappbe.entities.User;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import com.progmatic.progmappbe.services.ConstantService;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,11 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -45,14 +53,18 @@ public class DataLoader implements ApplicationRunner {
 
     private String adminPassword;
 
+    private ConstantService constantService;
+
     public DataLoader(UserAutoDao userAutoDao, PasswordEncoder passwordEncoder,
                       PriviligeAutoDao priviligeAutoDao, RoleAutoDao roleAutoDao,
-                      @Value("progmatic.admin.default.password") String adminPassword) {
+                      @Value("progmatic.admin.default.password") String adminPassword,
+                      ConstantService constantService) {
         this.userAutoDao = userAutoDao;
         this.passwordEncoder = passwordEncoder;
         this.priviligeAutoDao = priviligeAutoDao;
         this.roleAutoDao = roleAutoDao;
         this.adminPassword = adminPassword;
+        this.constantService = constantService;
     }
 
     @Override
@@ -61,37 +73,51 @@ public class DataLoader implements ApplicationRunner {
         createPriviliges();
         createRoles();
         createUsers();
+        createConstants();
+    }
+
+    private void createConstants() {
+        Long constantCount = (Long) em.createQuery("select count(c) from Constant  c").getSingleResult();
+        if(constantCount == 0){
+            constantService.writeConstant(ConstantService.KEY_ETERNALQUIZ_TARGET_PERCENTAGE, "80");
+        }
     }
 
     private void createPriviliges() {
         long priviliges = priviligeAutoDao.count();
         if(priviliges == 0){
-            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_QUESTION));
-            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_TEST));
-            priviligeAutoDao.save(new Privilige(Privilige.PRIV_START_TEST));
-            priviligeAutoDao.save(new Privilige(Privilige.PRIV_READ_QUESTION));
-            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_CLASS));
-            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_STUDENT));
-            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CREATE_USER));
-            priviligeAutoDao.save(new Privilige(Privilige.PRIV_CRUD_ETERNAL_QUIZ));
+            List<Field> fields = FieldUtils.getAllFieldsList(Privilige.class);
+            fields.stream()
+                    .filter(field -> Modifier.isStatic(field.getModifiers()))
+                    .map(field -> {
+                        try {
+                            return field.get(null).toString();
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .forEach(privName -> priviligeAutoDao.save(new Privilige(privName)));
             LOG.debug("Priviliges created.");
         }
     }
 
     private void createRoles() {
-        long priviliges = roleAutoDao.count();
-        if(priviliges == 0){
+        long roles = roleAutoDao.count();
+        if(roles == 0){
             createRole(Role.ROLE_ADMIN);
             createRole(Role.ROLE_OFFICE,
                     Privilige.PRIV_CREATE_CLASS,
-                    Privilige.PRIV_CREATE_STUDENT);
+                    Privilige.PRIV_CREATE_STUDENT,
+                    Privilige.PRIV_ETERNAL_QUIZ_STATISTICS_OF_ANY_STUDENT);
             createRole(Role.ROLE_TEACHER, 
                     Privilige.PRIV_CREATE_QUESTION, 
                     Privilige.PRIV_CREATE_TEST,
                     Privilige.PRIV_READ_QUESTION,
-                    Privilige.PRIV_CRUD_ETERNAL_QUIZ);
+                    Privilige.PRIV_CRUD_ETERNAL_QUIZ,
+                    Privilige.PRIV_ETERNAL_QUIZ_STATISTICS_OF_ANY_STUDENT);
             createRole(Role.ROLE_STUDENT,
-                    Privilige.PRIV_READ_QUESTION);
+                    Privilige.PRIV_READ_QUESTION,
+                    Privilige.PRIV_OWN_ETERNAL_QUIZ_STATISTICS);
             LOG.debug("Roles created.");
         }
     }

@@ -42,10 +42,13 @@ public class EternalQuizService {
 
     private ApplicationContext context;
 
+    private ConstantService constantService;
+
     @Autowired
-    public EternalQuizService(DozerBeanMapper mapper, ApplicationContext context) {
+    public EternalQuizService(DozerBeanMapper mapper, ApplicationContext context, ConstantService constantService) {
         this.mapper = mapper;
         this.context = context;
+        this.constantService = constantService;
     }
 
 
@@ -326,6 +329,30 @@ public class EternalQuizService {
             }
         }
 
+        return ret;
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_OWN_ETERNAL_QUIZ_STATISTICS + "')")
+    public EternalQuizStatisticDTO getMyEternalQuizStatistics() {
+        User loggedInUser = SecHelper.getLoggedInUser();
+        List<EternalQuizAnswer> quizes =
+                em.createQuery("select  eq from EternalQuizAnswer eq left join  eq.lastAnswer where eq.student.id = :studentId",
+                        EternalQuizAnswer.class)
+                        .setParameter("studentId", loggedInUser.getId())
+                        .getResultList();
+
+        int allQuestions = quizes.size();
+        int goodAnswers = (int) quizes.stream()
+                .filter(q -> q.getHasAnswer())
+                .filter(q -> (!q.getLastAnswer().getAnswerEvaulationResult().isWrongAnswer()))
+                .count();
+        int badAnswers = (int) quizes.stream()
+                .filter(q -> q.getHasAnswer())
+                .filter(q -> (q.getLastAnswer().getAnswerEvaulationResult().isWrongAnswer()))
+                .count();
+        Integer targetPercentage = constantService.getConstantValueAsIntegerByKey(ConstantService.KEY_ETERNALQUIZ_TARGET_PERCENTAGE);
+
+        EternalQuizStatisticDTO ret = new EternalQuizStatisticDTO(loggedInUser.getId(), allQuestions, goodAnswers, badAnswers, targetPercentage);
         return ret;
     }
 

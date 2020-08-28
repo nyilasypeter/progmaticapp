@@ -41,4 +41,9 @@ public class EternalQuizController {
     public AnswerFeedbackDTO acceptEternalQuizAnswer(@RequestBody AnswerResponseDTO answer){
         return eternalQuizService.acceptEternalQuizAnswer(answer);
     }
+
+    @GetMapping(path = "/eternalquiz/me/statistics")
+    public EternalQuizStatisticDTO getMyEternalQuizStatistics(){
+        return eternalQuizService.getMyEternalQuizStatistics();
+    }
 }

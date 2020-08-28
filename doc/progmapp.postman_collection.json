@@ -973,6 +973,18 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "7b4f3b3c-3328-4254-a46f-ceab98d69d2c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -1004,6 +1016,53 @@
 					]
 				},
 				"description": "Modify it according to Get next eternal quiz's result."
+			},
+			"response": []
+		},
+		{
+			"name": "Aladár gets his own statistics",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f73b8404-2d0b-4de4-bae4-2c0007868cd5",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"id is not null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).not.equal(null);",
+							"});",
+							"",
+							"pm.test(\"possibleAnswers is not empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.possibleAnswers.length).to.be.above(0);",
+							"});",
+							"",
+							"pm.variables.set(\"questionToAnswer\", JSON.stringify(pm.response.json()));",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{progmappbe_host}}/eternalquiz/me/statistics",
+					"host": [
+						"{{progmappbe_host}}"
+					],
+					"path": [
+						"eternalquiz",
+						"me",
+						"statistics"
+					]
+				}
 			},
 			"response": []
 		}

@@ -30,14 +30,6 @@ public class SecHelper {
 
     public static boolean hasAuthority(String authority) {
         return  hasAuthority((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(), authority);
-        /*Collection<? extends GrantedAuthority> authorities
-                = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-        for (GrantedAuthority auth : authorities) {
-            if (auth.getAuthority().equals(authority)) {
-                return true;
-            }
-        }
-        return false;*/
     }
 
     public static boolean hasAuthority(User u, String authority) {
