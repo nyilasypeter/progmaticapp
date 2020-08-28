@@ -332,13 +332,31 @@ public class EternalQuizService {
         return ret;
     }
 
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_ETERNAL_QUIZ_STATISTICS_OF_ANY_STUDENT + "')")
+    public EternalQuizStatisticOfStudentsDTO getEternalQuizStatistics(String classId) {
+        SchoolClass schoolClass = em.find(SchoolClass.class, classId);
+        if(schoolClass == null){
+            return new EternalQuizStatisticOfStudentsDTO(false, "SchoolClass does not exist.");
+        }
+        EternalQuizStatisticOfStudentsDTO ret = new EternalQuizStatisticOfStudentsDTO();
+        for (User student : schoolClass.getStudents()) {
+            ret.addStatistic(getEternalQuizStatisticsOfStudent(student));
+        }
+        ret.getStudentStatistics().sort(Comparator.comparingDouble(EternalQuizStatisticDTO::getAchievedPercentage).reversed());
+        return ret;
+    }
+
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_OWN_ETERNAL_QUIZ_STATISTICS + "')")
     public EternalQuizStatisticDTO getMyEternalQuizStatistics() {
         User loggedInUser = SecHelper.getLoggedInUser();
+        return getEternalQuizStatisticsOfStudent(loggedInUser);
+    }
+
+    private EternalQuizStatisticDTO getEternalQuizStatisticsOfStudent(User user) {
         List<EternalQuizAnswer> quizes =
                 em.createQuery("select  eq from EternalQuizAnswer eq left join  eq.lastAnswer where eq.student.id = :studentId",
                         EternalQuizAnswer.class)
-                        .setParameter("studentId", loggedInUser.getId())
+                        .setParameter("studentId", user.getId())
                         .getResultList();
 
         int allQuestions = quizes.size();
@@ -352,7 +370,7 @@ public class EternalQuizService {
                 .count();
         Integer targetPercentage = constantService.getConstantValueAsIntegerByKey(ConstantService.KEY_ETERNALQUIZ_TARGET_PERCENTAGE);
 
-        EternalQuizStatisticDTO ret = new EternalQuizStatisticDTO(loggedInUser.getId(), allQuestions, goodAnswers, badAnswers, targetPercentage);
+        EternalQuizStatisticDTO ret = new EternalQuizStatisticDTO(user.getId(), allQuestions, goodAnswers, badAnswers, targetPercentage);
         return ret;
     }
 
