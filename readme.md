@@ -20,8 +20,8 @@ MYSQL_USER_FOR_PROGMAPPBE=<Username for your local MySQL>
 MYSQL_PWD_FOR_PROGMAPPBE=<Password for your local MySQL>
 PROGMAPP_DEFAULT_ADMIN_PASSWORD=<Password for the initial admin user created during the first deoloy>
 //These ones are only needed for e-mail sending
-GMAIL_PROGMATIC_USERNAME=<A valid Gmail username>
-GMAIL_PROGMATIC_PASSWORD=<A valid Gmail password for the above username>
+MAIL_PROGMATIC_USERNAME=<A valid username for an smtp mail server>
+MAIL_PROGMATIC_PASSWORD=<A valid password for the above username>
 ```
 ## Build, deploy
 

@@ -5,6 +5,8 @@
  */
 package com.progmatic.progmappbe.entities;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,12 +42,17 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private String emailAddress;
 
-    @Column(nullable = false)
     private String password;
+
+    private LocalDate birthDate;
+
+    private String registrationToken;
+
+    private LocalDateTime registrationTokenValidTo;
 
     private Boolean accountNonLocked = true;
 
-    @ManyToMany(mappedBy = "users",fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "users")
     private Set<Role> roles = new HashSet<>();
     
     @OneToMany(mappedBy = "student")
@@ -86,6 +93,30 @@ public class User extends BaseEntity implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getRegistrationToken() {
+        return registrationToken;
+    }
+
+    public void setRegistrationToken(String registrationToken) {
+        this.registrationToken = registrationToken;
+    }
+
+    public LocalDateTime getRegistrationTokenValidTo() {
+        return registrationTokenValidTo;
+    }
+
+    public void setRegistrationTokenValidTo(LocalDateTime registrationTokenValidTo) {
+        this.registrationTokenValidTo = registrationTokenValidTo;
     }
 
     public Boolean getAccountNonLocked() {

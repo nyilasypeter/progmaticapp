@@ -1,11 +1,9 @@
 package com.progmatic.progmappbe.services;
 
 import com.progmatic.progmappbe.aoutodaos.RoleAutoDao;
-import com.progmatic.progmappbe.dtos.BasicResult;
-import com.progmatic.progmappbe.dtos.SchoolClassDTO;
-import com.progmatic.progmappbe.dtos.StudentListDto;
-import com.progmatic.progmappbe.dtos.UserDTO;
+import com.progmatic.progmappbe.dtos.*;
 import com.progmatic.progmappbe.entities.*;
+import com.progmatic.progmappbe.helpers.MailHelper;
 import com.progmatic.progmappbe.helpers.SecHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
@@ -17,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class OfficeAdminService {
@@ -34,10 +32,16 @@ public class OfficeAdminService {
 
     private RoleAutoDao roleAutoDao;
 
-    public OfficeAdminService(DozerBeanMapper mapper, PasswordEncoder passwordEncoder, RoleAutoDao roleAutoDao) {
+    private MailHelper mailHelper;
+
+    public OfficeAdminService(DozerBeanMapper mapper,
+                              PasswordEncoder passwordEncoder,
+                              RoleAutoDao roleAutoDao,
+                              MailHelper mailHelper) {
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
         this.roleAutoDao = roleAutoDao;
+        this.mailHelper = mailHelper;
     }
 
     @Transactional
@@ -99,20 +103,33 @@ public class OfficeAdminService {
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
-    public UserDTO createStudent(UserDTO studentDTO){
+    public EntityCreationResult createStudent(UserDTO studentDTO){
+        User user = em.find(User.class, studentDTO.getLoginName());
+        if(user != null){
+            return new EntityCreationResult(false, null, "User with this login name already exists.");
+        }
         studentDTO.getRoles().clear();
         User student = mapper.map(studentDTO, User.class);
         student.setId(studentDTO.getLoginName());
-        Role studentRole = roleAutoDao.findByName(Role.ROLE_STUDENT);
+        //Role studentRole = roleAutoDao.findByName(Role.ROLE_STUDENT);
+        Role studentRole = em.createQuery("select r from Role r where r.name = :rolename", Role.class)
+                .setParameter("rolename", Role.ROLE_STUDENT)
+                .getSingleResult();
         studentRole.addUser(student);
         if(StringUtils.isNotBlank(studentDTO.getPassword())){
             student.setPassword(passwordEncoder.encode(studentDTO.getPassword()));
         }
         else{
             student.setEnabled(false);
-            //TODO: send e-mail to student with link to complete registration
+            String token = UUID.randomUUID().toString();
+            student.setRegistrationToken(token);
+            student.setRegistrationTokenValidTo(LocalDateTime.now().plusDays(1));
+            Map<String, Object> templateModel = new HashMap<>();
+            templateModel.put(MailHelper.RECIPIENT_KEY, student);
+            templateModel.put(MailHelper.TOKEN_KEY, token);
+            mailHelper.sendMailByTemplate(MailHelper.MAIL_TEMPLATE_STUDENT_REGISTRATION, studentDTO.getEmailAddress(), templateModel);
         }
         em.persist(student);
-        return mapper.map(student, UserDTO.class);
+        return new EntityCreationResult(true, student.getId(), null);
     }
 }

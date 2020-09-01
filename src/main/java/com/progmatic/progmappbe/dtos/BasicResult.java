@@ -12,8 +12,8 @@ public class BasicResult {
         this.errorMessage = StringUtils.isBlank(errorMessage) ? null : errorMessage;
     }
 
-    public BasicResult(boolean successfullCreation) {
-        this.successFullResult = successfullCreation;
+    public BasicResult(boolean successFullResult) {
+        this.successFullResult = successFullResult;
     }
 
     public boolean isSuccessFullResult() {

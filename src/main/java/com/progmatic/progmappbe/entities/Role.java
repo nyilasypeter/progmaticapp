@@ -34,7 +34,7 @@ public class Role extends BaseEntity{
     @Column(nullable = false, unique = true)
     private String name;
     
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "roles")
     private Set<Privilige> priviliges = new HashSet<>();
     
     @ManyToMany

@@ -5,6 +5,8 @@
  */
 package com.progmatic.progmappbe.dtos;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +16,14 @@ import java.util.List;
  */
 public class UserDTO extends BaseEntityDTO  {
 
+    @NotNull
     private String name;
 
+    @NotNull
     private String loginName;
 
+    @NotNull
+    @Email
     private String emailAddress;
 
     private String password;

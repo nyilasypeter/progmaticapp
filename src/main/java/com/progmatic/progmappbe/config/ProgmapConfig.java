@@ -10,6 +10,11 @@ import java.util.List;
 import org.dozer.DozerBeanMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.StringTemplateResolver;
 
 /**
  *
@@ -25,5 +30,19 @@ public class ProgmapConfig {
         mappingFileUrls.add("dozer-bean-mappings.xml");
         mapper.setMappingFiles(mappingFileUrls);
         return mapper;
+    }
+
+    @Bean
+    public ITemplateResolver thymeleafStringTemplateResolver() {
+        StringTemplateResolver templateResolver = new StringTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        return templateResolver;
+    }
+
+    @Bean
+    public SpringTemplateEngine thymeleafTemplateEngine() {
+        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+        templateEngine.setTemplateResolver(thymeleafStringTemplateResolver());
+        return templateEngine;
     }
 }

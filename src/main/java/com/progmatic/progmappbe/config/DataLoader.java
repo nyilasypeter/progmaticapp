@@ -5,15 +5,18 @@
  */
 package com.progmatic.progmappbe.config;
 
+import com.progmatic.progmappbe.aoutodaos.MailTemplateAutoDao;
 import com.progmatic.progmappbe.aoutodaos.PriviligeAutoDao;
 import com.progmatic.progmappbe.aoutodaos.RoleAutoDao;
 import com.progmatic.progmappbe.aoutodaos.UserAutoDao;
+import com.progmatic.progmappbe.entities.MailTemplate;
 import com.progmatic.progmappbe.entities.Privilige;
 import com.progmatic.progmappbe.entities.Role;
 import com.progmatic.progmappbe.entities.User;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.progmatic.progmappbe.helpers.MailHelper;
 import com.progmatic.progmappbe.services.ConstantService;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
@@ -40,6 +43,8 @@ public class DataLoader implements ApplicationRunner {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataLoader.class);
 
+
+
     @PersistenceContext
     EntityManager em;
 
@@ -55,16 +60,20 @@ public class DataLoader implements ApplicationRunner {
 
     private ConstantService constantService;
 
+    private MailTemplateAutoDao mailTemplateAutoDao;
+
     public DataLoader(UserAutoDao userAutoDao, PasswordEncoder passwordEncoder,
                       PriviligeAutoDao priviligeAutoDao, RoleAutoDao roleAutoDao,
-                      @Value("progmatic.admin.default.password") String adminPassword,
-                      ConstantService constantService) {
+                      @Value("${progmatic.admin.default.password}") String adminPassword,
+                      ConstantService constantService,
+                      MailTemplateAutoDao mailTemplateAutoDao) {
         this.userAutoDao = userAutoDao;
         this.passwordEncoder = passwordEncoder;
         this.priviligeAutoDao = priviligeAutoDao;
         this.roleAutoDao = roleAutoDao;
         this.adminPassword = adminPassword;
         this.constantService = constantService;
+        this.mailTemplateAutoDao = mailTemplateAutoDao;
     }
 
     @Override
@@ -74,6 +83,19 @@ public class DataLoader implements ApplicationRunner {
         createRoles();
         createUsers();
         createConstants();
+        createMailTemplates();
+    }
+
+    private void createMailTemplates() {
+        long mailTemplates = mailTemplateAutoDao.count();
+        if(mailTemplates == 0){
+            MailTemplate mt = new MailTemplate();
+            mt.setId(MailHelper.MAIL_TEMPLATE_STUDENT_REGISTRATION);
+            mt.setSubject("progmatic regisztráció");
+            mt.setBody("Kedves [(${recipient.name})]!  \n\n Ezen a linken: [(${registrationLink})] tudsz regisztrálni a Progmatic-ba.");
+            mt.setHtml(false);
+            mailTemplateAutoDao.save(mt);
+        }
     }
 
     private void createConstants() {
@@ -141,7 +163,7 @@ public class DataLoader implements ApplicationRunner {
             Role officeRole = roleAutoDao.findByName(Role.ROLE_OFFICE);
             User admin = new User();
             admin.setLoginName("admin");
-            admin.setPassword(passwordEncoder.encode("admin"));
+            admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setEmailAddress("admin@progmatic.hu");
             teacherRole.addUser(admin);
             adminRole.addUser(admin);
