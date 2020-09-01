@@ -6,1112 +6,1303 @@
 	},
 	"item": [
 		{
-			"name": "Get CSRF value",
-			"event": [
+			"name": "emailregistration",
+			"item": [
 				{
-					"listen": "prerequest",
-					"script": {
-						"id": "2c7a84c5-3b72-41a9-9e63-644d644be214",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "8ca2d9d2-535b-4c5c-8865-a8e3ab84bd21",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"pm.environment.set(\"csrf_token\", pm.response.text());"
-						]
-					}
+					"name": "Complete registration",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\":\"7cc56d2d-4c8b-4f0c-9d00-ea0696c5a55f\",\n    \"password\":\"nyilasypeter\",\n    \"birthDate\":\"1980.04.29\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/completeregistration",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"completeregistration"
+							]
+						}
+					},
+					"response": []
 				}
 			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{progmappbe_host}}/csrf",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"csrf"
-					]
-				}
-			},
-			"response": []
+			"protocolProfileBehavior": {}
 		},
 		{
-			"name": "Login",
-			"event": [
+			"name": "e2eTest_modifies_data",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "d3b0e2b2-7191-4d40-a74a-8b6d0d08aa43",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Your test name\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.name).to.eql(\"admin\");",
-							"});",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}"
-					},
-					{
-						"key": "",
-						"value": "",
-						"disabled": true
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
+					"name": "Get CSRF value",
+					"event": [
 						{
-							"key": "username",
-							"value": "admin",
-							"type": "text"
+							"listen": "prerequest",
+							"script": {
+								"id": "2c7a84c5-3b72-41a9-9e63-644d644be214",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
 						},
 						{
-							"key": "password",
-							"value": "admin",
-							"type": "text"
+							"listen": "test",
+							"script": {
+								"id": "8ca2d9d2-535b-4c5c-8865-a8e3ab84bd21",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d3b0e2b2-7191-4d40-a74a-8b6d0d08aa43",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql(\"admin\");",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/login",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF value after login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2c7a84c5-3b72-41a9-9e63-644d644be214",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
 						},
 						{
-							"key": "",
-							"value": "",
-							"type": "text",
-							"disabled": true
+							"listen": "test",
+							"script": {
+								"id": "ae01e34d-63ce-4c00-bc8f-81e686829e34",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								]
+							}
 						}
-					]
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/login",
-					"host": [
-						"{{progmappbe_host}}"
 					],
-					"path": [
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get CSRF value after login",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "2c7a84c5-3b72-41a9-9e63-644d644be214",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "ae01e34d-63ce-4c00-bc8f-81e686829e34",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"pm.environment.set(\"csrf_token\", pm.response.text());"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{progmappbe_host}}/csrf",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"csrf"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create question",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "fff8bc8e-d5f8-4ff8-ab2e-d9a859ab1db1",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"",
-							"",
-							"pm.test(\"successFullResult == true\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.successFullResult).to.eql(true);",
-							"});",
-							"pm.test(\"Body is correct\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.idOfCreatedEntity).to.eql(pm.environment.get('progmappbe_question_id'));",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "524ad69f-2493-4a10-a6d2-c6f3f5f2d7a3",
-						"exec": [
-							"if (!pm.environment.has(\"question_create_count\")) {",
-							"    console.log(\"Setting counter now\");",
-							"    pm.environment.set(\"question_create_count\", 0);",
-							" }",
-							" ",
-							"let currentCount = parseInt(pm.environment.get(\"question_create_count\")); ",
-							"let numberOfLoops = 100;",
-							"",
-							"if (currentCount < numberOfLoops) {",
-							"    pm.environment.set(\"progmappbe_question_id\", \"micimackokedvence_\" + currentCount);",
-							"    postman.setNextRequest(\"Create question\");",
-							"}",
-							"else{",
-							"    pm.environment.set(\"progmappbe_question_id\", \"micimackokedvence\");",
-							"}",
-							"",
-							"// increment the counter and re-save the value as an environment variable",
-							"currentCount++;",
-							"pm.environment.set(\"question_create_count\", currentCount);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
 					},
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t \"id\":\"{{progmappbe_question_id}}\",\n\t\"text\": \"Melyik Micimackó két legkedvesebb étele?\",\n    \"explanationAfter\": \"Nem muszáj, hogy a két legkedevesebb különbözzön...\",\n    \"feedbackType\": \"trueFalseFeedback\",\n\t\"possibleAnswers\": [{\n\t\t\"textBefore\": \"Első legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}, {\n\t\t\"textBefore\": \"Második legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}]\n}"
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/question",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"question"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Find question",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "99049aea-63e4-449f-a0cc-3c46af280e4f",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"pm.test(\"id is micimackokedvence\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.id).to.eql(\"micimackokedvence\");",
-							"});",
-							"pm.test(\"possibleAnswers.length is 2\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.possibleAnswers.length).to.eql(2);",
-							"});",
-							"pm.test(\"possibleAnswers[0].possibleAnswerValues.length is 3\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.possibleAnswers[0].possibleAnswerValues.length).to.eql(3);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
+					"response": []
 				},
 				{
-					"listen": "prerequest",
-					"script": {
-						"id": "50b56807-aff0-4370-8d06-f40ac665c349",
-						"exec": [
-							"pm.environment.set(\"question_create_count\", 0);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
+					"name": "Create question",
+					"event": [
 						{
-							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyTzBBQlhOeUFDWmpiMjB1Y0hKdloyMWhkR2xqTG5CeWIyZHRZWEJ3WW1VdVpXNTBhWFJwWlhNdVZYTmxjclNEY3dWY05iMGJBZ0FIVEFBUVlXTmpiM1Z1ZEU1dmJreHZZMnRsWkhRQUUweHFZWFpoTDJ4aGJtY3ZRbTl2YkdWaGJqdE1BQXRoWTNSMVlXeFVaWE4wYzNRQUQweHFZWFpoTDNWMGFXd3ZVMlYwTzB3QURHVnRZV2xzUVdSa2NtVnpjM1FBRWt4cVlYWmhMMnhoYm1jdlUzUnlhVzVuTzB3QUNXeHZaMmx1VG1GdFpYRUFmZ0FEVEFBRWJtRnRaWEVBZmdBRFRBQUljR0Z6YzNkdmNtUnhBSDRBQTB3QUJYSnZiR1Z6Y1FCK0FBSjRjZ0FzWTI5dExuQnliMmR0WVhScFl5NXdjbTluYldGd2NHSmxMbVZ1ZEdsMGFXVnpMa0poYzJWRmJuUnBkSG1BeHYybDAyYWNkd0lBQlV3QUNXTnlaV0YwWldSQmRIUUFHVXhxWVhaaEwzUnBiV1V2VEc5allXeEVZWFJsVkdsdFpUdE1BQWxqY21WaGRHVmtRbmx4QUg0QUEwd0FBbWxrY1FCK0FBTk1BQTVzWVhOMFRXOWthV1pwWldSQ2VYRUFmZ0FEVEFBSmRYQmtZWFJsWkVGMGNRQitBQVY0Y0hOeUFBMXFZWFpoTG5ScGJXVXVVMlZ5bFYyRXVoc2lTTElNQUFCNGNIY0tCUUFBQitJTERCUVgrWGh3ZEFBa016RXdNVE5tWWprdE5qTTRaaTAwTldabUxXSXdOMlF0TWpreU9UTmpaRGM1WVdFMWNIQnpjZ0FSYW1GMllTNXNZVzVuTGtKdmIyeGxZVzdOSUhLQTFaejY3Z0lBQVZvQUJYWmhiSFZsZUhBQmMzSUFMMjl5Wnk1b2FXSmxjbTVoZEdVdVkyOXNiR1ZqZEdsdmJpNXBiblJsY201aGJDNVFaWEp6YVhOMFpXNTBVMlYwaTBmdmVkVEprWDBDQUFGTUFBTnpaWFJ4QUg0QUFuaHlBRDV2Y21jdWFHbGlaWEp1WVhSbExtTnZiR3hsWTNScGIyNHVhVzUwWlhKdVlXd3VRV0p6ZEhKaFkzUlFaWEp6YVhOMFpXNTBRMjlzYkdWamRHbHZia0FzK0ExWTFWTHlBZ0FMV2dBYllXeHNiM2RNYjJGa1QzVjBjMmxrWlZSeVlXNXpZV04wYVc5dVNRQUtZMkZqYUdWa1UybDZaVm9BQldScGNuUjVXZ0FPWld4bGJXVnVkRkpsYlc5MlpXUmFBQXRwYm1sMGFXRnNhWHBsWkZvQURXbHpWR1Z0Y0ZObGMzTnBiMjVNQUFOclpYbDBBQlpNYW1GMllTOXBieTlUWlhKcFlXeHBlbUZpYkdVN1RBQUZiM2R1WlhKMEFCSk1hbUYyWVM5c1lXNW5MMDlpYW1WamREdE1BQVJ5YjJ4bGNRQitBQU5NQUJKelpYTnphVzl1Um1GamRHOXllVlYxYVdSeEFINEFBMHdBRG5OMGIzSmxaRk51WVhCemFHOTBjUUIrQUE1NGNBRC8vLy8vQUFBQUFIRUFmZ0FKY1FCK0FBWjBBREpqYjIwdWNISnZaMjFoZEdsakxuQnliMmR0WVhCd1ltVXVaVzUwYVhScFpYTXVWWE5sY2k1aFkzUjFZV3hVWlhOMGMzQndjSEIwQUFWaFpHMXBibkIwQUR3a01tRWtNVEFrUkdSQlVEbE1Za05STVRsTU0xUnNjSEYzTWpodFpWWXhMMUZuVjNCWFJ6WlZkV04zVVdkS1pXOU1XRFpuUzFwT1lrd3Zlakp6Y1FCK0FBd0EvLy8vL3dBQUFRQjBBQ1F6TVRBeE0yWmlPUzAyTXpobUxUUTFabVl0WWpBM1pDMHlPVEk1TTJOa056bGhZVFZ4QUg0QUJuUUFMR052YlM1d2NtOW5iV0YwYVdNdWNISnZaMjFoY0hCaVpTNWxiblJwZEdsbGN5NVZjMlZ5TG5KdmJHVnpjSE55QUJGcVlYWmhMblYwYVd3dVNHRnphRTFoY0FVSDJzSERGbURSQXdBQ1JnQUtiRzloWkVaaFkzUnZja2tBQ1hSb2NtVnphRzlzWkhod1AwQUFBQUFBQUFGM0NBQUFBQUlBQUFBQmMzSUFKbU52YlM1d2NtOW5iV0YwYVdNdWNISnZaMjFoY0hCaVpTNWxiblJwZEdsbGN5NVNiMnhscnBoMm9yeFhLck1DQUFOTUFBUnVZVzFsY1FCK0FBTk1BQXB3Y21sMmFXeHBaMlZ6Y1FCK0FBSk1BQVYxYzJWeWMzRUFmZ0FDZUhFQWZnQUVjM0VBZmdBSGR3b0ZBQUFINGdzTUZCZjVlSEIwQUNSaE9UZGhOR1l3Tmkwd056RmxMVFJrTWpJdE9UaGhZaTAyWVRRd01qTXdNV0ZtTVRod2NIUUFCM1JsWVdOb1pYSnpjUUIrQUF3QS8vLy8vd0FBQVFCMEFDUmhPVGRoTkdZd05pMHdOekZsTFRSa01qSXRPVGhoWWkwMllUUXdNak13TVdGbU1UaHhBSDRBR25RQU1XTnZiUzV3Y205bmJXRjBhV011Y0hKdloyMWhjSEJpWlM1bGJuUnBkR2xsY3k1U2IyeGxMbkJ5YVhacGJHbG5aWE53YzNFQWZnQVhQMEFBQUFBQUFBTjNDQUFBQUFRQUFBQURjM0lBSzJOdmJTNXdjbTluYldGMGFXTXVjSEp2WjIxaGNIQmlaUzVsYm5ScGRHbGxjeTVRY21sMmFXeHBaMlZ0Uk9LQ05iczVvZ0lBQWt3QUJHNWhiV1Z4QUg0QUEwd0FCWEp2YkdWemNRQitBQUo0Y1FCK0FBUnpjUUIrQUFkM0NnVUFBQWZpQ3d3VUYvbDRjSFFBSkRnME5XRXlNV1ZoTFdNNU56Z3ROR0l5TVMxaFl6UmpMVGd6WldNeE5qWmpaV0ppWTNCd2RBQU1jbVZoWkZGMVpYTjBhVzl1YzNFQWZnQU1BUC8vLy84QUFBQUFjUUIrQUNWeEFINEFJM1FBTVdOdmJTNXdjbTluYldGMGFXTXVjSEp2WjIxaGNIQmlaUzVsYm5ScGRHbGxjeTVRY21sMmFXeHBaMlV1Y205c1pYTndjSEJ4QUg0QUkzTnhBSDRBSW5OeEFINEFCM2NLQlFBQUIrSUxEQlFYK25od2RBQWtZbUptWlRFd04yTXRPRGhpWXkwME9UY3hMV0psWW1VdFlUa3dZamd4TldaaVpUUXhjSEIwQUE1amNtVmhkR1ZSZFdWemRHbHZibk54QUg0QURBRC8vLy8vQUFBQUFIRUFmZ0FyY1FCK0FDbHhBSDRBS0hCd2NIRUFmZ0FwYzNFQWZnQWljM0VBZmdBSGR3b0ZBQUFINGdzTUZCZjVlSEIwQUNSbE1EWTROREJtT0MwM09XWXpMVFF5T1RjdE9URXpZaTB5Wmpjd016TTJNRFJqWVRsd2NIUUFDbU55WldGMFpWUmxjM1J6Y1FCK0FBd0EvLy8vL3dBQUFBQnhBSDRBTUhFQWZnQXVjUUIrQUNod2NIQnhBSDRBTG5oemNnQVJhbUYyWVM1MWRHbHNMa2hoYzJoVFpYUzZSSVdWbHJpM05BTUFBSGh3ZHd3QUFBQVFQMEFBQUFBQUFBTnhBSDRBSTNFQWZnQXBjUUIrQUM1NGMzRUFmZ0FNQVAvLy8vOEFBQUFBY1FCK0FCeHhBSDRBR25RQUxHTnZiUzV3Y205bmJXRjBhV011Y0hKdloyMWhjSEJpWlM1bGJuUnBkR2xsY3k1U2IyeGxMblZ6WlhKemNIQndjUUIrQUJwNGMzRUFmZ0F6ZHd3QUFBQVFQMEFBQUFBQUFBRnhBSDRBR25nPSIsImV4cCI6MTU0MjIxNjIxMH0.I9KYH5uswSwoj20RQiiY3_nCJ3xqgGXwIVJXeil687gUkv2uerY1FsMyfUbD5_3lGZqyXkRIVTLJ5KTKQMnFWw",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}"
-					}
-				],
-				"url": {
-					"raw": "{{progmappbe_host}}/question/micimackokedvence",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"question",
-						"micimackokedvence"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Copy question",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "1ddcc745-e5d5-4df7-9f29-b92ae5505880",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					},
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}"
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/questioncopy/micimackokedvence",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"questioncopy",
-						"micimackokedvence"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create class",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "a5c87089-0eff-4af2-9846-9640719d7bc0",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"progmatic2020-ősz\",\n    \"year\": 2020,\n    \"semester\": \"autumn\",\n    \"isActive\": true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/class",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"class"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create student (Mézga Aladár)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "197e2103-cce9-4188-83d1-8d101377b578",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Mézga Aladár\",\n    \"loginName\": \"mezgaaladar\",\n    \"emailAddress\": \"mezgaaladar@gmail.com\",\n    \"password\": \"mezgaaladar\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/student",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"student"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create student (Mézga Kriszta)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "b83b107e-26cf-4355-be1d-c88fbddfdf8e",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Mézga Kriszta\",\n    \"loginName\": \"mezgakriszta\",\n    \"emailAddress\": \"mezgakriszta@gmail.com\",\n    \"password\": \"mezgakriszta\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/student",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"student"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Add student to class",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "bc6d67f6-50ad-4fc0-98ff-51e81aa5e14b",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"successFullResult == true\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.successFullResult).to.eql(true);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"idList\": [\n        \"mezgaaladar\",\n        \"mezgakriszta\"\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/class/progmatic2020-ősz/students",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"class",
-						"progmatic2020-ősz",
-						"students"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create eternal quiz",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "b2e7338d-472e-48fb-ac8f-f1ac042272b8",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"successFullResult == true\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.successFullResult).to.eql(true);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"Örökkvíz_1\",\n    \"questionIds\": [\n        \"micimackokedvence\",\n        \"micimackokedvence_0\",\n        \"micimackokedvence_1\",\n        \"micimackokedvence_2\",\n        \"micimackokedvence_3\",\n        \"micimackokedvence_4\",\n        \"micimackokedvence_5\",\n        \"micimackokedvence_6\",\n        \"micimackokedvence_7\",\n        \"micimackokedvence_8\",\n        \"micimackokedvence_9\",\n        \"micimackokedvence_10\",\n        \"micimackokedvence_11\",\n        \"micimackokedvence_12\",\n        \"micimackokedvence_13\",\n        \"micimackokedvence_14\",\n        \"micimackokedvence_15\",\n        \"micimackokedvence_16\",\n        \"micimackokedvence_17\",\n        \"micimackokedvence_18\",\n        \"micimackokedvence_19\"\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/eternalquiz",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"eternalquiz"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create another eternal quiz",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "12b31606-b0fb-4734-b4dc-0191241f5bad",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"successFullResult == true\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.successFullResult).to.eql(true);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"id\": \"Örökkvíz_2\",\n    \"questionIds\": [\n        \"micimackokedvence_21\",\n        \"micimackokedvence_22\",\n        \"micimackokedvence_23\",\n        \"micimackokedvence_24\",\n        \"micimackokedvence_25\",\n        \"micimackokedvence_26\",\n        \"micimackokedvence_27\",\n        \"micimackokedvence_28\",\n        \"micimackokedvence_29\",\n        \"micimackokedvence_30\",\n        \"micimackokedvence_31\",\n        \"micimackokedvence_32\",\n        \"micimackokedvence_33\",\n        \"micimackokedvence_34\",\n        \"micimackokedvence_35\"\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/eternalquiz",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"eternalquiz"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Assign question to Eternail Quiz",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "f9c1b663-7507-4828-a6f9-1ba2dbd71713",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"successFullResult == true\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.successFullResult).to.eql(true);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_1\",\n   \"questionId\": \"micimackokedvence_20\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/eternalquiz/quiz/question",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"eternalquiz",
-						"quiz",
-						"question"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Assign class to Eternal Quiz",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "b5038e43-eb5b-4ff2-8bb7-74215ab28563",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"successFullResult == true\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.successFullResult).to.eql(true);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"type": "text",
-						"value": "{{csrf_token}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_1\",\n   \"schoolClassId\": \"progmatic2020-ősz\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/eternalquiz/quiz/class",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"eternalquiz",
-						"quiz",
-						"class"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Assign class to another Eternal Quiz",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "b14d9f01-91ea-4ae2-8699-5fa8460dda8c",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"successFullResult == true\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.successFullResult).to.eql(true);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"type": "text",
-						"value": "{{csrf_token}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_2\",\n   \"schoolClassId\": \"progmatic2020-ősz\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/eternalquiz/quiz/class",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"eternalquiz",
-						"quiz",
-						"class"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Login as Aladár",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "ddf6ef60-2a0e-422f-98f0-d72581cf1f3a",
-						"exec": [
-							"pm.test(\"Your test name\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.name).to.eql(\"mezgaaladar\");",
-							"});",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}"
-					},
-					{
-						"key": "",
-						"value": "",
-						"disabled": true
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "username",
-							"value": "mezgaaladar",
-							"type": "text"
+							"listen": "test",
+							"script": {
+								"id": "fff8bc8e-d5f8-4ff8-ab2e-d9a859ab1db1",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.idOfCreatedEntity).to.eql(pm.environment.get('progmappbe_question_id'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						},
 						{
-							"key": "password",
-							"value": "mezgaaladar",
-							"type": "text"
+							"listen": "prerequest",
+							"script": {
+								"id": "524ad69f-2493-4a10-a6d2-c6f3f5f2d7a3",
+								"exec": [
+									"if (!pm.environment.has(\"question_create_count\")) {",
+									"    console.log(\"Setting counter now\");",
+									"    pm.environment.set(\"question_create_count\", 0);",
+									" }",
+									" ",
+									"let currentCount = parseInt(pm.environment.get(\"question_create_count\")); ",
+									"let numberOfLoops = 100;",
+									"",
+									"if (currentCount < numberOfLoops) {",
+									"    pm.environment.set(\"progmappbe_question_id\", \"micimackokedvence_\" + currentCount);",
+									"    postman.setNextRequest(\"Create question\");",
+									"}",
+									"else{",
+									"    pm.environment.set(\"progmappbe_question_id\", \"micimackokedvence\");",
+									"}",
+									"",
+									"// increment the counter and re-save the value as an environment variable",
+									"currentCount++;",
+									"pm.environment.set(\"question_create_count\", currentCount);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t \"id\":\"{{progmappbe_question_id}}\",\n\t\"text\": \"Melyik Micimackó két legkedvesebb étele?\",\n    \"explanationAfter\": \"Nem muszáj, hogy a két legkedevesebb különbözzön...\",\n    \"feedbackType\": \"trueFalseFeedback\",\n\t\"possibleAnswers\": [{\n\t\t\"textBefore\": \"Első legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}, {\n\t\t\"textBefore\": \"Második legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}]\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "99049aea-63e4-449f-a0cc-3c46af280e4f",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"id is micimackokedvence\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.eql(\"micimackokedvence\");",
+									"});",
+									"pm.test(\"possibleAnswers.length is 2\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.possibleAnswers.length).to.eql(2);",
+									"});",
+									"pm.test(\"possibleAnswers[0].possibleAnswerValues.length is 3\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.possibleAnswers[0].possibleAnswerValues.length).to.eql(3);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						},
 						{
-							"key": "",
-							"value": "",
-							"type": "text",
-							"disabled": true
+							"listen": "prerequest",
+							"script": {
+								"id": "50b56807-aff0-4370-8d06-f40ac665c349",
+								"exec": [
+									"pm.environment.set(\"question_create_count\", 0);"
+								],
+								"type": "text/javascript"
+							}
 						}
-					]
-				},
-				"url": {
-					"raw": "{{progmappbe_host}}/login",
-					"host": [
-						"{{progmappbe_host}}"
 					],
-					"path": [
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get CSRF value after login Copy",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "87476440-b7c2-4349-99dd-3490e5cf3f2b",
-						"exec": [
-							""
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyTzBBQlhOeUFDWmpiMjB1Y0hKdloyMWhkR2xqTG5CeWIyZHRZWEJ3WW1VdVpXNTBhWFJwWlhNdVZYTmxjclNEY3dWY05iMGJBZ0FIVEFBUVlXTmpiM1Z1ZEU1dmJreHZZMnRsWkhRQUUweHFZWFpoTDJ4aGJtY3ZRbTl2YkdWaGJqdE1BQXRoWTNSMVlXeFVaWE4wYzNRQUQweHFZWFpoTDNWMGFXd3ZVMlYwTzB3QURHVnRZV2xzUVdSa2NtVnpjM1FBRWt4cVlYWmhMMnhoYm1jdlUzUnlhVzVuTzB3QUNXeHZaMmx1VG1GdFpYRUFmZ0FEVEFBRWJtRnRaWEVBZmdBRFRBQUljR0Z6YzNkdmNtUnhBSDRBQTB3QUJYSnZiR1Z6Y1FCK0FBSjRjZ0FzWTI5dExuQnliMmR0WVhScFl5NXdjbTluYldGd2NHSmxMbVZ1ZEdsMGFXVnpMa0poYzJWRmJuUnBkSG1BeHYybDAyYWNkd0lBQlV3QUNXTnlaV0YwWldSQmRIUUFHVXhxWVhaaEwzUnBiV1V2VEc5allXeEVZWFJsVkdsdFpUdE1BQWxqY21WaGRHVmtRbmx4QUg0QUEwd0FBbWxrY1FCK0FBTk1BQTVzWVhOMFRXOWthV1pwWldSQ2VYRUFmZ0FEVEFBSmRYQmtZWFJsWkVGMGNRQitBQVY0Y0hOeUFBMXFZWFpoTG5ScGJXVXVVMlZ5bFYyRXVoc2lTTElNQUFCNGNIY0tCUUFBQitJTERCUVgrWGh3ZEFBa016RXdNVE5tWWprdE5qTTRaaTAwTldabUxXSXdOMlF0TWpreU9UTmpaRGM1WVdFMWNIQnpjZ0FSYW1GMllTNXNZVzVuTGtKdmIyeGxZVzdOSUhLQTFaejY3Z0lBQVZvQUJYWmhiSFZsZUhBQmMzSUFMMjl5Wnk1b2FXSmxjbTVoZEdVdVkyOXNiR1ZqZEdsdmJpNXBiblJsY201aGJDNVFaWEp6YVhOMFpXNTBVMlYwaTBmdmVkVEprWDBDQUFGTUFBTnpaWFJ4QUg0QUFuaHlBRDV2Y21jdWFHbGlaWEp1WVhSbExtTnZiR3hsWTNScGIyNHVhVzUwWlhKdVlXd3VRV0p6ZEhKaFkzUlFaWEp6YVhOMFpXNTBRMjlzYkdWamRHbHZia0FzK0ExWTFWTHlBZ0FMV2dBYllXeHNiM2RNYjJGa1QzVjBjMmxrWlZSeVlXNXpZV04wYVc5dVNRQUtZMkZqYUdWa1UybDZaVm9BQldScGNuUjVXZ0FPWld4bGJXVnVkRkpsYlc5MlpXUmFBQXRwYm1sMGFXRnNhWHBsWkZvQURXbHpWR1Z0Y0ZObGMzTnBiMjVNQUFOclpYbDBBQlpNYW1GMllTOXBieTlUWlhKcFlXeHBlbUZpYkdVN1RBQUZiM2R1WlhKMEFCSk1hbUYyWVM5c1lXNW5MMDlpYW1WamREdE1BQVJ5YjJ4bGNRQitBQU5NQUJKelpYTnphVzl1Um1GamRHOXllVlYxYVdSeEFINEFBMHdBRG5OMGIzSmxaRk51WVhCemFHOTBjUUIrQUE1NGNBRC8vLy8vQUFBQUFIRUFmZ0FKY1FCK0FBWjBBREpqYjIwdWNISnZaMjFoZEdsakxuQnliMmR0WVhCd1ltVXVaVzUwYVhScFpYTXVWWE5sY2k1aFkzUjFZV3hVWlhOMGMzQndjSEIwQUFWaFpHMXBibkIwQUR3a01tRWtNVEFrUkdSQlVEbE1Za05STVRsTU0xUnNjSEYzTWpodFpWWXhMMUZuVjNCWFJ6WlZkV04zVVdkS1pXOU1XRFpuUzFwT1lrd3Zlakp6Y1FCK0FBd0EvLy8vL3dBQUFRQjBBQ1F6TVRBeE0yWmlPUzAyTXpobUxUUTFabVl0WWpBM1pDMHlPVEk1TTJOa056bGhZVFZ4QUg0QUJuUUFMR052YlM1d2NtOW5iV0YwYVdNdWNISnZaMjFoY0hCaVpTNWxiblJwZEdsbGN5NVZjMlZ5TG5KdmJHVnpjSE55QUJGcVlYWmhMblYwYVd3dVNHRnphRTFoY0FVSDJzSERGbURSQXdBQ1JnQUtiRzloWkVaaFkzUnZja2tBQ1hSb2NtVnphRzlzWkhod1AwQUFBQUFBQUFGM0NBQUFBQUlBQUFBQmMzSUFKbU52YlM1d2NtOW5iV0YwYVdNdWNISnZaMjFoY0hCaVpTNWxiblJwZEdsbGN5NVNiMnhscnBoMm9yeFhLck1DQUFOTUFBUnVZVzFsY1FCK0FBTk1BQXB3Y21sMmFXeHBaMlZ6Y1FCK0FBSk1BQVYxYzJWeWMzRUFmZ0FDZUhFQWZnQUVjM0VBZmdBSGR3b0ZBQUFINGdzTUZCZjVlSEIwQUNSaE9UZGhOR1l3Tmkwd056RmxMVFJrTWpJdE9UaGhZaTAyWVRRd01qTXdNV0ZtTVRod2NIUUFCM1JsWVdOb1pYSnpjUUIrQUF3QS8vLy8vd0FBQVFCMEFDUmhPVGRoTkdZd05pMHdOekZsTFRSa01qSXRPVGhoWWkwMllUUXdNak13TVdGbU1UaHhBSDRBR25RQU1XTnZiUzV3Y205bmJXRjBhV011Y0hKdloyMWhjSEJpWlM1bGJuUnBkR2xsY3k1U2IyeGxMbkJ5YVhacGJHbG5aWE53YzNFQWZnQVhQMEFBQUFBQUFBTjNDQUFBQUFRQUFBQURjM0lBSzJOdmJTNXdjbTluYldGMGFXTXVjSEp2WjIxaGNIQmlaUzVsYm5ScGRHbGxjeTVRY21sMmFXeHBaMlZ0Uk9LQ05iczVvZ0lBQWt3QUJHNWhiV1Z4QUg0QUEwd0FCWEp2YkdWemNRQitBQUo0Y1FCK0FBUnpjUUIrQUFkM0NnVUFBQWZpQ3d3VUYvbDRjSFFBSkRnME5XRXlNV1ZoTFdNNU56Z3ROR0l5TVMxaFl6UmpMVGd6WldNeE5qWmpaV0ppWTNCd2RBQU1jbVZoWkZGMVpYTjBhVzl1YzNFQWZnQU1BUC8vLy84QUFBQUFjUUIrQUNWeEFINEFJM1FBTVdOdmJTNXdjbTluYldGMGFXTXVjSEp2WjIxaGNIQmlaUzVsYm5ScGRHbGxjeTVRY21sMmFXeHBaMlV1Y205c1pYTndjSEJ4QUg0QUkzTnhBSDRBSW5OeEFINEFCM2NLQlFBQUIrSUxEQlFYK25od2RBQWtZbUptWlRFd04yTXRPRGhpWXkwME9UY3hMV0psWW1VdFlUa3dZamd4TldaaVpUUXhjSEIwQUE1amNtVmhkR1ZSZFdWemRHbHZibk54QUg0QURBRC8vLy8vQUFBQUFIRUFmZ0FyY1FCK0FDbHhBSDRBS0hCd2NIRUFmZ0FwYzNFQWZnQWljM0VBZmdBSGR3b0ZBQUFINGdzTUZCZjVlSEIwQUNSbE1EWTROREJtT0MwM09XWXpMVFF5T1RjdE9URXpZaTB5Wmpjd016TTJNRFJqWVRsd2NIUUFDbU55WldGMFpWUmxjM1J6Y1FCK0FBd0EvLy8vL3dBQUFBQnhBSDRBTUhFQWZnQXVjUUIrQUNod2NIQnhBSDRBTG5oemNnQVJhbUYyWVM1MWRHbHNMa2hoYzJoVFpYUzZSSVdWbHJpM05BTUFBSGh3ZHd3QUFBQVFQMEFBQUFBQUFBTnhBSDRBSTNFQWZnQXBjUUIrQUM1NGMzRUFmZ0FNQVAvLy8vOEFBQUFBY1FCK0FCeHhBSDRBR25RQUxHTnZiUzV3Y205bmJXRjBhV011Y0hKdloyMWhjSEJpWlM1bGJuUnBkR2xsY3k1U2IyeGxMblZ6WlhKemNIQndjUUIrQUJwNGMzRUFmZ0F6ZHd3QUFBQVFQMEFBQUFBQUFBRnhBSDRBR25nPSIsImV4cCI6MTU0MjIxNjIxMH0.I9KYH5uswSwoj20RQiiY3_nCJ3xqgGXwIVJXeil687gUkv2uerY1FsMyfUbD5_3lGZqyXkRIVTLJ5KTKQMnFWw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
 						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "ad79c695-a113-45b3-9d65-34210be3ee43",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"pm.environment.set(\"csrf_token\", pm.response.text());"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{progmappbe_host}}/csrf",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"csrf"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get next eternal quiz",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "95c64ebf-39e7-4436-b1fb-5fafba35cf23",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"id is not null\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.id).not.equal(null);",
-							"});",
-							"",
-							"pm.test(\"possibleAnswers is not empty\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.possibleAnswers.length).to.be.above(0);",
-							"});",
-							"",
-							"pm.variables.set(\"questionToAnswer\", JSON.stringify(pm.response.json()));",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{progmappbe_host}}/eternalquiz/question",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"eternalquiz",
-						"question"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "quizanswer",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "7b6b70c7-3e03-4286-8997-ff0f975821da",
-						"exec": [
-							"//let question = JSON.parse(pm.variables.get('questionToAnswer')).id;",
-							"//pm.variables.set(\"questionId\",question.id);",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "7b4f3b3c-3328-4254-a46f-ceab98d69d2c",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-CSRF-TOKEN",
-						"value": "{{csrf_token}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"questionId\": \"micimackokedvence_33\",\n    \"answers\": [\n        {\n            \"id\": \"0e453335-74fe-4927-97d5-b6f05681e6f6\",\n            \"selectedAnswerIds\": [\n                \"71858411-036b-4737-b2b3-6e09fd1c8e52\"\n            ]\n        },\n        {\n            \"id\": \"67b95568-87d0-4419-9406-6c6c9e72ffdf\",\n            \"selectedAnswerIds\": [\n                \"987709bd-b5a3-4102-88dc-bd757d7ad0d2\"\n            ]\n        }\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+						"url": {
+							"raw": "{{progmappbe_host}}/question/micimackokedvence",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question",
+								"micimackokedvence"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{progmappbe_host}}/eternalquiz/answer",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"eternalquiz",
-						"answer"
-					]
-				},
-				"description": "Modify it according to Get next eternal quiz's result."
-			},
-			"response": []
-		},
-		{
-			"name": "Aladár gets his own statistics",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "f73b8404-2d0b-4de4-bae4-2c0007868cd5",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"id is not null\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.id).not.equal(null);",
-							"});",
-							"",
-							"pm.test(\"possibleAnswers is not empty\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.possibleAnswers.length).to.be.above(0);",
-							"});",
-							"",
-							"pm.variables.set(\"questionToAnswer\", JSON.stringify(pm.response.json()));",
-							"",
-							""
+					"name": "Copy question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1ddcc745-e5d5-4df7-9f29-b92ae5505880",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
 						],
-						"type": "text/javascript"
-					}
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/questioncopy/micimackokedvence",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"questioncopy",
+								"micimackokedvence"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create class",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a5c87089-0eff-4af2-9846-9640719d7bc0",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"progmatic2020-ősz\",\n    \"year\": 2020,\n    \"semester\": \"autumn\",\n    \"isActive\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create student (Mézga Aladár)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "197e2103-cce9-4188-83d1-8d101377b578",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mézga Aladár\",\n    \"loginName\": \"mezgaaladar\",\n    \"emailAddress\": \"mezgaaladar@gmail.com\",\n    \"password\": \"mezgaaladar\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/student",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create student (Mézga Kriszta)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b83b107e-26cf-4355-be1d-c88fbddfdf8e",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mézga Kriszta\",\n    \"loginName\": \"mezgakriszta\",\n    \"emailAddress\": \"mezgakriszta@gmail.com\",\n    \"password\": \"mezgakriszta\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/student",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create student (Nyilasy Péter) with mail registration",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "02557534-8f4e-4673-b441-04be49516bb0",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Nyilasy Péter\",\n    \"loginName\": \"nyilasypeter\",\n    \"emailAddress\": \"nyilasypeter@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/student",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add student to class",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bc6d67f6-50ad-4fc0-98ff-51e81aa5e14b",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idList\": [\n        \"mezgaaladar\",\n        \"mezgakriszta\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class/progmatic2020-ősz/students",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class",
+								"progmatic2020-ősz",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create eternal quiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b2e7338d-472e-48fb-ac8f-f1ac042272b8",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"Örökkvíz_1\",\n    \"questionIds\": [\n        \"micimackokedvence\",\n        \"micimackokedvence_0\",\n        \"micimackokedvence_1\",\n        \"micimackokedvence_2\",\n        \"micimackokedvence_3\",\n        \"micimackokedvence_4\",\n        \"micimackokedvence_5\",\n        \"micimackokedvence_6\",\n        \"micimackokedvence_7\",\n        \"micimackokedvence_8\",\n        \"micimackokedvence_9\",\n        \"micimackokedvence_10\",\n        \"micimackokedvence_11\",\n        \"micimackokedvence_12\",\n        \"micimackokedvence_13\",\n        \"micimackokedvence_14\",\n        \"micimackokedvence_15\",\n        \"micimackokedvence_16\",\n        \"micimackokedvence_17\",\n        \"micimackokedvence_18\",\n        \"micimackokedvence_19\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create another eternal quiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "12b31606-b0fb-4734-b4dc-0191241f5bad",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"Örökkvíz_2\",\n    \"questionIds\": [\n        \"micimackokedvence_21\",\n        \"micimackokedvence_22\",\n        \"micimackokedvence_23\",\n        \"micimackokedvence_24\",\n        \"micimackokedvence_25\",\n        \"micimackokedvence_26\",\n        \"micimackokedvence_27\",\n        \"micimackokedvence_28\",\n        \"micimackokedvence_29\",\n        \"micimackokedvence_30\",\n        \"micimackokedvence_31\",\n        \"micimackokedvence_32\",\n        \"micimackokedvence_33\",\n        \"micimackokedvence_34\",\n        \"micimackokedvence_35\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign question to Eternail Quiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f9c1b663-7507-4828-a6f9-1ba2dbd71713",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_1\",\n   \"questionId\": \"micimackokedvence_20\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/quiz/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"quiz",
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign class to Eternal Quiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b5038e43-eb5b-4ff2-8bb7-74215ab28563",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_1\",\n   \"schoolClassId\": \"progmatic2020-ősz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/quiz/class",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"quiz",
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign class to another Eternal Quiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b14d9f01-91ea-4ae2-8699-5fa8460dda8c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_2\",\n   \"schoolClassId\": \"progmatic2020-ősz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/quiz/class",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"quiz",
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login as Aladár",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ddf6ef60-2a0e-422f-98f0-d72581cf1f3a",
+								"exec": [
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql(\"mezgaaladar\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "mezgaaladar",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "mezgaaladar",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/login",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF value after login Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87476440-b7c2-4349-99dd-3490e5cf3f2b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad79c695-a113-45b3-9d65-34210be3ee43",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get next eternal quiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "95c64ebf-39e7-4436-b1fb-5fafba35cf23",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"id is not null\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).not.equal(null);",
+									"});",
+									"",
+									"pm.test(\"possibleAnswers is not empty\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.possibleAnswers.length).to.be.above(0);",
+									"});",
+									"",
+									"pm.variables.set(\"questionToAnswer\", JSON.stringify(pm.response.json()));",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "quizanswer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b6b70c7-3e03-4286-8997-ff0f975821da",
+								"exec": [
+									"//let question = JSON.parse(pm.variables.get('questionToAnswer')).id;",
+									"//pm.variables.set(\"questionId\",question.id);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7b4f3b3c-3328-4254-a46f-ceab98d69d2c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"questionId\": \"micimackokedvence_0\",\n    \"answers\": [\n        {\n            \"id\": \"8aaa91cd-bb33-48c9-a60d-a4d10c43b36e\",\n            \"selectedAnswerIds\": [\n                \"9b5ce09a-b642-4674-b380-77441513832a\"\n            ]\n        },\n        {\n            \"id\": \"adf8ea72-e384-4f05-bda8-837bd7f13360\",\n            \"selectedAnswerIds\": [\n                \"a5fa3a78-f5c4-4fbe-8cb6-eeedcc448ee2\"\n            ]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/answer",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"answer"
+							]
+						},
+						"description": "Modify it according to Get next eternal quiz's result."
+					},
+					"response": []
+				},
+				{
+					"name": "Aladár gets his own statistics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f73b8404-2d0b-4de4-bae4-2c0007868cd5",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"userId is not mezgaaladar\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.userId).to.equal(\"mezgaaladar\");",
+									"});",
+									"",
+									"pm.test(\"nrOfAllQuestions is not empty\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.nrOfAllQuestions).to.be.above(0);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/me/statistics",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"me",
+								"statistics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e63fd58e-24fd-4d14-8559-d89c702049df",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name).to.eql(\"admin\");",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/login",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF value after login Copy 2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5ccb08f4-9ea1-4034-a3ae-dedd3da2fc82",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "6e6d1434-a1ab-47ae-8773-2404b3c1ee65",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin gets students' statistics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "42949cf5-58c3-48d3-b627-7e404172cba6",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"successFullResult is true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.equal(true);",
+									"});",
+									"pm.test(\"studentStatistics length == 2\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.studentStatistics.length).to.equal(2);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/statistics/progmatic2020-ősz",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"statistics",
+								"progmatic2020-ősz"
+							]
+						}
+					},
+					"response": []
 				}
 			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{progmappbe_host}}/eternalquiz/me/statistics",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"eternalquiz",
-						"me",
-						"statistics"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Admin gets students' statistics",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "42949cf5-58c3-48d3-b627-7e404172cba6",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"id is not null\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.id).not.equal(null);",
-							"});",
-							"",
-							"pm.test(\"possibleAnswers is not empty\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.possibleAnswers.length).to.be.above(0);",
-							"});",
-							"",
-							"pm.variables.set(\"questionToAnswer\", JSON.stringify(pm.response.json()));",
-							"",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{progmappbe_host}}/eternalquiz/statistics/progmatic2020-ősz",
-					"host": [
-						"{{progmappbe_host}}"
-					],
-					"path": [
-						"eternalquiz",
-						"statistics",
-						"progmatic2020-ősz"
-					]
-				}
-			},
-			"response": []
+			"description": "The requests here are meant to serve as an end to end test.\nThis test will create questions, students, etc. so do not run these requests on a production system.",
+			"protocolProfileBehavior": {}
 		}
 	]
 }

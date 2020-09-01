@@ -166,7 +166,7 @@ public class DataLoader implements ApplicationRunner {
             Role adminRole = roleAutoDao.findByName(Role.ROLE_ADMIN);
             Role officeRole = roleAutoDao.findByName(Role.ROLE_OFFICE);
             User admin = new User();
-            admin.setLoginName("admin");
+            admin.setLoginName(adminUsername);
             admin.setPassword(passwordEncoder.encode(adminPassword));
             admin.setEmailAddress("admin@progmatic.hu");
             teacherRole.addUser(admin);
