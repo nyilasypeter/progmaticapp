@@ -58,6 +58,8 @@ public class DataLoader implements ApplicationRunner {
 
     private String adminPassword;
 
+    private String adminUsername;
+
     private ConstantService constantService;
 
     private MailTemplateAutoDao mailTemplateAutoDao;
@@ -65,6 +67,7 @@ public class DataLoader implements ApplicationRunner {
     public DataLoader(UserAutoDao userAutoDao, PasswordEncoder passwordEncoder,
                       PriviligeAutoDao priviligeAutoDao, RoleAutoDao roleAutoDao,
                       @Value("${progmatic.admin.default.password}") String adminPassword,
+                      @Value("${progmatic.admin.default.username}") String adminUsername,
                       ConstantService constantService,
                       MailTemplateAutoDao mailTemplateAutoDao) {
         this.userAutoDao = userAutoDao;
@@ -74,6 +77,7 @@ public class DataLoader implements ApplicationRunner {
         this.adminPassword = adminPassword;
         this.constantService = constantService;
         this.mailTemplateAutoDao = mailTemplateAutoDao;
+        this.adminUsername = adminUsername;
     }
 
     @Override
