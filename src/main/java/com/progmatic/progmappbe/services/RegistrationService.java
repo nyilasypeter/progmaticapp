@@ -7,6 +7,7 @@ import com.progmatic.progmappbe.entities.Privilige;
 import com.progmatic.progmappbe.entities.User;
 import com.progmatic.progmappbe.helpers.SecHelper;
 import org.apache.commons.lang3.StringUtils;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,9 +27,12 @@ public class RegistrationService {
 
     private PasswordEncoder passwordEncoder;
 
+    private DozerBeanMapper mapper;
+
     @Autowired
-    public RegistrationService(PasswordEncoder passwordEncoder) {
+    public RegistrationService(PasswordEncoder passwordEncoder, DozerBeanMapper mapper) {
         this.passwordEncoder = passwordEncoder;
+        this.mapper = mapper;
     }
 
     @Transactional
@@ -73,4 +77,10 @@ public class RegistrationService {
     }
 
 
+    public UserDTO myProfile() {
+        User loggedInUser = SecHelper.getLoggedInUser();
+        UserDTO userDTO = mapper.map(loggedInUser, UserDTO.class);
+        userDTO.setPassword(null);
+        return userDTO;
+    }
 }
