@@ -37,5 +37,27 @@ this will create a jar file in target direcotry, which you can run with `java -j
 
 You can also run the class `com.progmatic.progmappbe.ProgmappbeApplication` directly from your preferred IDE.
 
+### Deploy to Heroku
+
+First create an app with heroku CLI in the app's root directory with.
+```
+heroku create
+```
+Before deploying to Heroku make sure to set the above environment variables (on Heroku they are called config vars) with heroku cli. The command is:
+```
+heorku config set name=value
+```
+Also create a MySql database (ClearDB is OK) on Heroku, and make sure to extend the database_url with these query parameters:
+```
+useUnicode=yes&characterEncoding=UTF-8
+```
+It can be done on the web interface at Settings / Config Vars / Reveal Config Vars.
+
+Then app can be deployed directly to Heroku with 
+```
+git push heroku master
+```
+
+
 ## Test
 Use the Postman collection file within /doc directory to test the deployed application.
