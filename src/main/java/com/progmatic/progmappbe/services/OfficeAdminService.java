@@ -46,10 +46,15 @@ public class OfficeAdminService {
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
-    public SchoolClassDTO createSchoolClass(SchoolClassDTO schoolClass){
+    public EntityCreationResult createSchoolClass(SchoolClassDTO schoolClass){
+        if(StringUtils.isNotBlank(schoolClass.getId())){
+            if(em.find(SchoolClass.class, schoolClass.getId()) != null){
+                return new EntityCreationResult(false, null, "Class with this id already exists");
+            }
+        }
         SchoolClass sc = mapper.map(schoolClass, SchoolClass.class);
         em.persist(sc);
-        return mapper.map(sc, SchoolClassDTO.class);
+        return new EntityCreationResult(true, schoolClass.getId(), null);
     }
 
     @Transactional

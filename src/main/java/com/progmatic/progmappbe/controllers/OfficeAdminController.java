@@ -18,7 +18,7 @@ public class OfficeAdminController {
     }
 
     @PostMapping("/class")
-    public SchoolClassDTO createClass(@RequestBody SchoolClassDTO sc){
+    public EntityCreationResult createClass(@RequestBody SchoolClassDTO sc){
         return officeAdminService.createSchoolClass(sc);
     }
 

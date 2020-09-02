@@ -1,10 +1,11 @@
 package com.progmatic.progmappbe.dtos;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class EternalQuizDTO {
     private String id;
-    private Set<String> questionIds;
+    private Set<String> questionIds = new HashSet<>();
 
     public String getId() {
         return id;

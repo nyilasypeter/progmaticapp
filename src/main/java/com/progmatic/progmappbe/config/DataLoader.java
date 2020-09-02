@@ -48,21 +48,21 @@ public class DataLoader implements ApplicationRunner {
     @PersistenceContext
     EntityManager em;
 
-    private UserAutoDao userAutoDao;
+    protected UserAutoDao userAutoDao;
 
-    private PasswordEncoder passwordEncoder;
+    protected PasswordEncoder passwordEncoder;
 
-    private PriviligeAutoDao priviligeAutoDao;
+    protected PriviligeAutoDao priviligeAutoDao;
 
-    private RoleAutoDao roleAutoDao;
+    protected RoleAutoDao roleAutoDao;
 
-    private String adminPassword;
+    protected String adminPassword;
 
-    private String adminUsername;
+    protected String adminUsername;
 
-    private ConstantService constantService;
+    protected ConstantService constantService;
 
-    private MailTemplateAutoDao mailTemplateAutoDao;
+    protected MailTemplateAutoDao mailTemplateAutoDao;
 
     public DataLoader(UserAutoDao userAutoDao, PasswordEncoder passwordEncoder,
                       PriviligeAutoDao priviligeAutoDao, RoleAutoDao roleAutoDao,
@@ -90,7 +90,7 @@ public class DataLoader implements ApplicationRunner {
         createMailTemplates();
     }
 
-    private void createMailTemplates() {
+    protected void createMailTemplates() {
         long mailTemplates = mailTemplateAutoDao.count();
         if(mailTemplates == 0){
             MailTemplate mt = new MailTemplate();
@@ -102,14 +102,14 @@ public class DataLoader implements ApplicationRunner {
         }
     }
 
-    private void createConstants() {
+    protected void createConstants() {
         Long constantCount = (Long) em.createQuery("select count(c) from Constant  c").getSingleResult();
         if(constantCount == 0){
             constantService.writeConstant(ConstantService.KEY_ETERNALQUIZ_TARGET_PERCENTAGE, "80");
         }
     }
 
-    private void createPriviliges() {
+    protected void createPriviliges() {
         long priviliges = priviligeAutoDao.count();
         if(priviliges == 0){
             List<Field> fields = FieldUtils.getAllFieldsList(Privilige.class);
@@ -127,7 +127,7 @@ public class DataLoader implements ApplicationRunner {
         }
     }
 
-    private void createRoles() {
+    protected void createRoles() {
         long roles = roleAutoDao.count();
         if(roles == 0){
             createRole(Role.ROLE_ADMIN);
@@ -158,7 +158,7 @@ public class DataLoader implements ApplicationRunner {
         roleAutoDao.save(role);
     }
 
-    private void createUsers() {
+    protected void createUsers() {
         long nrOfUsers = userAutoDao.count();
         
         if (nrOfUsers == 0) {

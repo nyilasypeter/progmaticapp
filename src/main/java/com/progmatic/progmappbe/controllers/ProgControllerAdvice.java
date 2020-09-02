@@ -1,10 +1,12 @@
 package com.progmatic.progmappbe.controllers;
 
+import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.validation.ValidationErrorDTO;
 import com.progmatic.progmappbe.dtos.validation.ValidationErrorResponseDTO;
 import com.progmatic.progmappbe.exceptions.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +44,13 @@ public class ProgControllerAdvice {
             ret.addValidatinError(new ValidationErrorDTO(fieldName, errorMessage));
         });
         return ret;
+    }
+
+    @ExceptionHandler(value = DataIntegrityViolationException.class)
+    @ResponseBody
+    public EntityCreationResult handleNonUniqId(DataIntegrityViolationException ex){
+        LOG.error("Data integrity violation", ex);
+        return new EntityCreationResult(false, null, ex.getMessage());
+
     }
 }
