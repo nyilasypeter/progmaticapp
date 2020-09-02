@@ -39,6 +39,63 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "send new reglink to user",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{progmappbe_host}}/user/newreglink/nyilasypeter",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"user",
+								"newreglink",
+								"nyilasypeter"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Aladár changes his data",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mézga megváltozott aladár\",\n    \"oldPassword\": \"mezgaaladar\",\n    \"password\": \"bubuka123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/me",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"me"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -351,6 +408,81 @@
 					"response": []
 				},
 				{
+					"name": "Search questions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5c6a99e6-96e0-42b5-bc38-c0528013f9ef",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"return array.length  > 2\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.gt(2);",
+									"});",
+									"pm.test(\"First question's text is 'Melyik Micimackó két legkedvesebb étele?'\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData[0].text).to.eql(\"Melyik Micimackó két legkedvesebb étele?\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4638deaf-4027-4701-9610-e001783a372a",
+								"exec": [
+									"pm.environment.set(\"question_create_count\", 0);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyTzBBQlhOeUFDWmpiMjB1Y0hKdloyMWhkR2xqTG5CeWIyZHRZWEJ3WW1VdVpXNTBhWFJwWlhNdVZYTmxjclNEY3dWY05iMGJBZ0FIVEFBUVlXTmpiM1Z1ZEU1dmJreHZZMnRsWkhRQUUweHFZWFpoTDJ4aGJtY3ZRbTl2YkdWaGJqdE1BQXRoWTNSMVlXeFVaWE4wYzNRQUQweHFZWFpoTDNWMGFXd3ZVMlYwTzB3QURHVnRZV2xzUVdSa2NtVnpjM1FBRWt4cVlYWmhMMnhoYm1jdlUzUnlhVzVuTzB3QUNXeHZaMmx1VG1GdFpYRUFmZ0FEVEFBRWJtRnRaWEVBZmdBRFRBQUljR0Z6YzNkdmNtUnhBSDRBQTB3QUJYSnZiR1Z6Y1FCK0FBSjRjZ0FzWTI5dExuQnliMmR0WVhScFl5NXdjbTluYldGd2NHSmxMbVZ1ZEdsMGFXVnpMa0poYzJWRmJuUnBkSG1BeHYybDAyYWNkd0lBQlV3QUNXTnlaV0YwWldSQmRIUUFHVXhxWVhaaEwzUnBiV1V2VEc5allXeEVZWFJsVkdsdFpUdE1BQWxqY21WaGRHVmtRbmx4QUg0QUEwd0FBbWxrY1FCK0FBTk1BQTVzWVhOMFRXOWthV1pwWldSQ2VYRUFmZ0FEVEFBSmRYQmtZWFJsWkVGMGNRQitBQVY0Y0hOeUFBMXFZWFpoTG5ScGJXVXVVMlZ5bFYyRXVoc2lTTElNQUFCNGNIY0tCUUFBQitJTERCUVgrWGh3ZEFBa016RXdNVE5tWWprdE5qTTRaaTAwTldabUxXSXdOMlF0TWpreU9UTmpaRGM1WVdFMWNIQnpjZ0FSYW1GMllTNXNZVzVuTGtKdmIyeGxZVzdOSUhLQTFaejY3Z0lBQVZvQUJYWmhiSFZsZUhBQmMzSUFMMjl5Wnk1b2FXSmxjbTVoZEdVdVkyOXNiR1ZqZEdsdmJpNXBiblJsY201aGJDNVFaWEp6YVhOMFpXNTBVMlYwaTBmdmVkVEprWDBDQUFGTUFBTnpaWFJ4QUg0QUFuaHlBRDV2Y21jdWFHbGlaWEp1WVhSbExtTnZiR3hsWTNScGIyNHVhVzUwWlhKdVlXd3VRV0p6ZEhKaFkzUlFaWEp6YVhOMFpXNTBRMjlzYkdWamRHbHZia0FzK0ExWTFWTHlBZ0FMV2dBYllXeHNiM2RNYjJGa1QzVjBjMmxrWlZSeVlXNXpZV04wYVc5dVNRQUtZMkZqYUdWa1UybDZaVm9BQldScGNuUjVXZ0FPWld4bGJXVnVkRkpsYlc5MlpXUmFBQXRwYm1sMGFXRnNhWHBsWkZvQURXbHpWR1Z0Y0ZObGMzTnBiMjVNQUFOclpYbDBBQlpNYW1GMllTOXBieTlUWlhKcFlXeHBlbUZpYkdVN1RBQUZiM2R1WlhKMEFCSk1hbUYyWVM5c1lXNW5MMDlpYW1WamREdE1BQVJ5YjJ4bGNRQitBQU5NQUJKelpYTnphVzl1Um1GamRHOXllVlYxYVdSeEFINEFBMHdBRG5OMGIzSmxaRk51WVhCemFHOTBjUUIrQUE1NGNBRC8vLy8vQUFBQUFIRUFmZ0FKY1FCK0FBWjBBREpqYjIwdWNISnZaMjFoZEdsakxuQnliMmR0WVhCd1ltVXVaVzUwYVhScFpYTXVWWE5sY2k1aFkzUjFZV3hVWlhOMGMzQndjSEIwQUFWaFpHMXBibkIwQUR3a01tRWtNVEFrUkdSQlVEbE1Za05STVRsTU0xUnNjSEYzTWpodFpWWXhMMUZuVjNCWFJ6WlZkV04zVVdkS1pXOU1XRFpuUzFwT1lrd3Zlakp6Y1FCK0FBd0EvLy8vL3dBQUFRQjBBQ1F6TVRBeE0yWmlPUzAyTXpobUxUUTFabVl0WWpBM1pDMHlPVEk1TTJOa056bGhZVFZ4QUg0QUJuUUFMR052YlM1d2NtOW5iV0YwYVdNdWNISnZaMjFoY0hCaVpTNWxiblJwZEdsbGN5NVZjMlZ5TG5KdmJHVnpjSE55QUJGcVlYWmhMblYwYVd3dVNHRnphRTFoY0FVSDJzSERGbURSQXdBQ1JnQUtiRzloWkVaaFkzUnZja2tBQ1hSb2NtVnphRzlzWkhod1AwQUFBQUFBQUFGM0NBQUFBQUlBQUFBQmMzSUFKbU52YlM1d2NtOW5iV0YwYVdNdWNISnZaMjFoY0hCaVpTNWxiblJwZEdsbGN5NVNiMnhscnBoMm9yeFhLck1DQUFOTUFBUnVZVzFsY1FCK0FBTk1BQXB3Y21sMmFXeHBaMlZ6Y1FCK0FBSk1BQVYxYzJWeWMzRUFmZ0FDZUhFQWZnQUVjM0VBZmdBSGR3b0ZBQUFINGdzTUZCZjVlSEIwQUNSaE9UZGhOR1l3Tmkwd056RmxMVFJrTWpJdE9UaGhZaTAyWVRRd01qTXdNV0ZtTVRod2NIUUFCM1JsWVdOb1pYSnpjUUIrQUF3QS8vLy8vd0FBQVFCMEFDUmhPVGRoTkdZd05pMHdOekZsTFRSa01qSXRPVGhoWWkwMllUUXdNak13TVdGbU1UaHhBSDRBR25RQU1XTnZiUzV3Y205bmJXRjBhV011Y0hKdloyMWhjSEJpWlM1bGJuUnBkR2xsY3k1U2IyeGxMbkJ5YVhacGJHbG5aWE53YzNFQWZnQVhQMEFBQUFBQUFBTjNDQUFBQUFRQUFBQURjM0lBSzJOdmJTNXdjbTluYldGMGFXTXVjSEp2WjIxaGNIQmlaUzVsYm5ScGRHbGxjeTVRY21sMmFXeHBaMlZ0Uk9LQ05iczVvZ0lBQWt3QUJHNWhiV1Z4QUg0QUEwd0FCWEp2YkdWemNRQitBQUo0Y1FCK0FBUnpjUUIrQUFkM0NnVUFBQWZpQ3d3VUYvbDRjSFFBSkRnME5XRXlNV1ZoTFdNNU56Z3ROR0l5TVMxaFl6UmpMVGd6WldNeE5qWmpaV0ppWTNCd2RBQU1jbVZoWkZGMVpYTjBhVzl1YzNFQWZnQU1BUC8vLy84QUFBQUFjUUIrQUNWeEFINEFJM1FBTVdOdmJTNXdjbTluYldGMGFXTXVjSEp2WjIxaGNIQmlaUzVsYm5ScGRHbGxjeTVRY21sMmFXeHBaMlV1Y205c1pYTndjSEJ4QUg0QUkzTnhBSDRBSW5OeEFINEFCM2NLQlFBQUIrSUxEQlFYK25od2RBQWtZbUptWlRFd04yTXRPRGhpWXkwME9UY3hMV0psWW1VdFlUa3dZamd4TldaaVpUUXhjSEIwQUE1amNtVmhkR1ZSZFdWemRHbHZibk54QUg0QURBRC8vLy8vQUFBQUFIRUFmZ0FyY1FCK0FDbHhBSDRBS0hCd2NIRUFmZ0FwYzNFQWZnQWljM0VBZmdBSGR3b0ZBQUFINGdzTUZCZjVlSEIwQUNSbE1EWTROREJtT0MwM09XWXpMVFF5T1RjdE9URXpZaTB5Wmpjd016TTJNRFJqWVRsd2NIUUFDbU55WldGMFpWUmxjM1J6Y1FCK0FBd0EvLy8vL3dBQUFBQnhBSDRBTUhFQWZnQXVjUUIrQUNod2NIQnhBSDRBTG5oemNnQVJhbUYyWVM1MWRHbHNMa2hoYzJoVFpYUzZSSVdWbHJpM05BTUFBSGh3ZHd3QUFBQVFQMEFBQUFBQUFBTnhBSDRBSTNFQWZnQXBjUUIrQUM1NGMzRUFmZ0FNQVAvLy8vOEFBQUFBY1FCK0FCeHhBSDRBR25RQUxHTnZiUzV3Y205bmJXRjBhV011Y0hKdloyMWhjSEJpWlM1bGJuUnBkR2xsY3k1U2IyeGxMblZ6WlhKemNIQndjUUIrQUJwNGMzRUFmZ0F6ZHd3QUFBQVFQMEFBQUFBQUFBRnhBSDRBR25nPSIsImV4cCI6MTU0MjIxNjIxMH0.I9KYH5uswSwoj20RQiiY3_nCJ3xqgGXwIVJXeil687gUkv2uerY1FsMyfUbD5_3lGZqyXkRIVTLJ5KTKQMnFWw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"questionText\":\"icim\",\n    \"uploader\": \"admin\",\n    \"notInEternalQuiz\": true,\n    \"uploadTimeFrom\": \"2010.09.01 08:00\",\n    \"uploadTimeTo\": \"2030.09.01 18:00\"\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question/search",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question",
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Copy question",
 					"event": [
 						{
@@ -451,6 +583,10 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -497,6 +633,10 @@
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
 									"});"
 								],
 								"type": "text/javascript"
@@ -528,6 +668,56 @@
 							],
 							"path": [
 								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create superuser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d4eec9da-21fe-41db-8245-ff5dcbdd95f1",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"superman\",\n    \"loginName\": \"superman\",\n    \"emailAddress\": \"superman@progmatic.com\",\n    \"password\": \"superman\",\n    \"roles\":[\n        {\n            \"name\": \"teacher\"\n        },\n        {\n            \"name\": \"office\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/user",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"user"
 							]
 						}
 					},
@@ -574,6 +764,56 @@
 							],
 							"path": [
 								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a8af67b2-162a-43ab-9320-6e76618c0dcd",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"result length > 1\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.gt(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\",\n    \"hasUnfinishedRegistration\": null,\n    \"student\": null\n\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/usersearch",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"usersearch"
 							]
 						}
 					},
@@ -888,6 +1128,37 @@
 								"eternalquiz",
 								"quiz",
 								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search eternal quizes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "460ac5de-2a98-4aab-80b5-92f106d94219",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz"
 							]
 						}
 					},
@@ -1302,6 +1573,234 @@
 				}
 			],
 			"description": "The requests here are meant to serve as an end to end test.\nThis test will create questions, students, etc. so do not run these requests on a production system.",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "upload-download-image",
+			"item": [
+				{
+					"name": "Upload image to PossibleAnswer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "907cfb35-fc22-4c32-bf27-815c95c753a7",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"successFullResult is true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ae09f4bb-6ca1-47ff-b946-27322ea70371",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/peti/kepek/Icons-Protection.png"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question/possibleanswer/c742129b-55c8-485f-ab5c-915b4d36bd3f/imagefile",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question",
+								"possibleanswer",
+								"c742129b-55c8-485f-ab5c-915b4d36bd3f",
+								"imagefile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download image of question Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1f55f772-424f-4e1a-9f60-04a4ecbc5863",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Content-Type is present\", function () {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type header is image/png\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('image/png');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/question/possibleanswer/c742129b-55c8-485f-ab5c-915b4d36bd3f/imagefile",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question",
+								"possibleanswer",
+								"c742129b-55c8-485f-ab5c-915b4d36bd3f",
+								"imagefile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload image to question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "838d9e85-1854-44ba-a00a-b0d7788d4e2f",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"successFullResult is true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8d03799f-f44b-46aa-b539-fa142cb83bb4",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/peti/kepek/Icons-Protection.png"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question/micimackokedvence/imagefile",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question",
+								"micimackokedvence",
+								"imagefile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download image of question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f1aaae94-3ef3-4a03-9eb4-ab2810d5d657",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Content-Type is present\", function () {",
+									"    pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"pm.test(\"Content-Type header is image/png\", () => {",
+									"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('image/png');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/question/micimackokedvence/imagefile",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question",
+								"micimackokedvence",
+								"imagefile"
+							]
+						}
+					},
+					"response": []
+				}
+			],
 			"protocolProfileBehavior": {}
 		}
 	]
