@@ -149,6 +149,15 @@ public class EternalQuizService {
         }
     }
 
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CRUD_ETERNAL_QUIZ + "')")
+    public List<EternalQuizSearchResponseDTO> searchEternalQuizes(){
+        List<EternalQuiz> resultList = em.createQuery("select e from EternalQuiz  e left join e.schoolClasses", EternalQuiz.class)
+                .getResultList();
+        List<EternalQuizSearchResponseDTO> ret = new ArrayList<>();
+        resultList.stream().forEach(eq -> ret.add(mapper.map(eq, EternalQuizSearchResponseDTO.class)));
+        return ret;
+    }
+
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_READ_QUESTION + "')")
     public QuestionDTO getNextEternalQuizQuestion() {

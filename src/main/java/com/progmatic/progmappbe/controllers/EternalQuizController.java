@@ -39,6 +39,12 @@ public class EternalQuizController {
         return eternalQuizService.getNextEternalQuizQuestion();
     }
 
+
+    @GetMapping(path = "/eternalquiz")
+    public List<EternalQuizSearchResponseDTO> searchEternalQuizes(){
+        return eternalQuizService.searchEternalQuizes();
+    }
+
     @PostMapping(path = "/eternalquiz/answer")
     public AnswerFeedbackDTO acceptEternalQuizAnswer(@RequestBody AnswerResponseDTO answer){
         return eternalQuizService.acceptEternalQuizAnswer(answer);
