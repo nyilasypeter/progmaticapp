@@ -8,6 +8,7 @@ package com.progmatic.progmappbe.services;
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.QuestionDTO;
+import com.progmatic.progmappbe.dtos.QuestionSearchDto;
 import com.progmatic.progmappbe.entities.*;
 import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
@@ -21,7 +22,10 @@ import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -155,6 +159,41 @@ public class TestService {
         }
         em.persist(newQ);
         return newQ.getId();
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
+    @Transactional
+    public List<QuestionDTO> findQuestions(QuestionSearchDto searchDto){
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        BooleanBuilder whereCondition = new BooleanBuilder();
+        QQuestion question = QQuestion.question;
+        if(StringUtils.isNotBlank(searchDto.getQuestionText())){
+            whereCondition.and(question.text.contains(searchDto.getQuestionText()));
+        }
+        if(StringUtils.isNotBlank(searchDto.getUploader())){
+            whereCondition.and(question.createdBy.eq(searchDto.getUploader()));
+        }
+        if(searchDto.getUploadTimeFrom() != null){
+            whereCondition.and(question.createdAt.after(searchDto.getUploadTimeFrom()));
+        }
+        if(searchDto.getUploadTimeTo() != null){
+            whereCondition.and(question.createdAt.before(searchDto.getUploadTimeTo()));
+        }
+        if(searchDto.getNotInEternalQuiz() != null && searchDto.getNotInEternalQuiz()){
+            whereCondition.and(question.eternalQuizs.isEmpty());
+        }
+        QPossibleAnswer qPossibleAnswer = QPossibleAnswer.possibleAnswer;
+        List<Question> questions = queryFactory.selectFrom(question)
+                .leftJoin(question.eternalQuizs).fetchJoin()
+                .join(question.possibleAnswers, qPossibleAnswer).fetchJoin()
+                .join(qPossibleAnswer.possibleAnswerValues).fetchJoin()
+                .where(whereCondition)
+                .distinct()
+                .fetch();
+
+        List<QuestionDTO> ret = new ArrayList<>();
+        questions.stream().forEach(q -> ret.add(mapper.map(q, QuestionDTO.class)));
+        return ret;
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_READ_QUESTION + "') or hasAuthority('" + Privilige.PRIV_START_TEST + "')")

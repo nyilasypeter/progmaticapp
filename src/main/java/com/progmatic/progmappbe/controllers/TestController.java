@@ -8,15 +8,15 @@ package com.progmatic.progmappbe.controllers;
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.QuestionDTO;
-import com.progmatic.progmappbe.entities.Privilige;
-import com.progmatic.progmappbe.services.AttachmentService;
+import com.progmatic.progmappbe.dtos.QuestionSearchDto;
 import com.progmatic.progmappbe.services.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  *
@@ -42,6 +42,11 @@ public class TestController {
     @GetMapping(path = "question/{questionId}")
     public QuestionDTO findQuestion(@PathVariable("questionId") String questionId){
         return testService.findQuestion(questionId);
+    }
+
+    @PostMapping(path = "/question/search")
+    public List<QuestionDTO> findQuestions(@RequestBody QuestionSearchDto searchDto){
+        return testService.findQuestions(searchDto);
     }
     
     @PostMapping(path = "/questioncopy/{questionId}")
