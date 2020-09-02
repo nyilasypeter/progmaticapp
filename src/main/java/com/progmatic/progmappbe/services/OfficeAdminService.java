@@ -5,6 +5,8 @@ import com.progmatic.progmappbe.dtos.*;
 import com.progmatic.progmappbe.entities.*;
 import com.progmatic.progmappbe.helpers.MailHelper;
 import com.progmatic.progmappbe.helpers.SecHelper;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +48,9 @@ public class OfficeAdminService {
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
-    public EntityCreationResult createSchoolClass(SchoolClassDTO schoolClass){
-        if(StringUtils.isNotBlank(schoolClass.getId())){
-            if(em.find(SchoolClass.class, schoolClass.getId()) != null){
+    public EntityCreationResult createSchoolClass(SchoolClassDTO schoolClass) {
+        if (StringUtils.isNotBlank(schoolClass.getId())) {
+            if (em.find(SchoolClass.class, schoolClass.getId()) != null) {
                 return new EntityCreationResult(false, null, "Class with this id already exists");
             }
         }
@@ -59,36 +61,33 @@ public class OfficeAdminService {
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
-    public BasicResult assignStudentToClass(StudentListDto students, String classId){
+    public BasicResult assignStudentToClass(StudentListDto students, String classId) {
         SchoolClass schoolClass = em.find(SchoolClass.class, classId);
         Set<User> newlyAddedStudents = new HashSet<>();
         StringBuilder errorString = new StringBuilder("");
-        for (String studId: students.getIdList()) {
+        for (String studId : students.getIdList()) {
             User student = em.find(User.class, studId);
-            if(student == null){
+            if (student == null) {
                 errorString.append(String.format("User with id: %s is not found in database. ", studId));
-            }
-            else if(!SecHelper.hasRole(student, Role.ROLE_STUDENT)){
+            } else if (!SecHelper.hasRole(student, Role.ROLE_STUDENT)) {
                 errorString.append(String.format("User: %s is not a student. Only students can be added to a class. ", studId));
-            }
-            else if(schoolClass.getStudents().stream().filter(st -> st.getId().equals(student.getId())).count() > 0){
+            } else if (schoolClass.getStudents().stream().filter(st -> st.getId().equals(student.getId())).count() > 0) {
                 errorString.append(String.format("Student: %s is already in this class: %s. ", studId, classId));
-            }
-            else{
+            } else {
                 newlyAddedStudents.add(student);
                 schoolClass.addStudent(student);
             }
 
         }
         self.createEternalQuizAnswers(schoolClass, newlyAddedStudents);
-        if(errorString.length()!=0){
+        if (errorString.length() != 0) {
             errorString.append("Besides these problems all the other operations were successfull");
         }
         return new BasicResult(true, errorString.toString());
     }
 
     @Transactional
-    public void createEternalQuizAnswers(SchoolClass schoolClass, Set<User> students){
+    public void createEternalQuizAnswers(SchoolClass schoolClass, Set<User> students) {
         Set<EternalQuiz> eternalQuizes = schoolClass.getEternalQuizes();
         for (EternalQuiz eternalQuiz : eternalQuizes) {
             Set<Question> questions = eternalQuiz.getQuestions();
@@ -108,40 +107,38 @@ public class OfficeAdminService {
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
-    public EntityCreationResult createStudent(UserDTO studentDTO){
+    public EntityCreationResult createStudent(UserDTO studentDTO) {
         return createUser(studentDTO, true);
     }
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_USER + "')")
-    public EntityCreationResult createUser(UserDTO studentDTO){
+    public EntityCreationResult createUser(UserDTO studentDTO) {
         return createUser(studentDTO, false);
     }
 
-    private EntityCreationResult createUser(UserDTO userDTO, boolean isStudent){
+    private EntityCreationResult createUser(UserDTO userDTO, boolean isStudent) {
         User user = em.find(User.class, userDTO.getLoginName());
-        if(user != null){
+        if (user != null) {
             return new EntityCreationResult(false, null, "User with this login name already exists.");
         }
-        if(isStudent) {
+        if (isStudent) {
             userDTO.getRoles().clear();
         }
         User newUser = mapper.map(userDTO, User.class);
         newUser.setId(userDTO.getLoginName());
-        if(isStudent) {
+        if (isStudent) {
             Role studentRole = roleAutoDao.findByName(Role.ROLE_STUDENT);
             studentRole.addUser(newUser);
-        }
-        else{
+        } else {
             for (RoleDTO rdto : userDTO.getRoles()) {
                 Role role = roleAutoDao.findByName(rdto.getName());
                 role.addUser(newUser);
             }
         }
-        if(StringUtils.isNotBlank(userDTO.getPassword())){
+        if (StringUtils.isNotBlank(userDTO.getPassword())) {
             newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        }
-        else{
+        } else {
             newUser.setEnabled(false);
             String token = UUID.randomUUID().toString();
             newUser.setRegistrationToken(token);
@@ -153,5 +150,47 @@ public class OfficeAdminService {
         }
         em.persist(newUser);
         return new EntityCreationResult(true, newUser.getId(), null);
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
+    public List<SearchUserResponseDTO> searchStudents(UserSearchRequestDTO requestDTO) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        BooleanBuilder whereCondition = new BooleanBuilder();
+        QUser qUser = QUser.user;
+        QRole qRole = QRole.role;
+        if (StringUtils.isNotBlank(requestDTO.getName())) {
+            whereCondition.and(qUser.name.contains(requestDTO.getName()));
+        }
+        if (requestDTO.isHasUnfinishedRegistration() != null) {
+            if (requestDTO.isHasUnfinishedRegistration()) {
+                whereCondition.and(qUser.registrationToken.isNotNull());
+            }
+            else{
+                whereCondition.and(qUser.registrationToken.isNull());
+            }
+        }
+        if (requestDTO.isStudent() != null) {
+            if (requestDTO.isStudent()) {
+                whereCondition.and(qRole.name.eq("student"));
+            } else {
+                whereCondition.and(qRole.name.ne("student"));
+            }
+        }
+
+
+        List<User> userList = queryFactory.selectFrom(qUser)
+                .leftJoin(qUser.classes).fetchJoin()
+                .leftJoin(qUser.roles, qRole).fetchJoin()
+                .where(whereCondition)
+                .distinct()
+                .fetch();
+
+        List<SearchUserResponseDTO> ret = new ArrayList<>();
+        for (User user : userList) {
+            SearchUserResponseDTO ur = mapper.map(user, SearchUserResponseDTO.class);
+            ur.setHasUnfinishedRegistration(user.getRegistrationToken() != null);
+            ret.add(ur);
+        }
+        return ret;
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class OfficeAdminController {
@@ -25,6 +26,11 @@ public class OfficeAdminController {
     @PostMapping("/student")
     public EntityCreationResult createStudent(@RequestBody @Valid  UserDTO udto){
         return officeAdminService.createStudent(udto);
+    }
+
+    @PostMapping("/usersearch")
+    public List<SearchUserResponseDTO> searchStudents(@RequestBody UserSearchRequestDTO requestDTO){
+        return officeAdminService.searchStudents(requestDTO);
     }
 
     @PostMapping("/user")
