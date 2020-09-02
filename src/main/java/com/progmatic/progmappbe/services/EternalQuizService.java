@@ -206,6 +206,7 @@ public class EternalQuizService {
     }
 
     @Transactional
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_READ_QUESTION + "')")
     public AnswerFeedbackDTO acceptEternalQuizAnswer(AnswerResponseDTO answer){
         User user = SecHelper.getLoggedInUser();
         EternalQuizAnswer eternalQuizAnswer = findEternalQuizAnswer(answer, user);

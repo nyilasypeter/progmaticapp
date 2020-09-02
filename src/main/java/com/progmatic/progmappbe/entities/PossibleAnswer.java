@@ -32,10 +32,7 @@ public class PossibleAnswer extends BaseEntity{
     
     @Enumerated(EnumType.STRING)
     private PossibleAnswerType type;
-    
-    @Lob
-    @Column(length=100000)
-    private byte[] image;
+
         
     @OneToMany(mappedBy = "possibleAnswer", cascade = {CascadeType.PERSIST})
     private Set<PossibleAnswerValue> possibleAnswerValues = new HashSet<>();
@@ -57,14 +54,6 @@ public class PossibleAnswer extends BaseEntity{
 
     public void setTextAfter(String textAfter) {
         this.textAfter = textAfter;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
     }
 
     public PossibleAnswerType getType() {

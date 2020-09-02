@@ -72,9 +72,7 @@ public class Question extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private FeedbackType feedbackType;
         
-    @Lob
-    @Column(length=100000)
-    private byte[] image;
+
 
     private Integer answerTimeInSec;
 
@@ -110,13 +108,6 @@ public class Question extends BaseEntity {
         this.text = text;
     }
 
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
 
     public Integer getAnswerTimeInSec() {
         return answerTimeInSec;
@@ -177,4 +168,5 @@ public class Question extends BaseEntity {
     public void setFeedbackType(FeedbackType feedbackType) {
         this.feedbackType = feedbackType;
     }
+
 }

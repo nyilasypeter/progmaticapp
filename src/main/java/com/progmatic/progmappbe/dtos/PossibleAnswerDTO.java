@@ -21,9 +21,6 @@ public class PossibleAnswerDTO extends BaseEntityDTO{
     private String textAfter;
     
     private PossibleAnswerType type;
-    
-
-    private byte[] image;
         
     private List<PossibleAnswerValueDTO> possibleAnswerValues = new ArrayList<>();
 
@@ -41,14 +38,6 @@ public class PossibleAnswerDTO extends BaseEntityDTO{
 
     public void setTextAfter(String textAfter) {
         this.textAfter = textAfter;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
     }
 
     public PossibleAnswerType getType() {

@@ -5,16 +5,18 @@
  */
 package com.progmatic.progmappbe.controllers;
 
+import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.QuestionDTO;
+import com.progmatic.progmappbe.entities.Privilige;
+import com.progmatic.progmappbe.services.AttachmentService;
 import com.progmatic.progmappbe.services.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -23,9 +25,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
     
+    private TestService testService;
+
+
+
     @Autowired
-    TestService testService;
-    
+    public TestController(TestService testService) {
+        this.testService = testService;
+    }
+
     @PostMapping(path = "/question")
     public EntityCreationResult createQuestion(@RequestBody QuestionDTO q){
         return testService.createQuestion(q);
@@ -39,6 +47,32 @@ public class TestController {
     @PostMapping(path = "/questioncopy/{questionId}")
     public String copyQuestion(@PathVariable("questionId") String questionId){
         return testService.copyQuestion(questionId);
+    }
+
+    @PostMapping(path = "/question/{questionId}/imagefile")
+    public BasicResult uplaoFileToQuestion(
+            @PathVariable("questionId") String questionId,
+            @RequestParam("file") MultipartFile file){
+        return testService.uplaoFileToQuestion(questionId, file);
+    }
+
+    @GetMapping(path = "/question/{questionId}/imagefile")
+    public ResponseEntity<Resource> loadImageOfQuestion(@PathVariable("questionId")  String questionId){
+       return  testService.loadImageOfQuestion(questionId);
+
+    }
+
+    @PostMapping(path = "/question/possibleanswer/{possibleAnswerId}/imagefile")
+    public BasicResult uplaoFileToPossibleAnswer(
+            @PathVariable("possibleAnswerId") String possibleAnswerId,
+            @RequestParam("file") MultipartFile file){
+        return testService.uplaoFileToPossibleAnswer(possibleAnswerId, file);
+    }
+
+    @GetMapping(path = "/question/possibleanswer/{possibleAnswerId}/imagefile")
+    public ResponseEntity<Resource> loadImageOfPossibleAnswer(@PathVariable("possibleAnswerId")  String possibleAnswerId){
+        return  testService.loadImageOfPossibleAnswer(possibleAnswerId);
+
     }
     
 }

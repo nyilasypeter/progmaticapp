@@ -50,8 +50,6 @@ public class QuestionDTO extends BaseEntityDTO {
 
     private String explanationAfter;
 
-    private byte[] image;
-
     private Integer answerTimeInSec;
 
     private String evaluationAlogrithm;
@@ -66,14 +64,6 @@ public class QuestionDTO extends BaseEntityDTO {
 
     public void setText(String text) {
         this.text = text;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
     }
 
     public List<PossibleAnswerDTO> getPossibleAnswers() {

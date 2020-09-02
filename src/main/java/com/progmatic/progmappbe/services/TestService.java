@@ -5,6 +5,7 @@
  */
 package com.progmatic.progmappbe.services;
 
+import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.QuestionDTO;
 import com.progmatic.progmappbe.entities.*;
@@ -13,6 +14,7 @@ import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import com.progmatic.progmappbe.exceptions.UnauthorizedException;
 import com.progmatic.progmappbe.helpers.SecHelper;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.EntityGraph;
@@ -22,10 +24,20 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.lang3.SerializationUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author peti
@@ -41,8 +53,11 @@ public class TestService {
     @PersistenceContext
     private EntityManager em;
 
+    private AttachmentService attachmentService;
+
     @Autowired
-    public TestService(DozerBeanMapper mapper) {
+    public TestService(DozerBeanMapper mapper, AttachmentService attachmentService) {
+        this.attachmentService = attachmentService;
         this.mapper = mapper;
     }
 
@@ -163,6 +178,38 @@ public class TestService {
             throw new UnauthorizedException("TODO check that the logged in user has an active test which contains this question");
             //TODO check that the logged in user has an active test which contains this question
         }
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
+    public BasicResult uplaoFileToQuestion(
+            String questionId,
+            MultipartFile file){
+        if(em.find(Question.class, questionId) == null){
+            return new BasicResult(false, "No question with this id");
+        }
+        return attachmentService.uploadOneFileToOneEntity(questionId, file);
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_READ_QUESTION + "') or hasAuthority('" + Privilige.PRIV_START_TEST + "')")
+    public ResponseEntity<Resource> loadImageOfQuestion(String questionId){
+        return  attachmentService.loadOneToOneFile(questionId);
+
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
+    public BasicResult uplaoFileToPossibleAnswer(
+            String possibleAnswerId,
+            MultipartFile file){
+        if(em.find(PossibleAnswer.class, possibleAnswerId) == null){
+            return new BasicResult(false, "No question with this id");
+        }
+        return attachmentService.uploadOneFileToOneEntity(possibleAnswerId, file);
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_READ_QUESTION + "') or hasAuthority('" + Privilige.PRIV_START_TEST + "')")
+    public ResponseEntity<Resource> loadImageOfPossibleAnswer(String possibleAnswerId){
+        return  attachmentService.loadOneToOneFile(possibleAnswerId);
+
     }
 
 
