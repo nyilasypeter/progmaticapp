@@ -22,6 +22,7 @@ Properties to configure:
 MYSQL_USER_FOR_PROGMAPPBE=<Username for your local MySQL>
 MYSQL_PWD_FOR_PROGMAPPBE=<Password for your local MySQL>
 PROGMAPP_DEFAULT_ADMIN_PASSWORD=<Password for the initial admin user created during the first deoloy>
+PROGMAPP_ALLOWED_ORIGINS_SEMINCOLON_SEPARATED=<A semiconlon seprated list of allowed origins for CORS configuration>
 //These ones are only needed for e-mail sending
 MAIL_PROGMATIC_USERNAME=<A valid username for an smtp mail server>
 MAIL_PROGMATIC_PASSWORD=<A valid password for the above username>
