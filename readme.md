@@ -2,13 +2,16 @@
 
 ## Config
 
-Before you build or deploy this app locally, you should start a local MySQL server, and create a MySQL schema.
+Before you build or deploy this app locally, you should start a local MySQL server, and create two MySQL schemas (one for the integration tests, and one for the deployed application).
 
-Here is the drop-create command for the schema:
+Here is the drop-create command for the schemas:
 
 ```SQL
 DROP SCHEMA `progmappbe`;
 CREATE SCHEMA `progmappbe` DEFAULT CHARACTER SET utf8 COLLATE utf8_hungarian_ci;
+
+DROP SCHEMA `progmappbetest`;
+CREATE SCHEMA `progmappbetest` DEFAULT CHARACTER SET utf8 COLLATE utf8_hungarian_ci;
 ```
 
 Then you should configure some environment variables for the application.properties file.
@@ -34,4 +37,4 @@ this will create a jar file in target direcotry, which you can run with `java -j
 You can also run the class `com.progmatic.progmappbe.ProgmappbeApplication` directly from your preferred IDE.
 
 ## Test
-Use the Postman collection file whithin /doc directory to test the application.
+Use the Postman collection file within /doc directory to test the deployed application.
