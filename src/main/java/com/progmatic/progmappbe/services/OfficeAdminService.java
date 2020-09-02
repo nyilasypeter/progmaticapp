@@ -109,32 +109,49 @@ public class OfficeAdminService {
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
     public EntityCreationResult createStudent(UserDTO studentDTO){
-        User user = em.find(User.class, studentDTO.getLoginName());
+        return createUser(studentDTO, true);
+    }
+
+    @Transactional
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_USER + "')")
+    public EntityCreationResult createUser(UserDTO studentDTO){
+        return createUser(studentDTO, false);
+    }
+
+    private EntityCreationResult createUser(UserDTO userDTO, boolean isStudent){
+        User user = em.find(User.class, userDTO.getLoginName());
         if(user != null){
             return new EntityCreationResult(false, null, "User with this login name already exists.");
         }
-        studentDTO.getRoles().clear();
-        User student = mapper.map(studentDTO, User.class);
-        student.setId(studentDTO.getLoginName());
-        //Role studentRole = roleAutoDao.findByName(Role.ROLE_STUDENT);
-        Role studentRole = em.createQuery("select r from Role r where r.name = :rolename", Role.class)
-                .setParameter("rolename", Role.ROLE_STUDENT)
-                .getSingleResult();
-        studentRole.addUser(student);
-        if(StringUtils.isNotBlank(studentDTO.getPassword())){
-            student.setPassword(passwordEncoder.encode(studentDTO.getPassword()));
+        if(isStudent) {
+            userDTO.getRoles().clear();
+        }
+        User newUser = mapper.map(userDTO, User.class);
+        newUser.setId(userDTO.getLoginName());
+        if(isStudent) {
+            Role studentRole = roleAutoDao.findByName(Role.ROLE_STUDENT);
+            studentRole.addUser(newUser);
         }
         else{
-            student.setEnabled(false);
-            String token = UUID.randomUUID().toString();
-            student.setRegistrationToken(token);
-            student.setRegistrationTokenValidTo(LocalDateTime.now().plusDays(1));
-            Map<String, Object> templateModel = new HashMap<>();
-            templateModel.put(MailHelper.RECIPIENT_KEY, student);
-            templateModel.put(MailHelper.TOKEN_KEY, token);
-            mailHelper.sendMailByTemplate(MailHelper.MAIL_TEMPLATE_STUDENT_REGISTRATION, studentDTO.getEmailAddress(), templateModel);
+            for (RoleDTO rdto : userDTO.getRoles()) {
+                Role role = roleAutoDao.findByName(rdto.getName());
+                role.addUser(newUser);
+            }
         }
-        em.persist(student);
-        return new EntityCreationResult(true, student.getId(), null);
+        if(StringUtils.isNotBlank(userDTO.getPassword())){
+            newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+        else{
+            newUser.setEnabled(false);
+            String token = UUID.randomUUID().toString();
+            newUser.setRegistrationToken(token);
+            newUser.setRegistrationTokenValidTo(LocalDateTime.now().plusDays(1));
+            Map<String, Object> templateModel = new HashMap<>();
+            templateModel.put(MailHelper.RECIPIENT_KEY, newUser);
+            templateModel.put(MailHelper.TOKEN_KEY, token);
+            mailHelper.sendMailByTemplate(MailHelper.MAIL_TEMPLATE_STUDENT_REGISTRATION, userDTO.getEmailAddress(), templateModel);
+        }
+        em.persist(newUser);
+        return new EntityCreationResult(true, newUser.getId(), null);
     }
 }

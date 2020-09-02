@@ -27,6 +27,11 @@ public class OfficeAdminController {
         return officeAdminService.createStudent(udto);
     }
 
+    @PostMapping("/user")
+    public EntityCreationResult createUser(@RequestBody @Valid  UserDTO udto){
+        return officeAdminService.createUser(udto);
+    }
+
     @PutMapping("/class/{classId}/students")
     public BasicResult assignStudentsToClass(@PathVariable("classId") String classId, @RequestBody StudentListDto students){
         return officeAdminService.assignStudentToClass(students, classId);

@@ -130,7 +130,8 @@ public class DataLoader implements ApplicationRunner {
     protected void createRoles() {
         long roles = roleAutoDao.count();
         if(roles == 0){
-            createRole(Role.ROLE_ADMIN);
+            createRole(Role.ROLE_ADMIN,
+                    Privilige.PRIV_CREATE_USER);
             createRole(Role.ROLE_OFFICE,
                     Privilige.PRIV_CREATE_CLASS,
                     Privilige.PRIV_CREATE_STUDENT,
