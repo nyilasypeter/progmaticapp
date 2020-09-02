@@ -5,8 +5,12 @@
  */
 package com.progmatic.progmappbe.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.progmatic.progmappbe.helpers.DateHelper;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +31,11 @@ public class UserDTO extends BaseEntityDTO  {
     private String emailAddress;
 
     private String password;
+
+    private String oldPassword;
+
+    @JsonFormat(pattern = DateHelper.DATE_FORMAT)
+    private LocalDate birthDate;
 
     private Boolean accountNonLocked = true;
 
@@ -79,5 +88,20 @@ public class UserDTO extends BaseEntityDTO  {
     public void setRoles(List<RoleDTO> roles) {
         this.roles = roles;
     }
-   
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
 }

@@ -2,7 +2,10 @@ package com.progmatic.progmappbe.services;
 
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.RegistrationDTO;
+import com.progmatic.progmappbe.dtos.UserDTO;
 import com.progmatic.progmappbe.entities.User;
+import com.progmatic.progmappbe.helpers.SecHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,7 +52,23 @@ public class RegistrationService {
 
     }
 
-    //changePassword
+    @Transactional
+    public BasicResult changeMyData(UserDTO userDTO){
+        User loggedInUser = SecHelper.getLoggedInUser();
+        loggedInUser = em.merge(loggedInUser);
+        if(StringUtils.isNotBlank(userDTO.getPassword())){
+            if(passwordEncoder.matches(userDTO.getOldPassword(), loggedInUser.getPassword())){
+                loggedInUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            }
+            else{
+                return new BasicResult(false, "old password did not match");
+            }
+        }
+        loggedInUser.setName(userDTO.getName());
+        loggedInUser.setBirthDate(userDTO.getBirthDate());
+        return new BasicResult(true);
+
+    }
 
     //updateRegistrationLink
 }
