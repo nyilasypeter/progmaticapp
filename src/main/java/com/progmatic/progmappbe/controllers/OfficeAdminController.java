@@ -42,4 +42,9 @@ public class OfficeAdminController {
     public BasicResult assignStudentsToClass(@PathVariable("classId") String classId, @RequestBody StudentListDto students){
         return officeAdminService.assignStudentToClass(students, classId);
     }
+
+    @PutMapping("/user/newreglink/{userId}")
+    public BasicResult updateRegistrationLink(@PathVariable("userId") String userId){
+        return officeAdminService.updateRegistrationLink(userId);
+    }
 }

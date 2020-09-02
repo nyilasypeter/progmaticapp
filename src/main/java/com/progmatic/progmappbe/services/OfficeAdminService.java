@@ -140,16 +140,34 @@ public class OfficeAdminService {
             newUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         } else {
             newUser.setEnabled(false);
-            String token = UUID.randomUUID().toString();
-            newUser.setRegistrationToken(token);
-            newUser.setRegistrationTokenValidTo(LocalDateTime.now().plusDays(1));
-            Map<String, Object> templateModel = new HashMap<>();
-            templateModel.put(MailHelper.RECIPIENT_KEY, newUser);
-            templateModel.put(MailHelper.TOKEN_KEY, token);
-            mailHelper.sendMailByTemplate(MailHelper.MAIL_TEMPLATE_STUDENT_REGISTRATION, userDTO.getEmailAddress(), templateModel);
+            setRegLinkAndSendMail(newUser);
         }
         em.persist(newUser);
         return new EntityCreationResult(true, newUser.getId(), null);
+    }
+
+    private void setRegLinkAndSendMail(User newUser){
+        String token = UUID.randomUUID().toString();
+        newUser.setRegistrationToken(token);
+        newUser.setRegistrationTokenValidTo(LocalDateTime.now().plusDays(1));
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put(MailHelper.RECIPIENT_KEY, newUser);
+        templateModel.put(MailHelper.TOKEN_KEY, token);
+        mailHelper.sendMailByTemplate(MailHelper.MAIL_TEMPLATE_STUDENT_REGISTRATION, newUser.getEmailAddress(), templateModel);
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
+    @Transactional
+    public BasicResult updateRegistrationLink(String userId){
+        User user = em.find(User.class, userId);
+        if(user == null){
+            return new BasicResult(false, "User with this id does not exist.");
+        }
+        if(user.getRegistrationToken() == null){
+            return new BasicResult(false, "User already registered.");
+        }
+        setRegLinkAndSendMail(user);
+        return new BasicResult(true);
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
