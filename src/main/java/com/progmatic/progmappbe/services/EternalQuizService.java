@@ -6,6 +6,7 @@ import com.progmatic.progmappbe.dtos.quizresponse.AnswerResponseDTO;
 import com.progmatic.progmappbe.dtos.quizresponse.PossibleAnswerResponseDTO;
 import com.progmatic.progmappbe.entities.*;
 import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
+import com.progmatic.progmappbe.helpers.ResultBuilder;
 import com.progmatic.progmappbe.helpers.SecHelper;
 import com.progmatic.progmappbe.anwerevaluator.AnswerEvaluator;
 import org.apache.commons.lang3.StringUtils;
@@ -44,11 +45,14 @@ public class EternalQuizService {
 
     private ConstantService constantService;
 
+    private ResultBuilder resultBuilder;
+
     @Autowired
-    public EternalQuizService(DozerBeanMapper mapper, ApplicationContext context, ConstantService constantService) {
+    public EternalQuizService(DozerBeanMapper mapper, ApplicationContext context, ConstantService constantService, ResultBuilder resultBuilder) {
         this.mapper = mapper;
         this.context = context;
         this.constantService = constantService;
+        this.resultBuilder = resultBuilder;
     }
 
 
@@ -58,22 +62,24 @@ public class EternalQuizService {
         EternalQuiz eq = new EternalQuiz();
         EternalQuiz eternalQuiz = em.find(EternalQuiz.class, edto.getId());
         if(eternalQuiz != null){
-            return new EntityCreationResult(false, null, String.format("EternalQuiz with this id: %s already exists.", edto.getId()) );
+            return resultBuilder.errorEntityCreateResult("progmapp.error.idalreadyexists", edto.getId(), resultBuilder.translate("progmapp.entity.eternalquiz"));
         }
         eq.setId(edto.getId());
-        StringBuilder errors = new StringBuilder("");
+        EntityCreationResult ret = new EntityCreationResult();
         for (String questionId : edto.getQuestionIds()) {
             Question question = em.find(Question.class, questionId);
             if(question != null){
                 eq.addQuestion(question);
             }
             else{
-                errors.append(String.format("Question with id: %s does not exist.", questionId));
+                ret.addNote(resultBuilder.translate("progmapp.error.iddoesnotexist", questionId, resultBuilder.translate("progmapp.entity.question")));
             }
 
         }
         em.persist(eq);
-        return new EntityCreationResult(true, eq.getId(), errors.toString());
+        ret.setSuccessFullResult(true);
+        ret.setIdOfCreatedEntity(eq.getId());
+        return ret;
     }
 
     @Transactional
@@ -81,19 +87,22 @@ public class EternalQuizService {
     public BasicResult assignQuestionToEternalQuiz(String eternqlQizId, String questionId){
         EternalQuiz eternalQuiz = em.find(EternalQuiz.class, eternqlQizId);
         Question question = em.find(Question.class, questionId);
-        if(eternalQuiz == null || question == null){
-            return new BasicResult(false, "EternalQiz or question does not exist");
+        if(eternalQuiz == null){
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", eternqlQizId, resultBuilder.translate("progmapp.entity.eternalquiz"));
+        }
+        if(question == null){
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", questionId, resultBuilder.translate("progmapp.entity.question"));
         }
         List resultList = em.createQuery("select e from EternalQuiz e inner join e.questions q where e.id = :eQId and q.id = :qId")
                 .setParameter("eQId", eternqlQizId)
                 .setParameter("qId", questionId)
                 .getResultList();
         if(!resultList.isEmpty()){
-            return new BasicResult(false, "EternalQuiz already conatains this question.");
+            return resultBuilder.errorResult("progmapp.error.equizalreadycontainsquestion");
         }
         eternalQuiz.addQuestion(question);
         self.fillEternalQuizAnswers(eternalQuiz, question);
-        return new BasicResult(true);
+        return resultBuilder.okResult();
     }
 
     @Transactional
@@ -116,19 +125,22 @@ public class EternalQuizService {
     public BasicResult assignQuestionToEternalSchoolClass(String eternqlQizId, String schoolClassId){
         EternalQuiz eternalQuiz = em.find(EternalQuiz.class, eternqlQizId);
         SchoolClass schoolClass = em.find(SchoolClass.class, schoolClassId);
-        if(eternalQuiz == null || schoolClass == null){
-            return new BasicResult(false, "EternalQiz of schoolClass does not exist");
+        if(eternalQuiz == null){
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", eternqlQizId, resultBuilder.translate("progmapp.entity.eternalquiz"));
+        }
+        if(schoolClass == null){
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", schoolClassId, resultBuilder.translate("progmapp.entity.schoolClass"));
         }
         List resultList = em.createQuery("select e from EternalQuiz e inner join e.schoolClasses c where e.id = :eQId and c.id = :classId")
                 .setParameter("eQId", eternqlQizId)
                 .setParameter("classId", schoolClassId)
                 .getResultList();
         if(!resultList.isEmpty()){
-            return new BasicResult(false, "EternalQuiz already conatains this class.");
+            return resultBuilder.errorResult("progmapp.error.equizalreadycontainsclass");
         }
         eternalQuiz.addSchoolClass(schoolClass);
         self.fillAllEternalQuizAnswers(eternalQuiz);
-        return new BasicResult(true);
+        return resultBuilder.okResult();
     }
 
     @Transactional
@@ -220,11 +232,14 @@ public class EternalQuizService {
         User user = SecHelper.getLoggedInUser();
         EternalQuizAnswer eternalQuizAnswer = findEternalQuizAnswer(answer, user);
         if(eternalQuizAnswer == null){
-            return  new AnswerFeedbackDTO(false, "No EternalQuizAnswer exists for this user and this question.");
+            return new AnswerFeedbackDTO(resultBuilder.errorResult("progmapp.error.noeternqlquizforuserquestion", user.getId(), answer.getQuestionId()));
+
         }
-        String errorString = checkQuizResponse(answer, eternalQuizAnswer);
-        if(StringUtils.isNotBlank(errorString)){
-            return new AnswerFeedbackDTO(false, errorString);
+        AnswerFeedbackDTO ret = new AnswerFeedbackDTO();
+        checkQuizResponse(answer, eternalQuizAnswer, ret);
+        if(!ret.getErrorMessages().isEmpty()){
+            ret.setSuccessFullResult(false);
+            return ret;
         }
         eternalQuizAnswer.setWasSentAsAQuestion(false);
         Question question = eternalQuizAnswer.getQuestion();
@@ -267,26 +282,28 @@ public class EternalQuizService {
         }
     }
 
-    private String checkQuizResponse(AnswerResponseDTO answer, EternalQuizAnswer eternalQuizAnswer){
+    private void checkQuizResponse(AnswerResponseDTO answer, EternalQuizAnswer eternalQuizAnswer, AnswerFeedbackDTO response){
         if(!eternalQuizAnswer.getWasSentAsAQuestion()){
-            return  "This EternalQuizAnswer was not selected as question (maybe already answered?).";
+            response.addErrorMessage("progmapp.error.eternqlquiz.answer.notaselectedquestion", resultBuilder.translate("progmapp.error.eternqlquiz.answer.notaselectedquestion"));
+            return;
         }
         Question question = eternalQuizAnswer.getQuestion();
         Set<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
         for (PossibleAnswerResponseDTO anAnswer : answer.getAnswers()) {
             //the answer has to be in the possibleAnswers
             if(possibleAnswers.stream().filter(po -> po.getId().equals(anAnswer.getId())).count() == 0){
-                return "ids of answers must be valid PossibleAnswerResponse ids for this eternalQuiz.";
+                response.addErrorMessage("progmapp.error.eternqlquiz.answer.wrongpossibleanswerid", resultBuilder.translate("progmapp.error.eternqlquiz.answer.wrongpossibleanswerid"));
+                return;
             }
             //selected answer ids must be real PossibleAnswerValue-s, belonging to this question
             PossibleAnswer possibleAnswer = possibleAnswers.stream().filter(po -> po.getId().equals(anAnswer.getId())).findFirst().get();
             for (String selectedAnswerId : anAnswer.getSelectedAnswerIds()) {
                 if(possibleAnswer.getPossibleAnswerValues().stream().filter(pv -> pv.getId().equals(selectedAnswerId)).count() == 0){
-                    return "selectedAnswerIds must be valid PossibleAnswerValue ids for this eternalQuiz";
+                    response.addErrorMessage("progmapp.error.eternqlquiz.answer.wrongpossibleanswervalueid", resultBuilder.translate("progmapp.error.eternqlquiz.answer.wrongpossibleanswervalueid"));
+                    return;
                 }
             }
         }
-        return null;
     }
 
     private AnswerEvaluator getAnswerEvaluator(Question question) {
@@ -346,13 +363,14 @@ public class EternalQuizService {
     public EternalQuizStatisticOfStudentsDTO getEternalQuizStatistics(String classId) {
         SchoolClass schoolClass = em.find(SchoolClass.class, classId);
         if(schoolClass == null){
-            return new EternalQuizStatisticOfStudentsDTO(false, "SchoolClass does not exist.");
+            return new EternalQuizStatisticOfStudentsDTO(resultBuilder.errorResult("progmapp.error.iddoesnotexist", classId, resultBuilder.translate("progmapp.entity.shcoolclass")));
         }
         EternalQuizStatisticOfStudentsDTO ret = new EternalQuizStatisticOfStudentsDTO();
         for (User student : schoolClass.getStudents()) {
             ret.addStatistic(getEternalQuizStatisticsOfStudent(student));
         }
         ret.getStudentStatistics().sort(Comparator.comparingDouble(EternalQuizStatisticDTO::getAchievedPercentage).reversed());
+        ret.setSuccessFullResult(true);
         return ret;
     }
 

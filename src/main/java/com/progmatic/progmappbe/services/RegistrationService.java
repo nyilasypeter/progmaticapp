@@ -5,6 +5,7 @@ import com.progmatic.progmappbe.dtos.RegistrationDTO;
 import com.progmatic.progmappbe.dtos.UserDTO;
 import com.progmatic.progmappbe.entities.Privilige;
 import com.progmatic.progmappbe.entities.User;
+import com.progmatic.progmappbe.helpers.ResultBuilder;
 import com.progmatic.progmappbe.helpers.SecHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
@@ -29,10 +30,13 @@ public class RegistrationService {
 
     private DozerBeanMapper mapper;
 
+    private ResultBuilder resultBuilder;
+
     @Autowired
-    public RegistrationService(PasswordEncoder passwordEncoder, DozerBeanMapper mapper) {
+    public RegistrationService(PasswordEncoder passwordEncoder, DozerBeanMapper mapper, ResultBuilder resultBuilder) {
         this.passwordEncoder = passwordEncoder;
         this.mapper = mapper;
+        this.resultBuilder = resultBuilder;
     }
 
     @Transactional
@@ -44,17 +48,17 @@ public class RegistrationService {
                     .getSingleResult();
         }
         catch (NoResultException ex){
-            return new BasicResult(false, "Token not found");
+            return resultBuilder.errorResult("progmapp.error.registration.notoken");
         }
         if(user.getRegistrationTokenValidTo().isBefore(LocalDateTime.now())){
-            return new BasicResult(false, "Token expired");
+            return resultBuilder.errorResult("progmapp.error.registration.tokenexpired");
         }
         user.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
         user.setRegistrationToken(null);
         user.setRegistrationTokenValidTo(null);
         user.setEnabled(true);
         user.setBirthDate(registrationDTO.getBirthDate());
-        return new BasicResult(true);
+        return resultBuilder.okResult();
 
     }
 
@@ -67,12 +71,12 @@ public class RegistrationService {
                 loggedInUser.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             }
             else{
-                return new BasicResult(false, "old password did not match");
+                return resultBuilder.errorResult("progmapp.error.changedata.wrongoldpasswd");
             }
         }
         loggedInUser.setName(userDTO.getName());
         loggedInUser.setBirthDate(userDTO.getBirthDate());
-        return new BasicResult(true);
+        return resultBuilder.okResult();
 
     }
 

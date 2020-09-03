@@ -6,11 +6,12 @@ import java.util.List;
 public class EternalQuizStatisticOfStudentsDTO extends BasicResult {
 
     public EternalQuizStatisticOfStudentsDTO(){
-        super(true, null);
     }
 
-    public EternalQuizStatisticOfStudentsDTO(boolean successFullResult, String errorMessage) {
-        super(successFullResult, errorMessage);
+    public EternalQuizStatisticOfStudentsDTO(BasicResult basicResult) {
+        setSuccessFullResult(basicResult.isSuccessFullResult());
+        setNotes(basicResult.getNotes());
+        setErrorMessages(basicResult.getErrorMessages());
     }
 
     private List<EternalQuizStatisticDTO> studentStatistics = new ArrayList<>();

@@ -4,12 +4,15 @@ import com.progmatic.progmappbe.aoutodaos.RoleAutoDao;
 import com.progmatic.progmappbe.dtos.*;
 import com.progmatic.progmappbe.entities.*;
 import com.progmatic.progmappbe.helpers.MailHelper;
+import com.progmatic.progmappbe.helpers.ResultBuilder;
 import com.progmatic.progmappbe.helpers.SecHelper;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,43 +39,62 @@ public class OfficeAdminService {
 
     private MailHelper mailHelper;
 
+    private ResultBuilder resultBuilder;
+
+
+    @Autowired
     public OfficeAdminService(DozerBeanMapper mapper,
                               PasswordEncoder passwordEncoder,
                               RoleAutoDao roleAutoDao,
-                              MailHelper mailHelper) {
+                              MailHelper mailHelper,
+                              ResultBuilder resultBuilder) {
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
         this.roleAutoDao = roleAutoDao;
         this.mailHelper = mailHelper;
+        this.resultBuilder = resultBuilder;
     }
+
+
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
     public EntityCreationResult createSchoolClass(SchoolClassDTO schoolClass) {
         if (StringUtils.isNotBlank(schoolClass.getId())) {
             if (em.find(SchoolClass.class, schoolClass.getId()) != null) {
-                return new EntityCreationResult(false, null, "Class with this id already exists");
+                EntityCreationResult er = resultBuilder.errorEntityCreateResult(
+                        "progmapp.error.idalreadyexists",
+                        schoolClass.getId(),
+                        resultBuilder.translate("progmapp.entity.shcoolclass"));
+                return er;
             }
         }
         SchoolClass sc = mapper.map(schoolClass, SchoolClass.class);
         em.persist(sc);
-        return new EntityCreationResult(true, schoolClass.getId(), null);
+        return resultBuilder.okEntityCreateResult(sc);
     }
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
     public BasicResult assignStudentToClass(StudentListDto students, String classId) {
         SchoolClass schoolClass = em.find(SchoolClass.class, classId);
+        if(schoolClass == null){
+            return resultBuilder.errorEntityCreateResult(
+                    "progmapp.error.iddoesnotexist",
+                    schoolClass.getId(),
+                    resultBuilder.translate("progmapp.entity.shcoolclass"));
+        }
         Set<User> newlyAddedStudents = new HashSet<>();
-        StringBuilder errorString = new StringBuilder("");
+        BasicResult ret = new BasicResult();
+        //StringBuilder errorString = new StringBuilder("");
         for (String studId : students.getIdList()) {
             User student = em.find(User.class, studId);
             if (student == null) {
-                errorString.append(String.format("User with id: %s is not found in database. ", studId));
+                ret.addNote(resultBuilder.translate("progmapp.error.iddoesnotexist", studId, resultBuilder.translate("progmapp.entity.user")));
             } else if (!SecHelper.hasRole(student, Role.ROLE_STUDENT)) {
-                errorString.append(String.format("User: %s is not a student. Only students can be added to a class. ", studId));
+                ret.addNote(resultBuilder.translate("progmapp.warning.usernotstudent", studId));
             } else if (schoolClass.getStudents().stream().filter(st -> st.getId().equals(student.getId())).count() > 0) {
-                errorString.append(String.format("Student: %s is already in this class: %s. ", studId, classId));
+                ret.addNote(resultBuilder.translate("progmapp.warning.studentalreadyinclass", studId, classId));
             } else {
                 newlyAddedStudents.add(student);
                 schoolClass.addStudent(student);
@@ -80,10 +102,8 @@ public class OfficeAdminService {
 
         }
         self.createEternalQuizAnswers(schoolClass, newlyAddedStudents);
-        if (errorString.length() != 0) {
-            errorString.append("Besides these problems all the other operations were successfull");
-        }
-        return new BasicResult(true, errorString.toString());
+        ret.setSuccessFullResult(true);
+        return ret;
     }
 
     @Transactional
@@ -120,7 +140,10 @@ public class OfficeAdminService {
     private EntityCreationResult createUser(UserDTO userDTO, boolean isStudent) {
         User user = em.find(User.class, userDTO.getLoginName());
         if (user != null) {
-            return new EntityCreationResult(false, null, "User with this login name already exists.");
+            return resultBuilder.errorEntityCreateResult(
+                    "progmapp.error.idalreadyexists",
+            userDTO.getLoginName(),
+            resultBuilder.translate("progmapp.entity.user"));
         }
         if (isStudent) {
             userDTO.getRoles().clear();
@@ -143,7 +166,7 @@ public class OfficeAdminService {
             setRegLinkAndSendMail(newUser);
         }
         em.persist(newUser);
-        return new EntityCreationResult(true, newUser.getId(), null);
+        return resultBuilder.okEntityCreateResult(newUser);
     }
 
     private void setRegLinkAndSendMail(User newUser){
@@ -161,13 +184,13 @@ public class OfficeAdminService {
     public BasicResult updateRegistrationLink(String userId){
         User user = em.find(User.class, userId);
         if(user == null){
-            return new BasicResult(false, "User with this id does not exist.");
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", userId, resultBuilder.translate("progmapp.entity.user"));
         }
         if(user.getRegistrationToken() == null){
-            return new BasicResult(false, "User already registered.");
+            return resultBuilder.errorResult("progmapp.error.useraleradyregistered");
         }
         setRegLinkAndSendMail(user);
-        return new BasicResult(true);
+        return resultBuilder.okResult();
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")

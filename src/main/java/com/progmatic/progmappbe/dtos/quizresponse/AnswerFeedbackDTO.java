@@ -9,21 +9,19 @@ import java.util.List;
 
 public class AnswerFeedbackDTO extends BasicResult {
 
-    public AnswerFeedbackDTO(){
-        super(true, null);
-    }
-
-    public AnswerFeedbackDTO(boolean successFullResult, String errorMessage) {
-        super(successFullResult, errorMessage);
-    }
-
-    public AnswerFeedbackDTO(boolean successfullCreation) {
-        super(successfullCreation);
-    }
-
     private AnswerEvaulationResult result;
     private String feedback;
     private List<PossibleAnswerDTO> rigthAnswers = new ArrayList<>();
+
+    public AnswerFeedbackDTO() {
+    }
+
+    public AnswerFeedbackDTO(BasicResult br){
+        this.setSuccessFullResult(br.isSuccessFullResult());
+        this.setErrorMessages(br.getErrorMessages());
+        this.setNotes(br.getNotes());
+
+    }
 
     public void addRgithAnswer(PossibleAnswerDTO possibleAnswerDTO){
         rigthAnswers.add(possibleAnswerDTO);

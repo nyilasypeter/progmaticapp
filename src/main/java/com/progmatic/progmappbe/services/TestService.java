@@ -13,6 +13,7 @@ import com.progmatic.progmappbe.entities.*;
 import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import com.progmatic.progmappbe.exceptions.UnauthorizedException;
+import com.progmatic.progmappbe.helpers.ResultBuilder;
 import com.progmatic.progmappbe.helpers.SecHelper;
 
 import java.io.IOException;
@@ -59,32 +60,37 @@ public class TestService {
 
     private AttachmentService attachmentService;
 
+    private ResultBuilder resultBuilder;
+
     @Autowired
-    public TestService(DozerBeanMapper mapper, AttachmentService attachmentService) {
+    public TestService(DozerBeanMapper mapper, AttachmentService attachmentService, ResultBuilder resultBuilder) {
         this.attachmentService = attachmentService;
         this.mapper = mapper;
+        this.resultBuilder = resultBuilder;
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
     @Transactional
     public EntityCreationResult createQuestion(QuestionDTO q) {
         Question question = mapper.map(q, Question.class);
-        StringBuilder errorMessages = new StringBuilder("");
+        EntityCreationResult ret = new EntityCreationResult();
         for (PossibleAnswer possibleAnswer : question.getPossibleAnswers()) {
             possibleAnswer.setQuestion(question);
             guessAnswerTypeIfNeeded(possibleAnswer);
-            checkPossibleAnswer(possibleAnswer, errorMessages);
+            checkPossibleAnswer(possibleAnswer, ret);
             for (PossibleAnswerValue possibleAnswerValue : possibleAnswer.getPossibleAnswerValues()) {
                 possibleAnswerValue.setPossibleAnswer(possibleAnswer);
             }
         }
-        if(errorMessages.length() > 0){
-            return new EntityCreationResult(false, null, errorMessages.toString());
+        if(!ret.getErrorMessages().isEmpty()){
+            ret.setSuccessFullResult(false);
         }
         else {
             em.persist(question);
-            return new EntityCreationResult(true, question.getId(), null);
+            ret.setSuccessFullResult(true);
+            ret.setIdOfCreatedEntity(question.getId());
         }
+        return ret;
     }
 
     private void guessAnswerTypeIfNeeded(PossibleAnswer possibleAnswer) {
@@ -100,23 +106,23 @@ public class TestService {
         }
     }
 
-    private void checkPossibleAnswer(PossibleAnswer possibleAnswer, StringBuilder erorMsgs) {
+    private void checkPossibleAnswer(PossibleAnswer possibleAnswer, EntityCreationResult result) {
         switch (possibleAnswer.getType()) {
             case trueFalseCheckbox:
                 if (possibleAnswer.getPossibleAnswerValues().size() != 1) {
-                    erorMsgs.append("If type of a possible answers is trueFalseCheckbox, then it must contain exactly one PossibleAnswerValue");
+                    result.addErrorMessage("progmapp.error.questionvalidation.truelfasechekbox", resultBuilder.translate("progmapp.error.questionvalidation.truelfasechekbox"));
                 }
                 break;
             case radioButtons:
             case dropdown:
                 if (possibleAnswer.getPossibleAnswerValues().stream().filter(pav -> pav.getIsRightAnswer()).count()  != 1) {
-                    erorMsgs.append("If type of a possible answers is radioButtons or dropdown, then it must contain exactly one right PossibleAnswerValue");
+                    result.addErrorMessage("progmapp.error.questionvalidation.radio", resultBuilder.translate("progmapp.error.questionvalidation.radio"));
                 }
                 break;
             case longText:
             case shortText:
                 if (!possibleAnswer.getPossibleAnswerValues().isEmpty()) {
-                    erorMsgs.append("If type of a possible answers is longText or shortText, then it should not contain any PossibleAnswerValue");
+                    result.addErrorMessage("progmapp.error.questionvalidation.freetext", resultBuilder.translate("progmapp.error.questionvalidation.freetext"));
                 }
                 break;
             default:
@@ -224,7 +230,7 @@ public class TestService {
             String questionId,
             MultipartFile file){
         if(em.find(Question.class, questionId) == null){
-            return new BasicResult(false, "No question with this id");
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", questionId, resultBuilder.translate("progmapp.entity.question"));
         }
         return attachmentService.uploadOneFileToOneEntity(questionId, file);
     }
@@ -240,7 +246,7 @@ public class TestService {
             String possibleAnswerId,
             MultipartFile file){
         if(em.find(PossibleAnswer.class, possibleAnswerId) == null){
-            return new BasicResult(false, "No question with this id");
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", possibleAnswerId, resultBuilder.translate("progmapp.entity.possibleanswer"));
         }
         return attachmentService.uploadOneFileToOneEntity(possibleAnswerId, file);
     }

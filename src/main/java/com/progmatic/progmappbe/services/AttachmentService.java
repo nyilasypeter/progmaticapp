@@ -6,6 +6,7 @@ import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.entities.Attachment;
 import com.progmatic.progmappbe.entities.BaseEntity;
 import com.progmatic.progmappbe.entities.Question;
+import com.progmatic.progmappbe.helpers.ResultBuilder;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -30,12 +31,13 @@ public class AttachmentService {
     @PersistenceContext
     private EntityManager em;
 
-
     private DozerBeanMapper mapper;
 
+    private ResultBuilder resultBuilder;
     @Autowired
-    public AttachmentService(DozerBeanMapper mapper) {
+    public AttachmentService(DozerBeanMapper mapper, ResultBuilder builder) {
         this.mapper = mapper;
+        this.resultBuilder = builder;
     }
 
     @Transactional
@@ -50,7 +52,7 @@ public class AttachmentService {
         try {
             attachment.setImage(file.getBytes());
             attachment.setImageContentType(file.getContentType());
-            return new BasicResult(true);
+            return resultBuilder.okResult();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -64,7 +66,7 @@ public class AttachmentService {
             em.persist(attachment);
             attachment.setImage(file.getBytes());
             attachment.setImageContentType(file.getContentType());
-            return new BasicResult(true);
+            return resultBuilder.okResult();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -75,10 +77,10 @@ public class AttachmentService {
         Attachment attachment = em.find(Attachment.class, attachmentId);
         if(attachment == null){
             em.remove(attachment);
-            return new BasicResult(true);
+            return resultBuilder.okResult();
         }
         else{
-            return new BasicResult(false, "No attachment with this id");
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", attachmentId, resultBuilder.translate("progmapp.entity.qttachment"));
         }
 
     }

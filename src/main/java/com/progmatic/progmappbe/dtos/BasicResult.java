@@ -1,20 +1,14 @@
 package com.progmatic.progmappbe.dtos;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BasicResult {
 
     private boolean successFullResult;
-    private String errorMessage;
+    private List<ErrorMsg> errorMessages = new ArrayList<>();
+    private List<String> notes = new ArrayList<>();
 
-    public BasicResult(boolean successFullResult, String errorMessage) {
-        this.successFullResult = successFullResult;
-        this.errorMessage = StringUtils.isBlank(errorMessage) ? null : errorMessage;
-    }
-
-    public BasicResult(boolean successFullResult) {
-        this.successFullResult = successFullResult;
-    }
 
     public boolean isSuccessFullResult() {
         return successFullResult;
@@ -24,11 +18,33 @@ public class BasicResult {
         this.successFullResult = successFullResult;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public List<ErrorMsg> getErrorMessages() {
+        return errorMessages;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    public void addErrorMessage(ErrorMsg msg){
+        errorMessages.add(msg);
+    }
+
+    public void addErrorMessage(String code, String value){
+        errorMessages.add(new ErrorMsg(code, value));
+    }
+
+    public void setErrorMessages(List<ErrorMsg> errorMessages) {
+        this.errorMessages = errorMessages;
+    }
+
+
+
+    public void addNote(String note){
+        notes.add(note);
+    }
+
+    public List<String> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<String> notes) {
+        this.notes = notes;
     }
 }
