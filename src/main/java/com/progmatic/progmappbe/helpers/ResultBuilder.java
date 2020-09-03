@@ -53,6 +53,7 @@ public class ResultBuilder {
     public EntityCreationResult okEntityCreateResult(String id){
         EntityCreationResult ret = new EntityCreationResult();
         ret.setSuccessFullResult(true);
+        ret.setIdOfCreatedEntity(id);
         return ret;
     }
 

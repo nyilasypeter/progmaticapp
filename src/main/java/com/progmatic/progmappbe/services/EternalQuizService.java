@@ -60,11 +60,13 @@ public class EternalQuizService {
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CRUD_ETERNAL_QUIZ + "')")
     public EntityCreationResult createEternalQuiz(EternalQuizDTO edto){
         EternalQuiz eq = new EternalQuiz();
-        EternalQuiz eternalQuiz = em.find(EternalQuiz.class, edto.getId());
-        if(eternalQuiz != null){
-            return resultBuilder.errorEntityCreateResult("progmapp.error.idalreadyexists", edto.getId(), resultBuilder.translate("progmapp.entity.eternalquiz"));
+        if(StringUtils.isNotBlank(edto.getId())){
+            if(em.find(EternalQuiz.class, edto.getId()) != null){
+                return resultBuilder.errorEntityCreateResult("progmapp.error.idalreadyexists", edto.getId(), resultBuilder.translate("progmapp.entity.eternalquiz"));
+            }
+            eq.setId(edto.getId());
         }
-        eq.setId(edto.getId());
+
         EntityCreationResult ret = new EntityCreationResult();
         for (String questionId : edto.getQuestionIds()) {
             Question question = em.find(Question.class, questionId);
