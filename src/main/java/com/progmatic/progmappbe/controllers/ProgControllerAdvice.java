@@ -33,6 +33,7 @@ public class ProgControllerAdvice {
     public BasicResult handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         LOG.warn("Validation failed.", ex);
         BasicResult ret = new BasicResult();
+        ret.setSuccessFullResult(false);
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
