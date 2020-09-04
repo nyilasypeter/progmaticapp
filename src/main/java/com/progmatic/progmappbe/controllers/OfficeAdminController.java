@@ -1,6 +1,11 @@
 package com.progmatic.progmappbe.controllers;
 
 import com.progmatic.progmappbe.dtos.*;
+import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
+import com.progmatic.progmappbe.dtos.user.UserSearchResponseDTO;
+import com.progmatic.progmappbe.dtos.user.StudentListDto;
+import com.progmatic.progmappbe.dtos.user.UserDTO;
+import com.progmatic.progmappbe.dtos.user.UserSearchRequestDTO;
 import com.progmatic.progmappbe.services.OfficeAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +29,12 @@ public class OfficeAdminController {
     }
 
     @PostMapping("/student")
-    public EntityCreationResult createStudent(@RequestBody @Valid  UserDTO udto){
+    public EntityCreationResult createStudent(@RequestBody @Valid UserDTO udto){
         return officeAdminService.createStudent(udto);
     }
 
     @PostMapping("/usersearch")
-    public List<SearchUserResponseDTO> searchStudents(@RequestBody UserSearchRequestDTO requestDTO){
+    public List<UserSearchResponseDTO> searchStudents(@RequestBody UserSearchRequestDTO requestDTO){
         return officeAdminService.searchStudents(requestDTO);
     }
 

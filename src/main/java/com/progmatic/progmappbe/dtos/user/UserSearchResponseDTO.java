@@ -1,10 +1,13 @@
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.user;
 
+
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
+import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchUserResponseDTO extends BaseEntityDTO {
+public class UserSearchResponseDTO extends BaseEntityDTO {
     private String name;
 
     private String loginName;

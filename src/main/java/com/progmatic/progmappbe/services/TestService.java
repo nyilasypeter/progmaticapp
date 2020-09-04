@@ -7,18 +7,15 @@ package com.progmatic.progmappbe.services;
 
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
-import com.progmatic.progmappbe.dtos.QuestionDTO;
-import com.progmatic.progmappbe.dtos.QuestionSearchDto;
+import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
+import com.progmatic.progmappbe.dtos.quiz.QuestionSearchDto;
 import com.progmatic.progmappbe.entities.*;
-import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import com.progmatic.progmappbe.exceptions.UnauthorizedException;
 import com.progmatic.progmappbe.helpers.ResultBuilder;
 import com.progmatic.progmappbe.helpers.SecHelper;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -29,19 +26,12 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

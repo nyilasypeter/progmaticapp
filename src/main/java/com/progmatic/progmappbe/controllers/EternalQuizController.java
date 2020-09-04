@@ -1,8 +1,8 @@
 package com.progmatic.progmappbe.controllers;
 
 import com.progmatic.progmappbe.dtos.*;
-import com.progmatic.progmappbe.dtos.quizresponse.AnswerFeedbackDTO;
-import com.progmatic.progmappbe.dtos.quizresponse.AnswerResponseDTO;
+import com.progmatic.progmappbe.dtos.eternalquiz.*;
+import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
 import com.progmatic.progmappbe.services.EternalQuizService;
 import org.springframework.web.bind.annotation.*;
 

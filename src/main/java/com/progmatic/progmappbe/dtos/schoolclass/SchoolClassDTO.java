@@ -1,6 +1,7 @@
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.schoolclass;
 
 
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 import com.progmatic.progmappbe.entities.enums.SemesterType;
 
 

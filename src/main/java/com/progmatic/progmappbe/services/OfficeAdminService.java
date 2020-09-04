@@ -2,6 +2,8 @@ package com.progmatic.progmappbe.services;
 
 import com.progmatic.progmappbe.aoutodaos.RoleAutoDao;
 import com.progmatic.progmappbe.dtos.*;
+import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
+import com.progmatic.progmappbe.dtos.user.*;
 import com.progmatic.progmappbe.entities.*;
 import com.progmatic.progmappbe.helpers.MailHelper;
 import com.progmatic.progmappbe.helpers.ResultBuilder;
@@ -11,8 +13,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -194,7 +194,7 @@ public class OfficeAdminService {
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
-    public List<SearchUserResponseDTO> searchStudents(UserSearchRequestDTO requestDTO) {
+    public List<UserSearchResponseDTO> searchStudents(UserSearchRequestDTO requestDTO) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         BooleanBuilder whereCondition = new BooleanBuilder();
         QUser qUser = QUser.user;
@@ -226,9 +226,9 @@ public class OfficeAdminService {
                 .distinct()
                 .fetch();
 
-        List<SearchUserResponseDTO> ret = new ArrayList<>();
+        List<UserSearchResponseDTO> ret = new ArrayList<>();
         for (User user : userList) {
-            SearchUserResponseDTO ur = mapper.map(user, SearchUserResponseDTO.class);
+            UserSearchResponseDTO ur = mapper.map(user, UserSearchResponseDTO.class);
             ur.setHasUnfinishedRegistration(user.getRegistrationToken() != null);
             ret.add(ur);
         }

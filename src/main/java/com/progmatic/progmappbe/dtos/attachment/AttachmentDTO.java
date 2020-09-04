@@ -1,5 +1,7 @@
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.attachment;
 
+
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 
 public class AttachmentDTO extends BaseEntityDTO {
 

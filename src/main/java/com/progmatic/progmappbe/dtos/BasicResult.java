@@ -8,7 +8,7 @@ public class BasicResult {
     private boolean successFullResult;
     private List<ErrorMsg> errorMessages = new ArrayList<>();
     private List<String> notes = new ArrayList<>();
-
+    private List<ValidationError> validationErrors = new ArrayList<>();
 
     public boolean isSuccessFullResult() {
         return successFullResult;
@@ -34,8 +34,6 @@ public class BasicResult {
         this.errorMessages = errorMessages;
     }
 
-
-
     public void addNote(String note){
         notes.add(note);
     }
@@ -46,5 +44,17 @@ public class BasicResult {
 
     public void setNotes(List<String> notes) {
         this.notes = notes;
+    }
+
+    public void addValidationError(ValidationError ve){
+        validationErrors.add(ve);
+    }
+
+    public List<ValidationError> getValidationErrors() {
+        return validationErrors;
+    }
+
+    public void setValidationErrors(List<ValidationError> validationErrors) {
+        this.validationErrors = validationErrors;
     }
 }

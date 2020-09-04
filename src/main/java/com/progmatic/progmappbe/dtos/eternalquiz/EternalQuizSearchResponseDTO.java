@@ -1,4 +1,7 @@
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.eternalquiz;
+
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
+import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
 
 import java.util.List;
 

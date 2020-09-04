@@ -1,4 +1,4 @@
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.progmatic.progmappbe.helpers.DateHelper;

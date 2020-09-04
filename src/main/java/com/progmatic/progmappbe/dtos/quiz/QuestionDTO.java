@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.quiz;
 
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 import com.progmatic.progmappbe.entities.enums.FeedbackType;
 
 import java.util.ArrayList;

@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.quiz;
 
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 import com.progmatic.progmappbe.entities.enums.ScoreMechanism;
 
 
@@ -12,7 +13,7 @@ import com.progmatic.progmappbe.entities.enums.ScoreMechanism;
  * A question in a test with score and order number.
  * @author peti
  */
-public class QuestionInTestDTO extends BaseEntityDTO{
+public class QuestionInTestDTO extends BaseEntityDTO {
     
     private int orderNr;
     

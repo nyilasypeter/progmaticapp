@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.user;
+
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
  *
  * @author peti
  */
-public class RoleDTO extends BaseEntityDTO{
+public class RoleDTO extends BaseEntityDTO {
 
     public RoleDTO() {
     }

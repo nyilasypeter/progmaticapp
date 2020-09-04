@@ -1,4 +1,4 @@
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.eternalquiz;
 
 
 public class EternalQuizStatisticDTO {

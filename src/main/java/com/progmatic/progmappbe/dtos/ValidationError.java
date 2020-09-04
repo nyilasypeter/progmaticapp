@@ -1,11 +1,11 @@
-package com.progmatic.progmappbe.dtos.validation;
+package com.progmatic.progmappbe.dtos;
 
-public class ValidationErrorDTO {
+public class ValidationError {
     private final String fieldName;
 
     private final String message;
 
-    public ValidationErrorDTO(String fieldName, String message) {
+    public ValidationError(String fieldName, String message) {
         this.fieldName = fieldName;
         this.message = message;
     }

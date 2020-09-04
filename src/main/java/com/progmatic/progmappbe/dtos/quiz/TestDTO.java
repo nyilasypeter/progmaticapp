@@ -3,24 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.quiz;
+
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
+import com.progmatic.progmappbe.dtos.quiz.QuestionInTestDTO;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * A test containing questions and their possible answers.
  * @author peti
  */
-public class TestDTO extends BaseEntityDTO{
+public class TestDTO extends BaseEntityDTO {
     
     private String name;
     
     private String description;
     
-    private List<QuestionInTestDTO> questionInTests = new ArrayList<>();    
+    private List<QuestionInTestDTO> questionInTests = new ArrayList<>();
     
     private Boolean showScores = true;
 

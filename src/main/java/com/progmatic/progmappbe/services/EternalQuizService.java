@@ -1,9 +1,9 @@
 package com.progmatic.progmappbe.services;
 
 import com.progmatic.progmappbe.dtos.*;
-import com.progmatic.progmappbe.dtos.quizresponse.AnswerFeedbackDTO;
-import com.progmatic.progmappbe.dtos.quizresponse.AnswerResponseDTO;
-import com.progmatic.progmappbe.dtos.quizresponse.PossibleAnswerResponseDTO;
+import com.progmatic.progmappbe.dtos.eternalquiz.*;
+import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerDTO;
+import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
 import com.progmatic.progmappbe.entities.*;
 import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 import com.progmatic.progmappbe.helpers.ResultBuilder;

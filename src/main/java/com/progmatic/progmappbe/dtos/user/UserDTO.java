@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 import com.progmatic.progmappbe.helpers.DateHelper;
 
 import javax.validation.constraints.Email;
@@ -18,7 +19,7 @@ import java.util.List;
  *
  * @author peti
  */
-public class UserDTO extends BaseEntityDTO  {
+public class UserDTO extends BaseEntityDTO {
 
     @NotNull
     private String name;

@@ -1,8 +1,8 @@
 package com.progmatic.progmappbe.controllers;
 
 import com.progmatic.progmappbe.dtos.BasicResult;
-import com.progmatic.progmappbe.dtos.RegistrationDTO;
-import com.progmatic.progmappbe.dtos.UserDTO;
+import com.progmatic.progmappbe.dtos.user.RegistrationDTO;
+import com.progmatic.progmappbe.dtos.user.UserDTO;
 import com.progmatic.progmappbe.services.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

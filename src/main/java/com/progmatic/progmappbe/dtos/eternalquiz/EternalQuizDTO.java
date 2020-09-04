@@ -1,4 +1,4 @@
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.eternalquiz;
 
 import java.util.HashSet;
 import java.util.Set;

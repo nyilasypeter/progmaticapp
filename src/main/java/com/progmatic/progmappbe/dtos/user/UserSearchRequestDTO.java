@@ -1,4 +1,4 @@
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.user;
 
 public class UserSearchRequestDTO {
     private String name;

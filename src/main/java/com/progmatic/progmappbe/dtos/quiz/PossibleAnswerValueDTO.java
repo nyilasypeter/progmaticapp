@@ -3,14 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.quiz;
+
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 
 /**
  * A Possible value of an answer. 
  * For details @see {@link com.progmatic.progmappbe.entities.Question}
  * @author peti
  */
-public class PossibleAnswerValueDTO extends BaseEntityDTO{
+public class PossibleAnswerValueDTO extends BaseEntityDTO {
     
     private String text;
     

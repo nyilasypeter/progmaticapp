@@ -1,8 +1,8 @@
 package com.progmatic.progmappbe.controllers;
 
+import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
-import com.progmatic.progmappbe.dtos.validation.ValidationErrorDTO;
-import com.progmatic.progmappbe.dtos.validation.ValidationErrorResponseDTO;
+import com.progmatic.progmappbe.dtos.ValidationError;
 import com.progmatic.progmappbe.exceptions.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +30,13 @@ public class ProgControllerAdvice {
     @ExceptionHandler(value=MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ValidationErrorResponseDTO handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+    public BasicResult handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         LOG.warn("Validation failed.", ex);
-        ValidationErrorResponseDTO ret = new ValidationErrorResponseDTO();
+        BasicResult ret = new BasicResult();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            ret.addValidatinError(new ValidationErrorDTO(fieldName, errorMessage));
+            ret.addValidationError(new ValidationError(fieldName, errorMessage));
         });
         return ret;
     }

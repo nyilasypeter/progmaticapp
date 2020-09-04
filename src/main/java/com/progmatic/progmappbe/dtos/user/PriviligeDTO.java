@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.user;
+
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 
 /**
  *
  * @author peti
  */
-public class PriviligeDTO extends BaseEntityDTO{
+public class PriviligeDTO extends BaseEntityDTO {
 
     public PriviligeDTO() {
     }

@@ -1,4 +1,6 @@
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.eternalquiz;
+
+import com.progmatic.progmappbe.dtos.BasicResult;
 
 import java.util.ArrayList;
 import java.util.List;

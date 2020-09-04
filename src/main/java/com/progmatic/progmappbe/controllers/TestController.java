@@ -7,8 +7,8 @@ package com.progmatic.progmappbe.controllers;
 
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
-import com.progmatic.progmappbe.dtos.QuestionDTO;
-import com.progmatic.progmappbe.dtos.QuestionSearchDto;
+import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
+import com.progmatic.progmappbe.dtos.quiz.QuestionSearchDto;
 import com.progmatic.progmappbe.services.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;

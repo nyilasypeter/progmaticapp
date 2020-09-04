@@ -1,11 +1,8 @@
 package com.progmatic.progmappbe.services;
 
-import com.progmatic.progmappbe.dtos.AttachmentDTO;
-import com.progmatic.progmappbe.dtos.BaseEntityDTO;
+import com.progmatic.progmappbe.dtos.attachment.AttachmentDTO;
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.entities.Attachment;
-import com.progmatic.progmappbe.entities.BaseEntity;
-import com.progmatic.progmappbe.entities.Question;
 import com.progmatic.progmappbe.helpers.ResultBuilder;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;

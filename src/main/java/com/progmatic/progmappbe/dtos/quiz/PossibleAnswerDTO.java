@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.progmatic.progmappbe.dtos;
+package com.progmatic.progmappbe.dtos.quiz;
 
+import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * For details @see {@link com.progmatic.progmappbe.entities.Question}
  * @author peti
  */
-public class PossibleAnswerDTO extends BaseEntityDTO{
+public class PossibleAnswerDTO extends BaseEntityDTO {
     
     private String textBefore;
     

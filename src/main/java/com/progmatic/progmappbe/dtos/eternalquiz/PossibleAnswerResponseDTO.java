@@ -1,4 +1,4 @@
-package com.progmatic.progmappbe.dtos.quizresponse;
+package com.progmatic.progmappbe.dtos.eternalquiz;
 
 import java.util.List;
 

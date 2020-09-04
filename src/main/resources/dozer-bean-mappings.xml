@@ -48,7 +48,7 @@
 
     <mapping map-id="omitIsRightAnswerInfo">
         <class-a>com.progmatic.progmappbe.entities.Question</class-a>
-        <class-b>com.progmatic.progmappbe.dtos.QuestionDTO</class-b>
+        <class-b>com.progmatic.progmappbe.dtos.quiz.QuestionDTO</class-b>
         <field map-id="omitIsRightAnswerInfo2" type="one-way" >
             <a>possibleAnswers</a>
             <b>possibleAnswers</b>
@@ -56,7 +56,7 @@
     </mapping>
     <mapping map-id="omitIsRightAnswerInfo2">
         <class-a>com.progmatic.progmappbe.entities.PossibleAnswer</class-a>
-        <class-b>com.progmatic.progmappbe.dtos.PossibleAnswerDTO</class-b>
+        <class-b>com.progmatic.progmappbe.dtos.quiz.PossibleAnswerDTO</class-b>
         <field map-id="omitIsRightAnswerInfo3" type="one-way" >
             <a>possibleAnswerValues</a>
             <b>possibleAnswerValues</b>
@@ -64,7 +64,7 @@
     </mapping>
     <mapping map-id="omitIsRightAnswerInfo3">
         <class-a>com.progmatic.progmappbe.entities.PossibleAnswerValue</class-a>
-        <class-b>com.progmatic.progmappbe.dtos.PossibleAnswerValueDTO</class-b>
+        <class-b>com.progmatic.progmappbe.dtos.quiz.PossibleAnswerValueDTO</class-b>
         <field-exclude type="one-way">
             <a>isRightAnswer</a>
             <b>isRightAnswer</b>

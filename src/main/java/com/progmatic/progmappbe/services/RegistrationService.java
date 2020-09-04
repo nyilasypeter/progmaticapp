@@ -1,16 +1,14 @@
 package com.progmatic.progmappbe.services;
 
 import com.progmatic.progmappbe.dtos.BasicResult;
-import com.progmatic.progmappbe.dtos.RegistrationDTO;
-import com.progmatic.progmappbe.dtos.UserDTO;
-import com.progmatic.progmappbe.entities.Privilige;
+import com.progmatic.progmappbe.dtos.user.RegistrationDTO;
+import com.progmatic.progmappbe.dtos.user.UserDTO;
 import com.progmatic.progmappbe.entities.User;
 import com.progmatic.progmappbe.helpers.ResultBuilder;
 import com.progmatic.progmappbe.helpers.SecHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

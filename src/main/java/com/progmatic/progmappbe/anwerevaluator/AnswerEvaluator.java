@@ -1,6 +1,5 @@
 package com.progmatic.progmappbe.anwerevaluator;
 
-import com.progmatic.progmappbe.dtos.quizresponse.AnswerResponseDTO;
 import com.progmatic.progmappbe.entities.ActualAnswer;
 import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 

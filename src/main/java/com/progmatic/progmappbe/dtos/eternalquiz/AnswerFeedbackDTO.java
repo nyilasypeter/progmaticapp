@@ -1,7 +1,7 @@
-package com.progmatic.progmappbe.dtos.quizresponse;
+package com.progmatic.progmappbe.dtos.eternalquiz;
 
 import com.progmatic.progmappbe.dtos.BasicResult;
-import com.progmatic.progmappbe.dtos.PossibleAnswerDTO;
+import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerDTO;
 import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 
 import java.util.ArrayList;
