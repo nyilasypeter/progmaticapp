@@ -624,6 +624,62 @@
 					"response": []
 				},
 				{
+					"name": "Seach class",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f944d0bd-2261-430f-90de-5d075896f982",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Search class return class with valid id\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData[0].id).to.eql('progmatic2020-ősz');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{progmappbe_host}}/class?active=true&year=2020&id=progmatic2020-ősz",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class"
+							],
+							"query": [
+								{
+									"key": "active",
+									"value": "true"
+								},
+								{
+									"key": "year",
+									"value": "2020"
+								},
+								{
+									"key": "id",
+									"value": "progmatic2020-ősz"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create student (Mézga Aladár)",
 					"event": [
 						{
@@ -840,7 +896,7 @@
 						}
 					],
 					"request": {
-						"method": "POST",
+						"method": "GET",
 						"header": [
 							{
 								"key": "X-CSRF-TOKEN",
@@ -848,22 +904,27 @@
 								"value": "{{csrf_token}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"\",\n    \"hasUnfinishedRegistration\": null,\n    \"student\": null\n\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "{{progmappbe_host}}/usersearch",
+							"raw": "{{progmappbe_host}}/user?name=&hasUnfinishedRegistration=&student=",
 							"host": [
 								"{{progmappbe_host}}"
 							],
 							"path": [
-								"usersearch"
+								"user"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": ""
+								},
+								{
+									"key": "hasUnfinishedRegistration",
+									"value": ""
+								},
+								{
+									"key": "student",
+									"value": ""
+								}
 							]
 						}
 					},

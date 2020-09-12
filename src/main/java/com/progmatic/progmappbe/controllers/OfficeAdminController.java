@@ -28,14 +28,19 @@ public class OfficeAdminController {
         return officeAdminService.createSchoolClass(sc);
     }
 
+    @GetMapping("/class")
+    public List<SchoolClassDTO> searchClass(SchoolClassDTO classFilter){
+        return officeAdminService.searchClass(classFilter);
+    }
+
     @PostMapping("/student")
     public EntityCreationResult createStudent(@RequestBody @Valid UserDTO udto){
         return officeAdminService.createStudent(udto);
     }
 
-    @PostMapping("/usersearch")
-    public List<UserSearchResponseDTO> searchStudents(@RequestBody UserSearchRequestDTO requestDTO){
-        return officeAdminService.searchStudents(requestDTO);
+    @GetMapping("/user")
+    public List<UserSearchResponseDTO> searchUser(UserSearchRequestDTO requestDTO){
+        return officeAdminService.searchUser(requestDTO);
     }
 
     @PostMapping("/user")

@@ -74,6 +74,42 @@ public class OfficeAdminService {
         return resultBuilder.okEntityCreateResult(sc);
     }
 
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
+    public List<SchoolClassDTO> searchClass(SchoolClassDTO classFilter){
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+        BooleanBuilder whereCondition = new BooleanBuilder();
+        QSchoolClass qSchoolClass = QSchoolClass.schoolClass;
+        if (StringUtils.isNotBlank(classFilter.getId())) {
+            whereCondition.and(qSchoolClass.id.eq(classFilter.getId()));
+        }
+        if (classFilter.getActive() != null) {
+            if (classFilter.getActive()) {
+                whereCondition.and(qSchoolClass.isActive.isTrue());
+            }
+            else{
+                whereCondition.and(qSchoolClass.isActive.isFalse());
+            }
+        }
+        if(classFilter.getYear() != null){
+            whereCondition.and(qSchoolClass.year.eq(classFilter.getYear()));
+        }
+        if(classFilter.getSemester() != null){
+            whereCondition.and(qSchoolClass.semester.eq(classFilter.getSemester()));
+        }
+
+
+        List<SchoolClass> schoolClasses = queryFactory.selectFrom(qSchoolClass)
+                .where(whereCondition)
+                .fetch();
+
+        List<SchoolClassDTO> ret = new ArrayList<>();
+        for (SchoolClass schoolClass : schoolClasses) {
+            SchoolClassDTO ur = mapper.map(schoolClass, SchoolClassDTO.class);
+            ret.add(ur);
+        }
+        return ret;
+    }
+
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
     public BasicResult assignStudentToClass(StudentListDto students, String classId) {
@@ -194,7 +230,7 @@ public class OfficeAdminService {
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
-    public List<UserSearchResponseDTO> searchStudents(UserSearchRequestDTO requestDTO) {
+    public List<UserSearchResponseDTO> searchUser(UserSearchRequestDTO requestDTO) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         BooleanBuilder whereCondition = new BooleanBuilder();
         QUser qUser = QUser.user;
