@@ -654,7 +654,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{progmappbe_host}}/class?active=true&year=2020&id=progmatic2020-ősz",
+							"raw": "{{progmappbe_host}}/class?active=true&year=2020&id=progmatic2020-ősz&semester=autumn",
 							"host": [
 								"{{progmappbe_host}}"
 							],
@@ -673,6 +673,10 @@
 								{
 									"key": "id",
 									"value": "progmatic2020-ősz"
+								},
+								{
+									"key": "semester",
+									"value": "autumn"
 								}
 							]
 						}
