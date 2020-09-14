@@ -28,6 +28,5 @@ public class CommonController {
         HttpSessionCsrfTokenRepository repo = new HttpSessionCsrfTokenRepository();
         CsrfToken csrf = repo.loadToken(request);
         return csrf.getToken();
-        
     }
 }

@@ -44,6 +44,10 @@ public class SecHelper {
         return false;
     }
 
+    public static boolean hasRole(String authority) {
+        return  hasRole((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(), authority);
+    }
+
     public static boolean hasRole(User u, String authority) {
 
         Collection<? extends GrantedAuthority> authorities
