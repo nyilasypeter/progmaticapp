@@ -12,8 +12,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.progmatic.progmappbe.dtos.user.UserDTO;
 import com.progmatic.progmappbe.entities.Role;
+import com.progmatic.progmappbe.entities.User;
 import com.progmatic.progmappbe.helpers.SecHelper;
+import org.dozer.DozerBeanMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -25,6 +30,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
+    @Autowired
+    ObjectMapper jacksonMapper;
+
+    @Autowired
+    DozerBeanMapper dozerMapper;
+
+
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
@@ -33,7 +46,11 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             response.sendRedirect( "/adminpage");
         }
         else {
-            response.getWriter().write("{\"name\":\"" + authentication.getName() + "\"}");
+            User loggedInUser = SecHelper.getLoggedInUser();
+            UserDTO userDTO = dozerMapper.map(loggedInUser, UserDTO.class);
+            userDTO.setPassword(null);
+            String userJson = jacksonMapper.writeValueAsString(userDTO);
+            response.getWriter().write(userJson);
         }
     }
     

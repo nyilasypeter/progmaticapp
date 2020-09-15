@@ -156,7 +156,7 @@
 									"let userName = pm.environment.get(\"adminusername\");",
 									"pm.test(\"Your test name\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.name).to.eql(userName);",
+									"    pm.expect(jsonData.loginName).to.eql(userName);",
 									"});",
 									""
 								],
@@ -1289,7 +1289,7 @@
 								"exec": [
 									"pm.test(\"Your test name\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.name).to.eql(\"mezgaaladar\");",
+									"    pm.expect(jsonData.loginName).to.eql(\"mezgaaladar\");",
 									"});",
 									""
 								],
@@ -1548,7 +1548,7 @@
 									"let userName = pm.environment.get(\"adminusername\");",
 									"pm.test(\"Your test name\", function () {",
 									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.name).to.eql(userName);",
+									"    pm.expect(jsonData.loginName).to.eql(userName);",
 									"});",
 									""
 								],
