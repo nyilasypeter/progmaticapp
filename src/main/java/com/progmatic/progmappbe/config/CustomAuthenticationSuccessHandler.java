@@ -50,6 +50,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             UserDTO userDTO = dozerMapper.map(loggedInUser, UserDTO.class);
             userDTO.setPassword(null);
             String userJson = jacksonMapper.writeValueAsString(userDTO);
+            response.setHeader("Content-Type", "application/json");
             response.getWriter().write(userJson);
         }
     }
