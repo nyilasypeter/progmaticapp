@@ -9,6 +9,7 @@ import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
 import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
 import com.progmatic.progmappbe.dtos.user.StudentListDto;
 import com.progmatic.progmappbe.entities.enums.FeedbackType;
+import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.jupiter.api.MethodOrderer;
@@ -29,9 +30,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -74,6 +74,115 @@ public class QuizTest {
                 .andExpect(jsonPath("$.successFullResult", Matchers.is(false)));
 
         //
+    }
+
+
+    @Test
+    @WithUserDetails("admin")
+    void updateQuestion() throws Exception {
+        QuestionDTO qdto = createQuestionDTO();
+        qdto.setId("1");
+        PossibleAnswerDTO mostFavoritepo = new PossibleAnswerDTO();
+        mostFavoritepo.setTextBefore("Mi a legeslegeslegkedvesebb?");
+        mostFavoritepo.setType(PossibleAnswerType.radioButtons);
+        mostFavoritepo.setPossibleAnswerValues(new ArrayList<>());
+        mostFavoritepo.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("méz", true));
+        mostFavoritepo.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("csilipaprika", false));
+        qdto.getPossibleAnswers().add(mostFavoritepo);
+        mockMvc.perform(
+                post("/question")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(qdto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.successFullResult", Matchers.is(true)))
+                .andExpect(jsonPath("$.idOfCreatedEntity", Matchers.is("1")));
+
+        //find question just created
+        MvcResult mvcResult = mockMvc.perform(get("/question/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        QuestionDTO qdto2 = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), QuestionDTO.class);
+        Assert.assertEquals(3, qdto2.getPossibleAnswers().size());
+        //update some fields of question
+        qdto2.setAdminDescription("modified description");
+        qdto2.setText("modifiedtext");
+        //delete Mi a legeslegeslegkedvesebb? Possible answer
+        ListIterator<PossibleAnswerDTO> polit = qdto2.getPossibleAnswers().listIterator();
+        while(polit.hasNext()){
+            PossibleAnswerDTO next = polit.next();
+            if(next.getTextBefore().equals("Mi a legeslegeslegkedvesebb?")){
+                polit.remove();
+            }
+        }
+        //update some fields of Első gkedevesebb PossibleAnswer
+        PossibleAnswerDTO paDto = qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Első legkedevesebb")).findFirst().get();
+        paDto.setTextBefore("1. legkedvesebb");
+        PossibleAnswerValueDTO kenyér = paDto.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("kenyér")).findFirst().get();
+        kenyér.setText("zsömle");
+        //delete a possible answer value (sör)
+        ListIterator<PossibleAnswerValueDTO> lit = paDto.getPossibleAnswerValues().listIterator();
+        while(lit.hasNext()){
+            PossibleAnswerValueDTO next = lit.next();
+            if(next.getText().equals("sör")){
+                lit.remove();
+            }
+        }
+        //add a new possible answer value (bor)
+        paDto.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("bor", false));
+
+        //add a new possible answer value to Második legkedevesebb
+        PossibleAnswerDTO paDto2 = qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Második legkedevesebb")).findFirst().get();
+        paDto2.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("spenót", false));
+
+        PossibleAnswerDTO newpaDto = new PossibleAnswerDTO();
+        newpaDto.setTextBefore("No és a harmadik?");
+        newpaDto.setType(PossibleAnswerType.radioButtons);
+        newpaDto.setPossibleAnswerValues(new ArrayList<>());
+        newpaDto.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("méz", true));
+        newpaDto.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("csilipaprika", false));
+        qdto2.getPossibleAnswers().add(newpaDto);
+
+        //
+         mockMvc.perform(
+                put("/question")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(qdto2)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.successFullResult", Matchers.is(true)));
+
+        mvcResult = mockMvc.perform(get("/question/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        QuestionDTO qdto3 = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), QuestionDTO.class);
+        Assert.assertEquals("modifiedtext", qdto3.getText());
+        Assert.assertEquals("modified description", qdto3.getAdminDescription());
+        PossibleAnswerDTO possibleAnswerDTO = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("1. legkedvesebb")).findFirst().get();
+        //check that one possibleAnswerValue was  deleted, one added
+        Assert.assertEquals(4, possibleAnswerDTO.getPossibleAnswerValues().size());
+        //check that sör was deleted
+        Assert.assertFalse(possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("sör")).findFirst().isPresent());
+        //check that bor was added
+        Assert.assertTrue(possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("bor")).findFirst().isPresent());
+        //check that kenyér was really changed to zsomle
+        Optional<PossibleAnswerValueDTO> bread = possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("kenyér")).findFirst();
+        Assert.assertFalse(bread.isPresent());
+        Optional<PossibleAnswerValueDTO> zsomle = possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("zsömle")).findFirst();
+        Assert.assertTrue(zsomle.isPresent());
+
+        PossibleAnswerDTO possibleAnswerDTO2 = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Második legkedevesebb")).findFirst().get();
+        Assert.assertEquals(5, possibleAnswerDTO2.getPossibleAnswerValues().size());
+
+        PossibleAnswerDTO possibleAnswerDTO3 = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("No és a harmadik?")).findFirst().get();
+        Assert.assertEquals(2, possibleAnswerDTO3.getPossibleAnswerValues().size());
+
+        //check that Mi a legeslegeslegkedvesebb? was indeed deleted
+        Assert.assertFalse(qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Mi a legeslegeslegkedvesebb?")).findFirst().isPresent());
+        
+
     }
 
     @Test

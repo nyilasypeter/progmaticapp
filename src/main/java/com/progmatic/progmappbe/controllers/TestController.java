@@ -38,6 +38,11 @@ public class TestController {
     public EntityCreationResult createQuestion(@RequestBody QuestionDTO q){
         return testService.createQuestion(q);
     }
+
+    @PutMapping(path = "/question")
+    public BasicResult updateQuestion(@RequestBody QuestionDTO q){
+        return testService.updateQuestion(q);
+    }
     
     @GetMapping(path = "question/{questionId}")
     public QuestionDTO findQuestion(@PathVariable("questionId") String questionId){

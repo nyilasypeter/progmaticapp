@@ -7,6 +7,8 @@ package com.progmatic.progmappbe.services;
 
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
+import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerDTO;
+import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerValueDTO;
 import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
 import com.progmatic.progmappbe.dtos.quiz.QuestionSearchDto;
 import com.progmatic.progmappbe.entities.*;
@@ -22,6 +24,7 @@ import javax.persistence.PersistenceContext;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import javafx.geometry.Pos;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
@@ -83,6 +86,99 @@ public class TestService {
         return ret;
     }
 
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
+    @Transactional
+    public BasicResult updateQuestion(QuestionDTO q) {
+        Question updatedQuestion = mapper.map(q, Question.class);
+        BasicResult ret = new BasicResult();
+        //checkUpdateQuestion(updatedQuestion);
+        if(!ret.getErrorMessages().isEmpty()){
+            ret.setSuccessFullResult(false);
+            return ret;
+        }
+        for (PossibleAnswer possibleAnswer : updatedQuestion.getPossibleAnswers()) {
+            guessAnswerTypeIfNeeded(possibleAnswer);
+            checkPossibleAnswer(possibleAnswer, ret);
+        }
+        if(!ret.getErrorMessages().isEmpty()){
+            ret.setSuccessFullResult(false);
+        }
+        else {
+            Question origQuestion = em.find(Question.class, q.getId());
+            origQuestion.setAdminDescription(q.getAdminDescription());
+            origQuestion.setAnswerTimeInSec(q.getAnswerTimeInSec());
+            origQuestion.setEvaluationAlogrithm(q.getEvaluationAlogrithm());
+            origQuestion.setExplanationAfter(q.getExplanationAfter());
+            origQuestion.setFeedbackType(q.getFeedbackType());
+            origQuestion.setText(q.getText());
+            updatePossibleAnswers(q, origQuestion);
+            ret.setSuccessFullResult(true);
+        }
+        return ret;
+    }
+    
+    private void updatePossibleAnswers(QuestionDTO  updatedQuestion, Question origQuestion){
+        List<PossibleAnswer> possibleAnswersToDelete = new ArrayList<>();
+        for (PossibleAnswer origPossibleAnswer : origQuestion.getPossibleAnswers()) {
+            Optional<PossibleAnswerDTO> newPo = updatedQuestion.getPossibleAnswers().stream().filter(pa -> origPossibleAnswer.getId().equals(pa.getId())).findFirst();
+            if(newPo.isPresent()){
+                PossibleAnswerDTO updatedPossibelAnswer = newPo.get();
+                origPossibleAnswer.setType(updatedPossibelAnswer.getType());
+                origPossibleAnswer.setTextBefore(updatedPossibelAnswer.getTextBefore());
+                origPossibleAnswer.setTextAfter(updatedPossibelAnswer.getTextBefore());
+                updatePossibleAnswerValue(updatedPossibelAnswer, origPossibleAnswer);
+            }
+            else{   //delete those possible answers which were not in the update request
+                possibleAnswersToDelete.add(origPossibleAnswer);
+            }
+        }
+        for (PossibleAnswer possibleAnswer : possibleAnswersToDelete) {
+            possibleAnswer.setQuestion(null);
+            em.remove(possibleAnswer);
+        }
+        //create those possible answers which were in the request but not in the db
+        for (PossibleAnswerDTO updatedPossibleAnswer : updatedQuestion.getPossibleAnswers()) {
+            if(!origQuestion.getPossibleAnswers().stream().filter(po -> po.getId().equals(updatedPossibleAnswer.getId())).findFirst().isPresent()){
+                PossibleAnswer pa = mapper.map(updatedPossibleAnswer, PossibleAnswer.class);
+                pa.setQuestion(origQuestion);
+                for (PossibleAnswerValue possibleAnswerValue : pa.getPossibleAnswerValues()) {
+                    possibleAnswerValue.setPossibleAnswer(pa);
+                }
+                em.persist(pa);
+            }
+        }
+    }
+    
+    private void updatePossibleAnswerValue(PossibleAnswerDTO updatedPossibleAnswer, PossibleAnswer origPossibleAnswer){
+        List<PossibleAnswerValue> possibleAnswerValuesToDelete = new ArrayList<>();
+        for (PossibleAnswerValue origPossibleAnswerValue : origPossibleAnswer.getPossibleAnswerValues()) {
+            Optional<PossibleAnswerValueDTO> first = updatedPossibleAnswer.getPossibleAnswerValues().stream().filter(pv -> origPossibleAnswerValue.getId().equals(pv.getId())).findFirst();
+            if(first.isPresent()){
+                PossibleAnswerValueDTO updatedPossibleAnswerValue = first.get();
+                origPossibleAnswerValue.setText(updatedPossibleAnswerValue.getText());
+                origPossibleAnswerValue.setIsRightAnswer(updatedPossibleAnswerValue.getIsRightAnswer());
+            }
+            else{ //delete those possible answers which were not in the update request
+                possibleAnswerValuesToDelete.add(origPossibleAnswerValue);
+
+            }
+        }
+        for (PossibleAnswerValue possibleAnswerValue : possibleAnswerValuesToDelete) {
+            possibleAnswerValue.setPossibleAnswer(null);
+            em.remove(possibleAnswerValue);
+        }
+        //create those possible answer values which were not in the db
+        for (PossibleAnswerValueDTO possibleAnswerValue : updatedPossibleAnswer.getPossibleAnswerValues()) {
+            if(!origPossibleAnswer.getPossibleAnswerValues().stream().filter(pv -> pv.getId().equals(possibleAnswerValue.getId())).findFirst().isPresent()){
+                PossibleAnswerValue pv = new PossibleAnswerValue();
+                pv.setPossibleAnswer(origPossibleAnswer);
+                pv.setText(possibleAnswerValue.getText());
+                pv.setIsRightAnswer(possibleAnswerValue.getIsRightAnswer());
+                em.persist(pv);
+            }
+        }
+    }
+
     private void guessAnswerTypeIfNeeded(PossibleAnswer possibleAnswer) {
         if (possibleAnswer.getType() == null) {
             Set<PossibleAnswerValue> possibleAnswerValues = possibleAnswer.getPossibleAnswerValues();
@@ -96,7 +192,7 @@ public class TestService {
         }
     }
 
-    private void checkPossibleAnswer(PossibleAnswer possibleAnswer, EntityCreationResult result) {
+    private void checkPossibleAnswer(PossibleAnswer possibleAnswer, BasicResult result) {
         switch (possibleAnswer.getType()) {
             case trueFalseCheckbox:
                 if (possibleAnswer.getPossibleAnswerValues().size() != 1) {
@@ -246,6 +342,7 @@ public class TestService {
         return  attachmentService.loadOneToOneFile(possibleAnswerId);
 
     }
+
 
 
 }
