@@ -63,6 +63,11 @@ public class ExtraDataLoaderForTests extends DataLoader {
         userAutoDao.save(student);
         LOG.debug("student user created.");
 
+        User student2 = createUser("student2");
+        studentRole.addUser(student2);
+        userAutoDao.save(student2);
+        LOG.debug("student2 user created.");
+
         User teacher = createUser("teacher");
         teacherRole.addUser(teacher);
         userAutoDao.save(teacher);

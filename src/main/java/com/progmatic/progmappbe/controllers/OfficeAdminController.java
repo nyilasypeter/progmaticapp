@@ -53,6 +53,11 @@ public class OfficeAdminController {
         return officeAdminService.assignStudentToClass(students, classId);
     }
 
+    @DeleteMapping("/class/{classId}/students/{studentId}")
+    public BasicResult removeStudentsFromClass(@PathVariable("classId") String classId, @PathVariable("studentId")  String students){
+        return officeAdminService.removeStudentsFromClass(students, classId);
+    }
+
     @PutMapping("/user/newreglink/{userId}")
     public BasicResult updateRegistrationLink(@PathVariable("userId") String userId){
         return officeAdminService.updateRegistrationLink(userId);

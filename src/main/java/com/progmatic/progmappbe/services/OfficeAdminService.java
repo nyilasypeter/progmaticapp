@@ -56,7 +56,6 @@ public class OfficeAdminService {
     }
 
 
-
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
     public EntityCreationResult createSchoolClass(SchoolClassDTO schoolClass) {
@@ -75,7 +74,7 @@ public class OfficeAdminService {
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
-    public List<SchoolClassDTO> searchClass(SchoolClassDTO classFilter){
+    public List<SchoolClassDTO> searchClass(SchoolClassDTO classFilter) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         BooleanBuilder whereCondition = new BooleanBuilder();
         QSchoolClass qSchoolClass = QSchoolClass.schoolClass;
@@ -85,15 +84,14 @@ public class OfficeAdminService {
         if (classFilter.getActive() != null) {
             if (classFilter.getActive()) {
                 whereCondition.and(qSchoolClass.isActive.isTrue());
-            }
-            else{
+            } else {
                 whereCondition.and(qSchoolClass.isActive.isFalse());
             }
         }
-        if(classFilter.getYear() != null){
+        if (classFilter.getYear() != null) {
             whereCondition.and(qSchoolClass.year.eq(classFilter.getYear()));
         }
-        if(classFilter.getSemester() != null){
+        if (classFilter.getSemester() != null) {
             whereCondition.and(qSchoolClass.semester.eq(classFilter.getSemester()));
         }
 
@@ -114,7 +112,7 @@ public class OfficeAdminService {
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
     public BasicResult assignStudentToClass(StudentListDto students, String classId) {
         SchoolClass schoolClass = em.find(SchoolClass.class, classId);
-        if(schoolClass == null){
+        if (schoolClass == null) {
             return resultBuilder.errorEntityCreateResult(
                     "progmapp.error.iddoesnotexist",
                     schoolClass.getId(),
@@ -140,6 +138,58 @@ public class OfficeAdminService {
         self.createEternalQuizAnswers(schoolClass, newlyAddedStudents);
         ret.setSuccessFullResult(true);
         return ret;
+    }
+
+    @Transactional
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_CLASS + "')")
+    public BasicResult removeStudentsFromClass(String studId, String classId) {
+        SchoolClass schoolClass = em.find(SchoolClass.class, classId);
+        if (schoolClass == null) {
+            return resultBuilder.errorEntityCreateResult(
+                    "progmapp.error.iddoesnotexist",
+                    schoolClass.getId(),
+                    resultBuilder.translate("progmapp.entity.shcoolclass"));
+        }
+        BasicResult ret = new BasicResult();
+        User student = em.find(User.class, studId);
+        if (student == null) {
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", studId, resultBuilder.translate("progmapp.entity.user"));
+        } else if (!SecHelper.hasRole(student, Role.ROLE_STUDENT)) {
+            return resultBuilder.errorResult("progmapp.warning.usernotstudent", studId);
+        } else if (schoolClass.getStudents().stream().filter(st -> st.getId().equals(student.getId())).count() == 0) {
+            return resultBuilder.errorResult("progmapp.warning.studentnotinclass", studId, classId);
+        } else if (hasCompletedEternalQuizQuestion(student)) {
+            return resultBuilder.errorResult("progmapp.warning.studenthasCompletedEternalQuizQuestion", studId, classId);
+        } else {
+            Iterator<User> iterator = schoolClass.getStudents().iterator();
+            while (iterator.hasNext()) {
+                User next = iterator.next();
+                if (next.getId().equals(studId)) {
+                    iterator.remove();
+                }
+            }
+
+        }
+        deleteEternalQuizAnswers(schoolClass, student);
+        ret.setSuccessFullResult(true);
+        return ret;
+    }
+
+    private void deleteEternalQuizAnswers(SchoolClass schoolClass, User deletedStudent) {
+        List<EternalQuizAnswer> eqAnswers = em.createQuery("select e from EternalQuizAnswer e where e.student.id = :studentId", EternalQuizAnswer.class)
+                .setParameter("studentId", deletedStudent.getId())
+                .getResultList();
+        for (EternalQuizAnswer eqAnswer : eqAnswers) {
+            em.remove(eqAnswer);
+        }
+    }
+
+    private boolean hasCompletedEternalQuizQuestion(User student) {
+        List<EternalQuizAnswer> completedQuestions = em.createQuery("select e from EternalQuizAnswer e where e.student.id = :studentId and e.hasAnswer = TRUE ", EternalQuizAnswer.class)
+                .setParameter("studentId", student.getId())
+                .setMaxResults(1)
+                .getResultList();
+        return !completedQuestions.isEmpty();
     }
 
     @Transactional
@@ -178,8 +228,8 @@ public class OfficeAdminService {
         if (user != null) {
             return resultBuilder.errorEntityCreateResult(
                     "progmapp.error.idalreadyexists",
-            userDTO.getLoginName(),
-            resultBuilder.translate("progmapp.entity.user"));
+                    userDTO.getLoginName(),
+                    resultBuilder.translate("progmapp.entity.user"));
         }
         if (isStudent) {
             userDTO.getRoles().clear();
@@ -205,7 +255,7 @@ public class OfficeAdminService {
         return resultBuilder.okEntityCreateResult(newUser);
     }
 
-    private void setRegLinkAndSendMail(User newUser){
+    private void setRegLinkAndSendMail(User newUser) {
         String token = UUID.randomUUID().toString();
         newUser.setRegistrationToken(token);
         newUser.setRegistrationTokenValidTo(LocalDateTime.now().plusDays(1));
@@ -217,12 +267,12 @@ public class OfficeAdminService {
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
     @Transactional
-    public BasicResult updateRegistrationLink(String userId){
+    public BasicResult updateRegistrationLink(String userId) {
         User user = em.find(User.class, userId);
-        if(user == null){
+        if (user == null) {
             return resultBuilder.errorResult("progmapp.error.iddoesnotexist", userId, resultBuilder.translate("progmapp.entity.user"));
         }
-        if(user.getRegistrationToken() == null){
+        if (user.getRegistrationToken() == null) {
             return resultBuilder.errorResult("progmapp.error.useraleradyregistered");
         }
         setRegLinkAndSendMail(user);
@@ -241,8 +291,7 @@ public class OfficeAdminService {
         if (requestDTO.isHasUnfinishedRegistration() != null) {
             if (requestDTO.isHasUnfinishedRegistration()) {
                 whereCondition.and(qUser.registrationToken.isNotNull());
-            }
-            else{
+            } else {
                 whereCondition.and(qUser.registrationToken.isNull());
             }
         }

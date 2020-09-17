@@ -1,5 +1,6 @@
 package com.progmatic.progmappbe;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.progmatic.progmappbe.dtos.*;
 import com.progmatic.progmappbe.dtos.eternalquiz.*;
@@ -8,6 +9,7 @@ import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerValueDTO;
 import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
 import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
 import com.progmatic.progmappbe.dtos.user.StudentListDto;
+import com.progmatic.progmappbe.dtos.user.UserSearchResponseDTO;
 import com.progmatic.progmappbe.entities.enums.FeedbackType;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import org.hamcrest.Matchers;
@@ -287,7 +289,9 @@ public class QuizTest {
     void assignStudentToClass() throws Exception {
         StudentListDto studentListDto = new StudentListDto();
         studentListDto.setIdList(new HashSet<>());
+        //check ExtraDataLoaderForTests.createUsers
         studentListDto.getIdList().add("student");
+        studentListDto.getIdList().add("student2");
 
         mockMvc.perform(
                 put("/class/progmatic_2020_1/students")
@@ -386,6 +390,58 @@ public class QuizTest {
         Assert.assertEquals((Integer) 0, stat.getNrOfBadAnswers());
     }
 
+    @Test
+    @WithUserDetails("officeUser")
+    @Order(25)
+    void checkRemoveStudentFromClass() throws Exception{
+
+
+        //both student and student2 should be in their class
+        MvcResult userGetResult = mockMvc.perform(get("/user"))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<UserSearchResponseDTO> userResp = objectMapper.readValue(userGetResult.getResponse().getContentAsString(Charset.forName("UTF-8")), new TypeReference<List<UserSearchResponseDTO>>() {});
+        UserSearchResponseDTO student = userResp.stream().filter(u -> u.getId().equals("student")).findFirst().get();
+        UserSearchResponseDTO student2 = userResp.stream().filter(u -> u.getId().equals("student2")).findFirst().get();
+
+        Assert.assertEquals(1, student.getClasses().size());
+        Assert.assertEquals("progmatic_2020_1", student.getClasses().get(0).getId());
+
+        Assert.assertEquals(1, student2.getClasses().size());
+        Assert.assertEquals("progmatic_2020_1", student2.getClasses().get(0).getId());
+
+        //we should be able to delete student2
+        mockMvc.perform(
+                delete("/class/progmatic_2020_1/students/student2")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.successFullResult", Matchers.is(true)));
+
+        //we should not be able to delete student
+        MvcResult mvcResult = mockMvc.perform(
+                delete("/class/progmatic_2020_1/students/student")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.successFullResult", Matchers.is(false)))
+                .andReturn();
+        BasicResult res = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), BasicResult.class);
+        res.getErrorMessages().forEach(em -> System.out.println(em.getLocalizedMessage()));
+
+        // student should be in his class and student 2 should not be there
+        userGetResult = mockMvc.perform(get("/user"))
+                .andExpect(status().isOk())
+                .andReturn();
+        userResp = objectMapper.readValue(userGetResult.getResponse().getContentAsString(Charset.forName("UTF-8")), new TypeReference<List<UserSearchResponseDTO>>() {});
+        student = userResp.stream().filter(u -> u.getId().equals("student")).findFirst().get();
+        student2 = userResp.stream().filter(u -> u.getId().equals("student2")).findFirst().get();
+
+        Assert.assertEquals(1, student.getClasses().size());
+        Assert.assertEquals("progmatic_2020_1", student.getClasses().get(0).getId());
+
+        Assert.assertEquals(0, student2.getClasses().size());
+
+    }
+
 
     @Test
     @WithUserDetails("student")
@@ -400,7 +456,7 @@ public class QuizTest {
                 .andExpect(status().is(HttpStatus.FORBIDDEN.value()));
     }
 
-    /*With anonymous user we should not be able to create it*/
+    /*With anonymous user we should not be able to create a question*/
     @Test
     void createTestWithoutPrivilige() throws Exception {
         QuestionDTO qdto = createQuestionDTO();

@@ -2,8 +2,8 @@ package com.progmatic.progmappbe.dtos.user;
 
 public class UserSearchRequestDTO {
     private String name;
-    private Boolean isStudent = false;
-    private Boolean hasUnfinishedRegistration = false;
+    private Boolean isStudent;
+    private Boolean hasUnfinishedRegistration;
 
     public String getName() {
         return name;
