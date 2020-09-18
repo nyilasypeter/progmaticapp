@@ -26,7 +26,7 @@ public class ActualAnswer extends BaseEntity{
     @ManyToMany(cascade = {CascadeType.PERSIST})
     private Set<PossibleAnswerValue> selectedAnswerValues = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Question question;
         
     private Integer actualScore;
@@ -34,7 +34,7 @@ public class ActualAnswer extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private AnswerEvaulationResult answerEvaulationResult;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private EternalQuizAnswer eternalQuizAnswer;
 
     public void addSelectedAnswerValue(PossibleAnswerValue possibleAnswerValue){

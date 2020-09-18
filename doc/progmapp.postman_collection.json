@@ -9,6 +9,12 @@
 			"name": "emailregistration",
 			"item": [
 				{
+					"name": "ForPerformanceTest",
+					"item": [],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
 					"name": "Complete registration",
 					"request": {
 						"method": "POST",
@@ -784,6 +790,59 @@
 					"response": []
 				},
 				{
+					"name": "Add student to class",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "75d1c4cc-ad60-41e0-8e03-fa5a4b5298ba",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idList\": [\n        \"mezgaaladar\",\n        \"mezgakriszta\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class/progmatic2020-ősz/students",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class",
+								"progmatic2020-ősz",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create superuser",
 					"event": [
 						{
@@ -929,59 +988,6 @@
 									"key": "student",
 									"value": ""
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add student to class",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "bc6d67f6-50ad-4fc0-98ff-51e81aa5e14b",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"pm.test(\"successFullResult == true\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.successFullResult).to.eql(true);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "X-CSRF-TOKEN",
-								"value": "{{csrf_token}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"idList\": [\n        \"mezgaaladar\",\n        \"mezgakriszta\"\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{progmappbe_host}}/class/progmatic2020-ősz/students",
-							"host": [
-								"{{progmappbe_host}}"
-							],
-							"path": [
-								"class",
-								"progmatic2020-ősz",
-								"students"
 							]
 						}
 					},
@@ -2028,6 +2034,186 @@
 							],
 							"path": [
 								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "other",
+			"item": [
+				{
+					"name": "Modify question",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "40a0967f-672b-46e9-8816-7c57bdae8cdc",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "2d24fdfd-e812-4d53-818d-5fa042f00bb9",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.idOfCreatedEntity).to.eql(pm.environment.get('progmappbe_question_id'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"micimackokedvence\",\n    \"createdAt\": null,\n    \"updatedAt\": \"2020-09-15T11:50:38\",\n    \"createdBy\": null,\n    \"lastModifiedBy\": \"admin\",\n    \"text\": \"Melyik Micimackó két legeslegkedvesebb csemegéje?\",\n    \"adminDescription\": null,\n    \"explanationAfter\": \"Nem muszáj, hogy a két legkedevesebb különbözzön...\",\n    \"answerTimeInSec\": null,\n    \"evaluationAlogrithm\": null,\n    \"feedbackType\": \"trueFalseFeedback\",\n    \"possibleAnswers\": [\n        {\n            \"id\": \"042418e9-457c-4801-9737-a67ec7e90f06\",\n            \"createdAt\": \"2020-09-04T07:50:23\",\n            \"updatedAt\": null,\n            \"createdBy\": \"admin\",\n            \"lastModifiedBy\": null,\n            \"textBefore\": \"Második legkedevesebb\",\n            \"textAfter\": null,\n            \"type\": \"dropdown\",\n            \"possibleAnswerValues\": [\n                {\n                    \"id\": \"931d79b9-f2c6-473a-b80e-9803cf9790bc\",\n                    \"createdAt\": \"2020-09-04T07:50:23\",\n                    \"updatedAt\": null,\n                    \"createdBy\": \"admin\",\n                    \"lastModifiedBy\": null,\n                    \"text\": \"méz\",\n                    \"isRightAnswer\": true\n                },\n                {\n                    \"id\": \"7bf53faa-98c1-495c-9a58-22b2f5801ce2\",\n                    \"createdAt\": \"2020-09-04T07:50:23\",\n                    \"updatedAt\": null,\n                    \"createdBy\": \"admin\",\n                    \"lastModifiedBy\": null,\n                    \"text\": \"zsömle\",\n                    \"isRightAnswer\": false\n                },\n                {\n                    \"id\": \"ff604a19-4c2d-4118-91c2-e0a2c34168e8\",\n                    \"createdAt\": \"2020-09-04T07:50:23\",\n                    \"updatedAt\": null,\n                    \"createdBy\": \"admin\",\n                    \"lastModifiedBy\": null,\n                    \"text\": \"sör\",\n                    \"isRightAnswer\": false\n                }\n            ]\n        },\n        {\n            \"id\": \"d5a0a58c-8f4c-4519-a013-8ab58f1dfdd8\",\n            \"createdAt\": \"2020-09-04T07:50:23\",\n            \"updatedAt\": null,\n            \"createdBy\": \"admin\",\n            \"lastModifiedBy\": null,\n            \"textBefore\": \"Első legkedevesebb\",\n            \"textAfter\": null,\n            \"type\": \"dropdown\",\n            \"possibleAnswerValues\": [\n                {\n                    \"id\": \"ebbc6035-b056-4faf-8bdd-1b5a59228ca6\",\n                    \"createdAt\": \"2020-09-04T07:50:23\",\n                    \"updatedAt\": null,\n                    \"createdBy\": \"admin\",\n                    \"lastModifiedBy\": null,\n                    \"text\": \"méz\",\n                    \"isRightAnswer\": true\n                },\n                {\n                    \"id\": \"204ef65d-4930-4cd0-bd29-9b49b21f8fa7\",\n                    \"createdAt\": \"2020-09-04T07:50:23\",\n                    \"updatedAt\": null,\n                    \"createdBy\": \"admin\",\n                    \"lastModifiedBy\": null,\n                    \"text\": \"kenyér\",\n                    \"isRightAnswer\": false\n                },\n                {\n                    \"id\": \"75441bad-6823-4be8-b8d8-853241ffbd2d\",\n                    \"createdAt\": \"2020-09-04T07:50:23\",\n                    \"updatedAt\": null,\n                    \"createdBy\": \"admin\",\n                    \"lastModifiedBy\": null,\n                    \"text\": \"sör\",\n                    \"isRightAnswer\": false\n                }\n            ]\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "forPerformanceTest",
+			"item": [
+				{
+					"name": "Create student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6154fec5-b713-402d-96da-26c66ff32a9b",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{studentname}}\",\n    \"loginName\": \"{{studentname}}\",\n    \"emailAddress\": \"{{studentname}}@progmaticmail.com\",\n    \"password\": \"{{studentname}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/student",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add student to class",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bc6d67f6-50ad-4fc0-98ff-51e81aa5e14b",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idList\": [\n        \"{{studentname}}\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class/progmatic2020-ősz/students",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class",
+								"progmatic2020-ősz",
+								"students"
 							]
 						}
 					},

@@ -53,14 +53,6 @@ public class PossibleAnswerValue extends BaseEntity{
         this.possibleAnswer = possibleAnswer;
     }
 
-    public Boolean getRightAnswer() {
-        return isRightAnswer;
-    }
-
-    public void setRightAnswer(Boolean rightAnswer) {
-        isRightAnswer = rightAnswer;
-    }
-
     public Set<ActualAnswer> getActualAnswers() {
         return actualAnswers;
     }

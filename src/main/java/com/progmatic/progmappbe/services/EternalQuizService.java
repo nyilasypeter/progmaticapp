@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -177,7 +178,7 @@ public class EternalQuizService {
     public QuestionDTO getNextEternalQuizQuestion() {
         User loggedInUser = SecHelper.getLoggedInUser();
         List<EternalQuizAnswer> quizes =
-                em.createQuery("select  eq from EternalQuizAnswer eq left join  eq.lastAnswer where eq.student.id = :studentId",
+                em.createQuery("select  eq from EternalQuizAnswer eq left join fetch eq.lastAnswer where eq.student.id = :studentId",
                         EternalQuizAnswer.class)
                         .setParameter("studentId", loggedInUser.getId())
                         .getResultList();
@@ -186,7 +187,10 @@ public class EternalQuizService {
         if (randomAnswer != null) {
             randomAnswer.setTimeOfLastAccess(System.currentTimeMillis());
             randomAnswer.setWasSentAsAQuestion(true);
-            Question question = randomAnswer.getQuestion();
+            EntityGraph entityGraph = em.getEntityGraph("questionWithPossibleAnswerAndPossibleAnswerValues");
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("javax.persistence.loadgraph", entityGraph);
+            Question question = em.find(Question.class, randomAnswer.getQuestion().getId(), properties);
             qdto = mapper.map(question, QuestionDTO.class, "omitIsRightAnswerInfo");
         }
         return qdto;
@@ -249,6 +253,7 @@ public class EternalQuizService {
             long answerTimeInSec = (System.currentTimeMillis() - eternalQuizAnswer.getTimeOfLastAccess()) / 1000;
             if(answerTimeInSec > question.calculatedAnswerTimeInSec()){
                 AnswerFeedbackDTO answerFeedbackDTO = new AnswerFeedbackDTO();
+                answerFeedbackDTO.setSuccessFullResult(true);
                 answerFeedbackDTO.setResult(AnswerEvaulationResult.lateAnswer);
                 return answerFeedbackDTO;
             }
@@ -337,6 +342,7 @@ public class EternalQuizService {
 
     private AnswerFeedbackDTO getResponse(Question question, AnswerEvaulationResult result) {
         AnswerFeedbackDTO ret = new AnswerFeedbackDTO();
+        ret.setSuccessFullResult(true);
         ret.setFeedback(question.getExplanationAfter());
         if(result.equals(AnswerEvaulationResult.lateAnswer)){
             ret.setResult(result);
@@ -384,7 +390,7 @@ public class EternalQuizService {
 
     private EternalQuizStatisticDTO getEternalQuizStatisticsOfStudent(User user) {
         List<EternalQuizAnswer> quizes =
-                em.createQuery("select  eq from EternalQuizAnswer eq left join  eq.lastAnswer where eq.student.id = :studentId",
+                em.createQuery("select  eq from EternalQuizAnswer eq left join fetch  eq.lastAnswer where eq.student.id = :studentId",
                         EternalQuizAnswer.class)
                         .setParameter("studentId", user.getId())
                         .getResultList();

@@ -16,6 +16,20 @@ import java.util.Set;
  */
 @Entity
 @Table(indexes = {@Index(name = "studentIdIdx", columnList = "student_id")})
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "eternalQuizAnswerWithFullQuestion",
+                attributeNodes = {
+                        @NamedAttributeNode(
+                                value = "question", subgraph = "question.possAnswers")
+                },
+                subgraphs = {
+                        @NamedSubgraph(
+                                name = "question.possAnswers",
+                                attributeNodes = @NamedAttributeNode(value = "possibleAnswers"))
+                }
+
+        )
+})
 public class EternalQuizAnswer extends BaseEntity {
 
     /* When a question is selected t be shown to the student, this field is set to currentTimeMillis*/
