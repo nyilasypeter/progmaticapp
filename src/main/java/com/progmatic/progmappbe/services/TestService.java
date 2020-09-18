@@ -24,7 +24,6 @@ import javax.persistence.PersistenceContext;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import javafx.geometry.Pos;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
