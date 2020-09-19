@@ -17,7 +17,10 @@ import com.progmatic.progmappbe.dtos.user.UserDTO;
 import com.progmatic.progmappbe.entities.Role;
 import com.progmatic.progmappbe.entities.User;
 import com.progmatic.progmappbe.helpers.SecHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.dozer.DozerBeanMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -29,6 +32,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomAuthenticationSuccessHandler.class);
 
     @Autowired
     ObjectMapper jacksonMapper;
@@ -51,6 +56,10 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             userDTO.setPassword(null);
             String userJson = jacksonMapper.writeValueAsString(userDTO);
             response.setHeader("Content-Type", "application/json");
+            if(StringUtils.isNotBlank(response.getHeader("Set-Cookie"))){
+                LOGGER.debug("SameSite=None added to cookie");
+                response.setHeader("Set-Cookie", response.getHeader("Set-Cookie") + "; SameSite=None");
+            }
             response.getWriter().write(userJson);
         }
     }
