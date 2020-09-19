@@ -48,10 +48,10 @@ public class ProgmapConfig {
         return templateEngine;
     }
 
-    @Bean
+  /* @Bean
     public CookieSerializer myCookieSerializer(){
         DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
         cookieSerializer.setSameSite("None");
         return cookieSerializer;
-    }
+    }*/
 }

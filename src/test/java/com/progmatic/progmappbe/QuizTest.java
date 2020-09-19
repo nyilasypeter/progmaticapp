@@ -13,11 +13,8 @@ import com.progmatic.progmappbe.dtos.user.UserSearchResponseDTO;
 import com.progmatic.progmappbe.entities.enums.FeedbackType;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -106,7 +103,7 @@ public class QuizTest {
                 .andReturn();
 
         QuestionDTO qdto2 = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), QuestionDTO.class);
-        Assert.assertEquals(3, qdto2.getPossibleAnswers().size());
+        assertEquals(3, qdto2.getPossibleAnswers().size());
         //update some fields of question
         qdto2.setAdminDescription("modified description");
         qdto2.setText("modifiedtext");
@@ -160,29 +157,29 @@ public class QuizTest {
                 .andReturn();
 
         QuestionDTO qdto3 = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), QuestionDTO.class);
-        Assert.assertEquals("modifiedtext", qdto3.getText());
-        Assert.assertEquals("modified description", qdto3.getAdminDescription());
+        assertEquals("modifiedtext", qdto3.getText());
+        assertEquals("modified description", qdto3.getAdminDescription());
         PossibleAnswerDTO possibleAnswerDTO = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("1. legkedvesebb")).findFirst().get();
         //check that one possibleAnswerValue was  deleted, one added
-        Assert.assertEquals(4, possibleAnswerDTO.getPossibleAnswerValues().size());
+        assertEquals(4, possibleAnswerDTO.getPossibleAnswerValues().size());
         //check that sör was deleted
-        Assert.assertFalse(possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("sör")).findFirst().isPresent());
+        assertFalse(possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("sör")).findFirst().isPresent());
         //check that bor was added
-        Assert.assertTrue(possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("bor")).findFirst().isPresent());
+        assertTrue(possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("bor")).findFirst().isPresent());
         //check that kenyér was really changed to zsomle
         Optional<PossibleAnswerValueDTO> bread = possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("kenyér")).findFirst();
-        Assert.assertFalse(bread.isPresent());
+        assertFalse(bread.isPresent());
         Optional<PossibleAnswerValueDTO> zsomle = possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("zsömle")).findFirst();
-        Assert.assertTrue(zsomle.isPresent());
+        assertTrue(zsomle.isPresent());
 
         PossibleAnswerDTO possibleAnswerDTO2 = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Második legkedevesebb")).findFirst().get();
-        Assert.assertEquals(5, possibleAnswerDTO2.getPossibleAnswerValues().size());
+        assertEquals(5, possibleAnswerDTO2.getPossibleAnswerValues().size());
 
         PossibleAnswerDTO possibleAnswerDTO3 = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("No és a harmadik?")).findFirst().get();
-        Assert.assertEquals(2, possibleAnswerDTO3.getPossibleAnswerValues().size());
+        assertEquals(2, possibleAnswerDTO3.getPossibleAnswerValues().size());
 
         //check that Mi a legeslegeslegkedvesebb? was indeed deleted
-        Assert.assertFalse(qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Mi a legeslegeslegkedvesebb?")).findFirst().isPresent());
+        assertFalse(qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Mi a legeslegeslegkedvesebb?")).findFirst().isPresent());
         
 
     }
@@ -328,10 +325,10 @@ public class QuizTest {
                 .andExpect(status().isOk())
                 .andReturn();
         EternalQuizStatisticDTO stat = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), EternalQuizStatisticDTO.class);
-        Assert.assertEquals((Integer) 20, stat.getNrOfAllQuestions());
-        Assert.assertEquals((Integer) 0, stat.getNrOfRightAnswers());
-        Assert.assertEquals((Integer) 0, stat.getNrOfBadAnswers());
-        Assert.assertEquals((Double) 0d, stat.getAchievedPercentage());
+        assertEquals((Integer) 20, stat.getNrOfAllQuestions());
+        assertEquals((Integer) 0, stat.getNrOfRightAnswers());
+        assertEquals((Integer) 0, stat.getNrOfBadAnswers());
+        assertEquals((Double) 0d, stat.getAchievedPercentage());
     }
 
     @Test
@@ -344,8 +341,8 @@ public class QuizTest {
                 //.andExpect(jsonPath("$.text", Matchers.notNullValue()))
                 .andReturn();
         QuestionDTO qdto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), QuestionDTO.class);
-        Assert.assertEquals(2, qdto.getPossibleAnswers().size());
-        qdto.getPossibleAnswers().get(0).getPossibleAnswerValues().forEach(pv -> Assert.assertNull(pv.getIsRightAnswer()));
+        assertEquals(2, qdto.getPossibleAnswers().size());
+        qdto.getPossibleAnswers().get(0).getPossibleAnswerValues().forEach(pv -> assertNull(pv.getIsRightAnswer()));
 
         AnswerResponseDTO resp = new AnswerResponseDTO();
         resp.setQuestionId(qdto.getId());
@@ -385,9 +382,9 @@ public class QuizTest {
                 .andExpect(status().isOk())
                 .andReturn();
         EternalQuizStatisticDTO stat = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), EternalQuizStatisticDTO.class);
-        Assert.assertEquals((Integer) 20, stat.getNrOfAllQuestions());
-        Assert.assertEquals((Integer) 1, stat.getNrOfRightAnswers());
-        Assert.assertEquals((Integer) 0, stat.getNrOfBadAnswers());
+        assertEquals((Integer) 20, stat.getNrOfAllQuestions());
+        assertEquals((Integer) 1, stat.getNrOfRightAnswers());
+        assertEquals((Integer) 0, stat.getNrOfBadAnswers());
     }
 
     @Test
@@ -404,11 +401,11 @@ public class QuizTest {
         UserSearchResponseDTO student = userResp.stream().filter(u -> u.getId().equals("student")).findFirst().get();
         UserSearchResponseDTO student2 = userResp.stream().filter(u -> u.getId().equals("student2")).findFirst().get();
 
-        Assert.assertEquals(1, student.getClasses().size());
-        Assert.assertEquals("progmatic_2020_1", student.getClasses().get(0).getId());
+        assertEquals(1, student.getClasses().size());
+        assertEquals("progmatic_2020_1", student.getClasses().get(0).getId());
 
-        Assert.assertEquals(1, student2.getClasses().size());
-        Assert.assertEquals("progmatic_2020_1", student2.getClasses().get(0).getId());
+        assertEquals(1, student2.getClasses().size());
+        assertEquals("progmatic_2020_1", student2.getClasses().get(0).getId());
 
         //we should be able to delete student2
         mockMvc.perform(
@@ -435,10 +432,10 @@ public class QuizTest {
         student = userResp.stream().filter(u -> u.getId().equals("student")).findFirst().get();
         student2 = userResp.stream().filter(u -> u.getId().equals("student2")).findFirst().get();
 
-        Assert.assertEquals(1, student.getClasses().size());
-        Assert.assertEquals("progmatic_2020_1", student.getClasses().get(0).getId());
+        assertEquals(1, student.getClasses().size());
+        assertEquals("progmatic_2020_1", student.getClasses().get(0).getId());
 
-        Assert.assertEquals(0, student2.getClasses().size());
+        assertEquals(0, student2.getClasses().size());
 
     }
 

@@ -1,7 +1,7 @@
 package com.progmatic.progmappbe;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class LoginTest {
                 .andExpect(status().isOk())
                 .andReturn();
         String csrfToken = mvcResult.getResponse().getContentAsString();
-        Assert.assertNotNull(csrfToken);
+        assertNotNull(csrfToken);
     }
 
     @Test
