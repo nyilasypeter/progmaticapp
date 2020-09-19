@@ -57,7 +57,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             String userJson = jacksonMapper.writeValueAsString(userDTO);
             response.setHeader("Content-Type", "application/json");
             if(StringUtils.isNotBlank(response.getHeader("Set-Cookie"))){
-                LOGGER.debug("SameSite=None added to cookie");
+                LOGGER.trace("SameSite=None added to cookie");
                 response.setHeader("Set-Cookie", response.getHeader("Set-Cookie") + "; SameSite=None");
             }
             response.getWriter().write(userJson);
