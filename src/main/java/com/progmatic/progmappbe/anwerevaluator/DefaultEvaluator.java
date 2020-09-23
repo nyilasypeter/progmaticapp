@@ -21,12 +21,14 @@ public class DefaultEvaluator implements AnswerEvaluator {
     public AnswerEvaulationResult evaluateAnswer(ActualAnswer actAnswer) {
         Map<String, PossibleAnswer> mapOfPossibleAnswers = new HashMap<>();
         Map<String, Set<PossibleAnswerValue>> mapByPossibleAnswer = new HashMap<>();
-
+        for (PossibleAnswer possibleAnswer : actAnswer.getQuestion().getPossibleAnswers()) {
+            mapByPossibleAnswer.put(possibleAnswer.getId(), new HashSet<>());
+            mapOfPossibleAnswers.put(possibleAnswer.getId(), possibleAnswer);
+        }
         for (PossibleAnswerValue selectedAnswerValue : actAnswer.getSelectedAnswerValues()) {
             PossibleAnswer possibleAnswer = selectedAnswerValue.getPossibleAnswer();
-            mapByPossibleAnswer.putIfAbsent(possibleAnswer.getId(), new HashSet<>());
             mapByPossibleAnswer.get(possibleAnswer.getId()).add(selectedAnswerValue);
-            mapOfPossibleAnswers.putIfAbsent(possibleAnswer.getId(), possibleAnswer);
+
         }
         AnswerEvaulationResult res = mapOfPossibleAnswers.isEmpty() ? AnswerEvaulationResult.falseAnswer : AnswerEvaulationResult.rightAnswer;
         for (PossibleAnswer possibleAnswer : mapOfPossibleAnswers.values()) {
