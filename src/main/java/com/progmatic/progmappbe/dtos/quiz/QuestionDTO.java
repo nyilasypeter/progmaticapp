@@ -59,6 +59,8 @@ public class QuestionDTO extends BaseEntityDTO {
     
     private List<PossibleAnswerDTO> possibleAnswers = new ArrayList<>();
 
+    private Boolean hasImage;
+
     public String getText() {
         return text;
     }
@@ -113,5 +115,13 @@ public class QuestionDTO extends BaseEntityDTO {
 
     public void setFeedbackType(FeedbackType feedbackType) {
         this.feedbackType = feedbackType;
+    }
+
+    public Boolean getHasImage() {
+        return hasImage;
+    }
+
+    public void setHasImage(Boolean hasImage) {
+        this.hasImage = hasImage;
     }
 }

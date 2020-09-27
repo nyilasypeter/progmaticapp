@@ -69,6 +69,8 @@ public class Question extends BaseEntity {
 
     private String evaluationAlogrithm;
 
+    private Boolean hasImage = false;
+
     @Enumerated(EnumType.STRING)
     private FeedbackType feedbackType;
         
@@ -169,4 +171,11 @@ public class Question extends BaseEntity {
         this.feedbackType = feedbackType;
     }
 
+    public Boolean getHasImage() {
+        return hasImage;
+    }
+
+    public void setHasImage(Boolean hasImage) {
+        this.hasImage = hasImage;
+    }
 }

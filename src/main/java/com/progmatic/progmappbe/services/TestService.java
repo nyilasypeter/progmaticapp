@@ -311,12 +311,15 @@ public class TestService {
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
+    @Transactional
     public BasicResult uplaoFileToQuestion(
             String questionId,
             MultipartFile file){
-        if(em.find(Question.class, questionId) == null){
+        Question question = em.find(Question.class, questionId);
+        if(question == null){
             return resultBuilder.errorResult("progmapp.error.iddoesnotexist", questionId, resultBuilder.translate("progmapp.entity.question"));
         }
+        question.setHasImage(true);
         return attachmentService.uploadOneFileToOneEntity(questionId, file);
     }
 
@@ -327,12 +330,15 @@ public class TestService {
     }
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
+    @Transactional
     public BasicResult uplaoFileToPossibleAnswer(
             String possibleAnswerId,
             MultipartFile file){
-        if(em.find(PossibleAnswer.class, possibleAnswerId) == null){
+        PossibleAnswer possibleAnswer = em.find(PossibleAnswer.class, possibleAnswerId);
+        if(possibleAnswer == null){
             return resultBuilder.errorResult("progmapp.error.iddoesnotexist", possibleAnswerId, resultBuilder.translate("progmapp.entity.possibleanswer"));
         }
+        possibleAnswer.setHasImage(true);
         return attachmentService.uploadOneFileToOneEntity(possibleAnswerId, file);
     }
 
