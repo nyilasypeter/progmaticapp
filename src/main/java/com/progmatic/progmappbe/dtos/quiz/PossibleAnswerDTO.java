@@ -7,6 +7,7 @@ package com.progmatic.progmappbe.dtos.quiz;
 
 import com.progmatic.progmappbe.dtos.BaseEntityDTO;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,10 @@ public class PossibleAnswerDTO extends BaseEntityDTO {
     private PossibleAnswerType type;
         
     private List<PossibleAnswerValueDTO> possibleAnswerValues = new ArrayList<>();
+
+    private Boolean hasImage;
+
+    private Integer order;
 
     public String getTextBefore() {
         return textBefore;
@@ -56,7 +61,20 @@ public class PossibleAnswerDTO extends BaseEntityDTO {
     public void setPossibleAnswerValues(List<PossibleAnswerValueDTO> possibleAnswerValues) {
         this.possibleAnswerValues = possibleAnswerValues;
     }
-    
-    
-    
+
+    public Boolean getHasImage() {
+        return hasImage;
+    }
+
+    public void setHasImage(Boolean hasImage) {
+        this.hasImage = hasImage;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
 }

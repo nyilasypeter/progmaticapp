@@ -192,7 +192,9 @@ public class EternalQuizService {
             properties.put("javax.persistence.loadgraph", entityGraph);
             Question question = em.find(Question.class, randomAnswer.getQuestion().getId(), properties);
             qdto = mapper.map(question, QuestionDTO.class, "omitIsRightAnswerInfo");
+            qdto.getPossibleAnswers().sort((Comparator.comparing(PossibleAnswerDTO::getOrder, Comparator.nullsFirst(Comparator.naturalOrder()))));
         }
+
         return qdto;
     }
 

@@ -40,6 +40,11 @@ public class PossibleAnswer extends BaseEntity{
     @ManyToOne
     private Question question;
 
+    private Boolean hasImage = false;
+
+    @Column(name = "order_nr")
+    private Integer order;
+
     public String getTextBefore() {
         return textBefore;
     }
@@ -79,7 +84,21 @@ public class PossibleAnswer extends BaseEntity{
     public void setQuestion(Question question) {
         this.question = question;
     }
-    
-    
-    
+
+    public Boolean getHasImage() {
+        return hasImage;
+    }
+
+    public void setHasImage(Boolean hasImage) {
+        this.hasImage = hasImage;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
+
 }
