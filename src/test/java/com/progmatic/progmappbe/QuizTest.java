@@ -10,7 +10,6 @@ import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
 import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
 import com.progmatic.progmappbe.dtos.user.StudentListDto;
 import com.progmatic.progmappbe.dtos.user.UserSearchResponseDTO;
-import com.progmatic.progmappbe.entities.enums.FeedbackType;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
@@ -30,7 +29,6 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class QuizTest {
+public class QuizTest extends QuizTestBase {
 
     @Autowired
     private MockMvc mockMvc;
@@ -207,63 +205,23 @@ public class QuizTest {
 
     private String createQuestionWithMockMvc() throws Exception {
         QuestionDTO qdto = createQuestionDTO();
-        MvcResult mvcResult = mockMvc.perform(
-                post("/question")
-                        .with(SecurityMockMvcRequestPostProcessors.csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(qdto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.successFullResult", Matchers.is(true)))
-                .andExpect(jsonPath("$.idOfCreatedEntity", Matchers.notNullValue()))
-                .andReturn();
-        EntityCreationResult res = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), EntityCreationResult.class);
+        EntityCreationResult res = createQuestionWithMockMvc(qdto, mockMvc, objectMapper);
         return res.getIdOfCreatedEntity();
     }
 
     private void createEternalQuizWithMockMvc(String quizId, List<String> questionIds) throws Exception {
-        EternalQuizDTO quizDTO = new EternalQuizDTO();
-        if (questionIds != null) {
-            questionIds.stream().forEach(qid -> quizDTO.getQuestionIds().add(qid));
-        }
-        quizDTO.setId(quizId);
-        mockMvc.perform(
-                post("/eternalquiz")
-                        .with(SecurityMockMvcRequestPostProcessors.csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(quizDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.successFullResult", Matchers.is(true)))
-                .andExpect(jsonPath("$.idOfCreatedEntity", Matchers.is(quizId)));
+        createEternalQuizWithMockMvc(quizId, questionIds, mockMvc, objectMapper);
     }
 
     private void assignQuestionToEternalQuiz(String eternalQuizId, String questionId) throws Exception {
-        EternalQuizToQuestionDTO dto = new EternalQuizToQuestionDTO();
-        dto.setEternalQuizId(eternalQuizId);
-        dto.setQuestionId(questionId);
-        mockMvc.perform(
-                put("/eternalquiz/quiz/question")
-                        .with(SecurityMockMvcRequestPostProcessors.csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.successFullResult", Matchers.is(true)));
+        assignQuestionToEternalQuiz(eternalQuizId, questionId, mockMvc, objectMapper);
     }
 
     @Test
     @WithUserDetails("officeUser")
     @Order(11)
     void createClass() throws Exception {
-        SchoolClassDTO schoolClassDTO = new SchoolClassDTO();
-        schoolClassDTO.setId("progmatic_2020_1");
-
-        mockMvc.perform(
-                post("/class")
-                        .with(SecurityMockMvcRequestPostProcessors.csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(schoolClassDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.successFullResult", Matchers.is(true)))
-                .andExpect(jsonPath("$.idOfCreatedEntity", Matchers.is("progmatic_2020_1")));
+        createClass("progmatic_2020_1", mockMvc, objectMapper);
     }
 
     @Test
@@ -304,17 +262,7 @@ public class QuizTest {
     @WithUserDetails("teacher")
     @Order(13)
     void assignEternalQuizToClass() throws Exception {
-        EternalQuizToClassDTO eternalQuizToClassDTO = new EternalQuizToClassDTO();
-        eternalQuizToClassDTO.setEternalQuizId("firstEternalQuiz");
-        eternalQuizToClassDTO.setSchoolClassId("progmatic_2020_1");
-
-        mockMvc.perform(
-                put("/eternalquiz/quiz/class")
-                        .with(SecurityMockMvcRequestPostProcessors.csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(eternalQuizToClassDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.successFullResult", Matchers.is(true)));
+        assignEternalQuizToClass("firstEternalQuiz", "progmatic_2020_1", mockMvc, objectMapper);
     }
 
     @Test
@@ -463,37 +411,5 @@ public class QuizTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(qdto)))
                 .andExpect(status().is(HttpStatus.FORBIDDEN.value()));
-    }
-
-    private QuestionDTO createQuestionDTO() {
-        QuestionDTO qdto = new QuestionDTO();
-        qdto.setExplanationAfter("Igen, igen. Megmondtam, megmondtam.");
-        qdto.setAdminDescription("Micimackó és a méz");
-        qdto.setFeedbackType(FeedbackType.trueFalseFeedback);
-        qdto.setText("Melyik micimackó két legkedvesebb étele?");
-        PossibleAnswerDTO po1 = new PossibleAnswerDTO();
-        po1.setTextBefore("Első legkedevesebb");
-        po1.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("sör", false));
-        po1.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("kenyér", false));
-        po1.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("tökfőzelék", false));
-        po1.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("méz", true));
-        qdto.getPossibleAnswers().add(po1);
-
-
-        PossibleAnswerDTO po2 = new PossibleAnswerDTO();
-        po2.setTextBefore("Második legkedevesebb");
-        po2.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("sör", false));
-        po2.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("kenyér", false));
-        po2.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("tökfőzelék", false));
-        po2.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("méz", true));
-        qdto.getPossibleAnswers().add(po2);
-        return qdto;
-    }
-
-    private PossibleAnswerValueDTO createPossibleAnswerValueDTO(String name, boolean isRight) {
-        PossibleAnswerValueDTO ret = new PossibleAnswerValueDTO();
-        ret.setText(name);
-        ret.setIsRightAnswer(isRight);
-        return ret;
     }
 }

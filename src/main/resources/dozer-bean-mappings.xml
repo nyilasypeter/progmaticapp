@@ -69,5 +69,9 @@
             <a>isRightAnswer</a>
             <b>isRightAnswer</b>
         </field-exclude>
+        <field-exclude type="one-way">
+            <a>rightOrder</a>
+            <b>rightOrder</b>
+        </field-exclude>
     </mapping>
 </mappings>

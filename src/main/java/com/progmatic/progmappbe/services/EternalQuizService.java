@@ -193,6 +193,9 @@ public class EternalQuizService {
             Question question = em.find(Question.class, randomAnswer.getQuestion().getId(), properties);
             qdto = mapper.map(question, QuestionDTO.class, "omitIsRightAnswerInfo");
             qdto.getPossibleAnswers().sort((Comparator.comparing(PossibleAnswerDTO::getOrder, Comparator.nullsFirst(Comparator.naturalOrder()))));
+            for (PossibleAnswerDTO possibleAnswer : qdto.getPossibleAnswers()) {
+                Collections.shuffle(possibleAnswer.getPossibleAnswerValues());
+            }
         }
 
         return qdto;
@@ -332,9 +335,14 @@ public class EternalQuizService {
         actualAnswer.setQuestion(question);
         actualAnswer.setAnswerText(answer.getAnswerText());
         for (PossibleAnswerResponseDTO anAnswer : answer.getAnswers()) {
+            int i = 1;
             for (String selectedAnswerId : anAnswer.getSelectedAnswerIds()) {
+                ActualAnswerValue actualAnswerValue = new ActualAnswerValue();
                 PossibleAnswerValue selectedAnswerValue = em.find(PossibleAnswerValue.class, selectedAnswerId);
-                actualAnswer.addSelectedAnswerValue(selectedAnswerValue);
+                actualAnswerValue.setPossibleAnswerValue(selectedAnswerValue);
+                actualAnswerValue.setSelectedOrder(i++);
+                actualAnswerValue.setActualAnswer(actualAnswer);
+                actualAnswer.addSelectedAnswerValue(actualAnswerValue);
             }
         }
         eternalQuizAnswer.setLastAnswer(actualAnswer);

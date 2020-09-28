@@ -23,8 +23,8 @@ public class ActualAnswer extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     private ActualTest actualTest;
     
-    @ManyToMany(cascade = {CascadeType.PERSIST})
-    private Set<PossibleAnswerValue> selectedAnswerValues = new HashSet<>();
+    @OneToMany(cascade = {CascadeType.PERSIST}, mappedBy = "actualAnswer")
+    private Set<ActualAnswerValue> selectedAnswerValues = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Question question;
@@ -37,7 +37,7 @@ public class ActualAnswer extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     private EternalQuizAnswer eternalQuizAnswer;
 
-    public void addSelectedAnswerValue(PossibleAnswerValue possibleAnswerValue){
+    public void addSelectedAnswerValue(ActualAnswerValue possibleAnswerValue){
         selectedAnswerValues.add(possibleAnswerValue);
     }
 
@@ -57,11 +57,11 @@ public class ActualAnswer extends BaseEntity{
         this.actualTest = actualTest;
     }
 
-    public Set<PossibleAnswerValue> getSelectedAnswerValues() {
+    public Set<ActualAnswerValue> getSelectedAnswerValues() {
         return selectedAnswerValues;
     }
 
-    public void setSelectedAnswerValues(Set<PossibleAnswerValue> selectedAnswerValues) {
+    public void setSelectedAnswerValues(Set<ActualAnswerValue> selectedAnswerValues) {
         this.selectedAnswerValues = selectedAnswerValues;
     }
 
