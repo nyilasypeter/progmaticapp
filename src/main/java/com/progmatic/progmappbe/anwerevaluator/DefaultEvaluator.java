@@ -6,6 +6,7 @@ import com.progmatic.progmappbe.entities.PossibleAnswer;
 import com.progmatic.progmappbe.entities.PossibleAnswerValue;
 import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +65,7 @@ public class DefaultEvaluator implements AnswerEvaluator {
         for (int i = 0; i < selectedAnswerValues.size(); i++) {
             ActualAnswerValue selectedAnswer = selectedAnswerValues.get(i);
             PossibleAnswerValue rightAnswerValue = rightAnswerValues.get(i);
-            if(!selectedAnswer.getPossibleAnswerValue().getText().equals(rightAnswerValue.getText())){
+            if(!selectedAnswer.getPossibleAnswerValue().getText().trim().equals(rightAnswerValue.getText().trim())){
                 return AnswerEvaulationResult.falseAnswer;
             }
         }
