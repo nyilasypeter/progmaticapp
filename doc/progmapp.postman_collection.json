@@ -1127,7 +1127,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_1\",\n   \"questionId\": \"micimackokedvence_20\"\n}",
+							"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_1\",\n   \"questionIds\":[\"micimackokedvence_20\"] \n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2214,6 +2214,659 @@
 								"class",
 								"progmatic2020-ősz",
 								"students"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "create_test_data",
+			"item": [
+				{
+					"name": "Get CSRF value Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "9303e885-262f-4e53-8474-6bbd7403cf1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "46ff1e5b-30cc-48e8-8c10-7d55de14cb2c",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ccae5601-5ad3-4b4b-8f4f-b93980d52653",
+								"exec": [
+									"let userName = pm.environment.get(\"adminusername\");",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.loginName).to.eql(userName);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "{{adminusername}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{adminuserpassword}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/login",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF value after login Copy 3",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ee158219-c3a2-4139-a968-84917e0de9e7",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1d3f4ce7-c899-4f23-8dd5-f530aebf6c99",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create question Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "edba5ea5-a464-4394-b6dd-7ec8db8c8e5b",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									"pm.test(\"Body is correct\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.idOfCreatedEntity).to.eql('micimac1');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "92c7352c-fd1e-40f7-9662-b040b7342139",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n     \"id\": \"micimac1\",\n\t\"text\": \"Melyik Micimackó két legkedvesebb étele?\",\n    \"explanationAfter\": \"Nem muszáj, hogy a két legkedevesebb különbözzön...\",\n    \"feedbackType\": \"trueFalseFeedback\",\n\t\"possibleAnswers\": [{\n\t\t\"textBefore\": \"Első legkedevesebb\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}, {\n\t\t\"textBefore\": \"Második legkedevesebb\",\n\t\t\"type\": \"radioButtons\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}]\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create question Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2a3628a5-55dd-49dc-8d71-2c4597abfc9b",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b10c95ba-84a4-46bb-a4dd-33c3caa431be",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"micimac2\",\n\t\"text\": \"Melyek Micimackó legkedvesebb ételei?\",\n    \"feedbackType\": \"trueFalseFeedback\",\n\t\"possibleAnswers\": [{\n\t\t\"textBefore\": \"Melyik a legkedvesebb étele\",\n\t\t\"type\": \"dropdown\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}, {\n\t\t\"textBefore\": \"Melyiket szereti Micimackó? (Válaszd ki az ÖSSZES helyes választ!)\",\n\t\t\"type\": \"checkboxList\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"kenyér\",\n\t\t\t\"isRightAnswer\": true\n\t\t}, {\n\t\t\t\"text\": \"sör\",\n\t\t\t\"isRightAnswer\": false\n\t\t}, {\n\t\t\t\"text\": \"méz\",\n\t\t\t\"isRightAnswer\": true\n\t\t},\n         {\n\t\t\t\"text\": \"tej\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}]\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create question Copy 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d1d9a76b-e5b6-40e9-88c5-701cfa0dcfda",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bba20d29-5f3f-4192-bd6c-b8eecef602b9",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"sorrend1\",\n\t\"text\": \"Tedd sorrendbe az alábbi vers sorait\",\n    \"feedbackType\": \"trueFalseFeedback\",\n\t\"possibleAnswers\": [{\n\t\t\"type\": \"soruceCodeToOrder_EvalByCompare\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"Egy napon, mikor Micimackónak semmi dolga nem akadt\",\n\t\t\t\"rightOrder\": 1\n\t\t}, {\n\t\t\t\"text\": \"eszébe jutott, hogy tenni kéne valami nagyon fontosat\",\n\t\t\t\"rightOrder\": 2\n\t\t}, {\n\t\t\t\"text\": \"Elment tehát Malackához, hogy meglesse, mit csinál\",\n\t\t\t\"rightOrder\": 3\n\t\t},\n        {\n\t\t\t\"text\": \"de Malackánál éppen akkor senkit nem talált\",\n\t\t\t\"rightOrder\": 4\n\t\t}]\n\t}]\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create question Copy 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "46fe5445-e6d9-4975-a48d-5ae3089e4b67",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6fa0f488-e2d2-4051-b102-3989fbbfa440",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"micimacko_es_a_mez\",\n\t\"text\": \"Szereti Micimackó a mézet?\",\n    \"feedbackType\": \"trueFalseFeedback\",\n\t\"possibleAnswers\": [{\n\t\t\"type\": \"trueFalseCheckbox\",\n\t\t\"possibleAnswerValues\": [{\n\t\t\t\"text\": \"Igen\",\n\t\t\t\"isRightAnswer\": true\n\t\t}]\n\t}]\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create class Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bbf0a030-89f5-46c9-a634-8701bcb48ed8",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"progmatic2020-ősz\",\n    \"year\": 2020,\n    \"semester\": \"autumn\",\n    \"isActive\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create student (Mézga Aladár) Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4508eca1-3483-4528-8019-12fc22fcb520",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mézga Aladár\",\n    \"loginName\": \"mezgaaladar\",\n    \"emailAddress\": \"mezgaaladar@gmail.com\",\n    \"password\": \"mezgaaladar\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/student",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add student to class Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3e89c015-d3e6-4446-84b1-a058a5070c96",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idList\": [\n        \"mezgaaladar\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class/progmatic2020-ősz/students",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class",
+								"progmatic2020-ősz",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create eternal quiz Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6441b360-038b-405a-9c5a-58f1f223018c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"Örökkvíz_1\",\n    \"questionIds\": [\n        \"micimac1\",\n        \"micimac2\",\n        \"micimacko_es_a_mez\",\n        \"sorrend1\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign class to Eternal Quiz Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f3759584-b1fe-4566-8f4b-2383da0bb221",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"eternalQuizId\": \"Örökkvíz_1\",\n   \"schoolClassId\": \"progmatic2020-ősz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/quiz/class",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"quiz",
+								"class"
 							]
 						}
 					},
