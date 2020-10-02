@@ -25,7 +25,7 @@ public class EternalQuizController {
     @PutMapping("/eternalquiz/quiz/question")
     public BasicResult assignQuestionToEternalQuiz(
             @RequestBody EternalQuizToQuestionDTO eqqDTO){
-        return eternalQuizService.assignQuestionToEternalQuiz(eqqDTO.getEternalQuizId(), eqqDTO.getQuestionId());
+        return eternalQuizService.assignQuestionToEternalQuiz(eqqDTO);
     }
 
     @PutMapping("/eternalquiz/quiz/class")

@@ -285,6 +285,7 @@ public class OfficeAdminService {
         BooleanBuilder whereCondition = new BooleanBuilder();
         QUser qUser = QUser.user;
         QRole qRole = QRole.role;
+        QPrivilige qPrivilige = QPrivilige.privilige;
         if (StringUtils.isNotBlank(requestDTO.getName())) {
             whereCondition.and(qUser.name.contains(requestDTO.getName()));
         }
@@ -303,10 +304,10 @@ public class OfficeAdminService {
             }
         }
 
-
         List<User> userList = queryFactory.selectFrom(qUser)
                 .leftJoin(qUser.classes).fetchJoin()
                 .leftJoin(qUser.roles, qRole).fetchJoin()
+                .leftJoin(qRole.priviliges, qPrivilige).fetchJoin()
                 .where(whereCondition)
                 .distinct()
                 .fetch();

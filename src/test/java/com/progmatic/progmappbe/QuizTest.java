@@ -266,6 +266,29 @@ public class QuizTest extends QuizTestBase {
     }
 
     @Test
+    @WithUserDetails("teacher")
+    @Order(15)
+    void checkSearchEternalQuiz() throws Exception{
+        MvcResult mvcResult = mockMvc.perform(get("/eternalquiz"))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<EternalQuizSearchResponseDTO>  resp = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), new TypeReference<List<EternalQuizSearchResponseDTO>>() {
+        });
+        assertEquals(2, resp.size());
+    }
+
+    @Test
+    @WithUserDetails("teacher")
+    @Order(15)
+    void checStatisticsByTeacherBeforeAnyAnswer() throws Exception{
+        MvcResult mvcResult = mockMvc.perform(get("/eternalquiz/statistics/progmatic_2020_1"))
+                .andExpect(status().isOk())
+                .andReturn();
+        EternalQuizStatisticOfStudentsDTO stat = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), EternalQuizStatisticOfStudentsDTO.class);
+        assertFalse(stat.getStudentStatistics().isEmpty());
+    }
+
+    @Test
     @WithUserDetails("student")
     @Order(15)
     void checkStatisticsBeforeAnyAnswer() throws Exception{

@@ -191,7 +191,7 @@ public class QuizTestBase {
     protected void assignQuestionToEternalQuiz(String eternalQuizId, String questionId, MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {
         EternalQuizToQuestionDTO dto = new EternalQuizToQuestionDTO();
         dto.setEternalQuizId(eternalQuizId);
-        dto.setQuestionId(questionId);
+        dto.getQuestionIds().add(questionId);
         mockMvc.perform(
                 put("/eternalquiz/quiz/question")
                         .with(SecurityMockMvcRequestPostProcessors.csrf())

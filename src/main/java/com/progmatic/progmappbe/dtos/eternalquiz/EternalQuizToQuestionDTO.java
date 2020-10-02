@@ -1,9 +1,12 @@
 package com.progmatic.progmappbe.dtos.eternalquiz;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EternalQuizToQuestionDTO {
 
     private String eternalQuizId;
-    private String questionId;
+    private List<String> questionIds = new ArrayList<>();
 
     public String getEternalQuizId() {
         return eternalQuizId;
@@ -13,11 +16,11 @@ public class EternalQuizToQuestionDTO {
         this.eternalQuizId = eternalQuizId;
     }
 
-    public String getQuestionId() {
-        return questionId;
+    public List<String> getQuestionIds() {
+        return questionIds;
     }
 
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
+    public void setQuestionIds(List<String> questionIds) {
+        this.questionIds = questionIds;
     }
 }

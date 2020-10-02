@@ -85,6 +85,22 @@ public class EternalQuizService {
         return ret;
     }
 
+
+    @Transactional
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CRUD_ETERNAL_QUIZ + "')")
+    public BasicResult assignQuestionToEternalQuiz(EternalQuizToQuestionDTO eternalQuizToQuestionDTO){
+        BasicResult ret = new BasicResult();
+        boolean ok = false;
+        for (String questionId : eternalQuizToQuestionDTO.getQuestionIds()) {
+            BasicResult result = self.assignQuestionToEternalQuiz(eternalQuizToQuestionDTO.getEternalQuizId(), questionId);
+            ret.getErrorMessages().addAll(result.getErrorMessages());
+            ok = ok || result.isSuccessFullResult();
+        }
+        ret.setSuccessFullResult(ok);
+        return ret;
+
+    }
+
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CRUD_ETERNAL_QUIZ + "')")
     public BasicResult assignQuestionToEternalQuiz(String eternqlQizId, String questionId){
@@ -166,7 +182,7 @@ public class EternalQuizService {
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CRUD_ETERNAL_QUIZ + "')")
     public List<EternalQuizSearchResponseDTO> searchEternalQuizes(){
-        List<EternalQuiz> resultList = em.createQuery("select e from EternalQuiz  e left join e.schoolClasses", EternalQuiz.class)
+        List<EternalQuiz> resultList = em.createQuery("select e from EternalQuiz  e left join fetch e.schoolClasses", EternalQuiz.class)
                 .getResultList();
         List<EternalQuizSearchResponseDTO> ret = new ArrayList<>();
         resultList.stream().forEach(eq -> ret.add(mapper.map(eq, EternalQuizSearchResponseDTO.class)));
@@ -379,9 +395,15 @@ public class EternalQuizService {
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_ETERNAL_QUIZ_STATISTICS_OF_ANY_STUDENT + "')")
     public EternalQuizStatisticOfStudentsDTO getEternalQuizStatistics(String classId) {
-        SchoolClass schoolClass = em.find(SchoolClass.class, classId);
-        if(schoolClass == null){
+        SchoolClass schoolClass;
+        try{
+            schoolClass = em.createQuery("select c from SchoolClass c join fetch c.students where c.id = :id", SchoolClass.class)
+                    .setParameter("id", classId)
+                    .getSingleResult();
+        }
+        catch (NoResultException ex){
             return new EternalQuizStatisticOfStudentsDTO(resultBuilder.errorResult("progmapp.error.iddoesnotexist", classId, resultBuilder.translate("progmapp.entity.shcoolclass")));
+
         }
         EternalQuizStatisticOfStudentsDTO ret = new EternalQuizStatisticOfStudentsDTO();
         for (User student : schoolClass.getStudents()) {
