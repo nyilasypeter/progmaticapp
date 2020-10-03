@@ -35,6 +35,7 @@ import org.springframework.security.core.userdetails.UserDetails;
             
     )
 })
+@Table(name = "USER_TBL")
 public class User extends BaseEntity implements UserDetails {
 
     private String name;
