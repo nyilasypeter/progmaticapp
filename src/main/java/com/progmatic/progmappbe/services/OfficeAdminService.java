@@ -3,6 +3,7 @@ package com.progmatic.progmappbe.services;
 import com.progmatic.progmappbe.aoutodaos.RoleAutoDao;
 import com.progmatic.progmappbe.dtos.*;
 import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
+import com.progmatic.progmappbe.dtos.template.MailTemplateDTO;
 import com.progmatic.progmappbe.dtos.user.*;
 import com.progmatic.progmappbe.entities.*;
 import com.progmatic.progmappbe.helpers.MailHelper;
@@ -319,5 +320,31 @@ public class OfficeAdminService {
             ret.add(ur);
         }
         return ret;
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
+    @Transactional
+    public List<MailTemplateDTO> getMailTemplates() {
+        List<MailTemplate> resultList = em.createQuery("select mt from MailTemplate  mt", MailTemplate.class)
+                .getResultList();
+        List<MailTemplateDTO> ret = new ArrayList<>();
+        for (MailTemplate mailTemplate : resultList) {
+            ret.add(mapper.map(mailTemplate, MailTemplateDTO.class));
+        }
+        return ret;
+    }
+
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
+    @Transactional
+    public BasicResult updateMailTemplate(MailTemplateDTO mailTemplateDTO) {
+        if(StringUtils.isBlank(mailTemplateDTO.getId())){
+            return resultBuilder.errorResult("porogmapp.error.mailtemplate.idmandatory");
+        }
+        MailTemplate mailTemplate = em.find(MailTemplate.class, mailTemplateDTO.getId());
+        if(mailTemplate == null){
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", mailTemplateDTO.getId(), resultBuilder.translate("progmapp.entity.mailtemplate"));
+        }
+        mapper.map(mailTemplateDTO, mailTemplate);
+        return resultBuilder.okResult();
     }
 }

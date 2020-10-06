@@ -2,6 +2,7 @@ package com.progmatic.progmappbe.controllers;
 
 import com.progmatic.progmappbe.dtos.*;
 import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
+import com.progmatic.progmappbe.dtos.template.MailTemplateDTO;
 import com.progmatic.progmappbe.dtos.user.UserSearchResponseDTO;
 import com.progmatic.progmappbe.dtos.user.StudentListDto;
 import com.progmatic.progmappbe.dtos.user.UserDTO;
@@ -61,5 +62,15 @@ public class OfficeAdminController {
     @PutMapping("/user/newreglink/{userId}")
     public BasicResult updateRegistrationLink(@PathVariable("userId") String userId){
         return officeAdminService.updateRegistrationLink(userId);
+    }
+
+    @GetMapping("/mailtemplate")
+    public List<MailTemplateDTO> getMailTemplates(){
+        return officeAdminService.getMailTemplates();
+    }
+
+    @PutMapping("/mailtemplate")
+    public BasicResult updateMailTemplate(@RequestBody @Valid MailTemplateDTO mailTemplateDTO){
+        return officeAdminService.updateMailTemplate(mailTemplateDTO);
     }
 }
