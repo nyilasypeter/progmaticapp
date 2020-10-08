@@ -89,6 +89,8 @@ public class AttachmentService {
      *                     if the relationship between the entity and the attachment is one ot one.
      * @return
      */
+
+    @Transactional
     public ResponseEntity<Resource> loadOneToOneFile(String attachmentId){
         Attachment attachment = em.find(Attachment.class, attachmentId);
         if(attachment == null || attachment.getImage() == null){
