@@ -23,15 +23,6 @@ public class PossibleAnswerValueDTO extends BaseEntityDTO {
      * */
     private Integer rightOrder;
 
-    /*
-     * Used only if PossibleAnswerType is soruceCodeToOrder_EvalByRun
-     * */
-    private String sourceCode;
-
-    /*
-     * Used only if PossibleAnswerType is soruceCodeToOrder_EvalByRun
-     * */
-    private String unitTestCode;
 
     public String getText() {
         return text;
@@ -65,19 +56,4 @@ public class PossibleAnswerValueDTO extends BaseEntityDTO {
         this.rightOrder = rightOrder;
     }
 
-    public String getSourceCode() {
-        return sourceCode;
-    }
-
-    public void setSourceCode(String sourceCode) {
-        this.sourceCode = sourceCode;
-    }
-
-    public String getUnitTestCode() {
-        return unitTestCode;
-    }
-
-    public void setUnitTestCode(String unitTestCode) {
-        this.unitTestCode = unitTestCode;
-    }
 }

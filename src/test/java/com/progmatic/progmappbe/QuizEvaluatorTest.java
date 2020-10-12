@@ -10,6 +10,8 @@ import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerValueDTO;
 import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
 import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 import com.progmatic.progmappbe.entities.enums.FeedbackType;
+import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +43,148 @@ public class QuizEvaluatorTest extends QuizTestBase {
     public static final String EQUIZ_PREFIX = "equiz_";
     private static final String SOURCE_CODE_QUESTION_ID = "sourceCodeQuestion1";
     private static final String QUESTION_WTIH_TWO_POOSS_ANSWER = "twopossanswQuestion1";
+    private static final String SOURCE_CODE_WITH_EVAL_QUESTION_ID = "sourceCodeWithEvalQuestion1";
+
+    private static final String MIN_SEARCH_GOOD_STANDARD_ORDER = "package org.progmatic.sourcequiz.classtotest;\n" +
+            "\n" +
+            "public class MinFinder {\n" +
+            "\n" +
+            "    public MinFinder() {\n" +
+            "    }\n" +
+            "\n" +
+            "    public Integer findMin(int[] nums){\n" +
+            "        if(nums.length == 0){\n" +
+            "            return null;\n" +
+            "        }\n" +
+            "        int min = nums[0];\n" +
+            "        for (int i = 1; i < nums.length; i++) {\n" +
+            "            if(nums[i] < min){\n" +
+            "                min = nums[i];\n" +
+            "            }\n" +
+            "        }\n" +
+            "        return min;\n" +
+            "    }\n" +
+            "\n" +
+            "}\n";
+
+    private static final String MIN_SEARCH_GOOD_NON_STANDARD_ORDER = "package org.progmatic.sourcequiz.classtotest;\n" +
+            "\n" +
+            "public class MinFinder {\n" +
+            "\n" +
+            "    public MinFinder() {\n" +
+            "    }\n" +
+            "\n" +
+            "    public Integer findMin(int[] nums){\n" +
+            "        int min = nums[0];\n" +
+            "        if(nums.length == 0){\n" +
+            "            return null;\n" +
+            "        }\n" +
+            "        for (int i = 1; i < nums.length; i++) {\n" +
+            "            if(nums[i] < min){\n" +
+            "                min = nums[i];\n" +
+            "            }\n" +
+            "        }\n" +
+            "        return min;\n" +
+            "    }\n" +
+            "\n" +
+            "}\n";
+    private static final String MIN_SEARCH_BAD = "package org.progmatic.sourcequiz.classtotest;\n" +
+            "\n" +
+            "public class MinFinder {\n" +
+            "\n" +
+            "    public MinFinder() {\n" +
+            "    }\n" +
+            "\n" +
+            "    public Integer findMin(int[] nums){\n" +
+            "        int min = nums[0];\n" +
+            "        if(nums.length == 0){\n" +
+            "            return null;\n" +
+            "        }\n" +
+            "        for (int i = 1; i < nums.length; i++) {\n" +
+            "            min = nums[i];\n" +
+            "            if(nums[i] < min){\n" +
+
+            "            }\n" +
+            "        }\n" +
+            "        return min;\n" +
+            "    }\n" +
+            "\n" +
+            "}\n";
+
+    private static final String MIN_SEARCH_COMPIL_ERROR = "package org.progmatic.sourcequiz.classtotest;\n" +
+            "\n" +
+            "public class MinFinder {\n" +
+            "\n" +
+            "    public MinFinder() {\n" +
+            "    }\n" +
+            "\n" +
+            "    public Integer findMin(int[] nums){\n" +
+
+            "        if(nums.length == 0){\n" +
+            "            return null;\n" +
+            "        }\n" +
+            "        for (int i = 1; i < nums.length; i++) {\n" +
+            "            min = nums[i];\n" +
+            "            if(nums[i] < min){\n" +
+            "        int min = nums[0];\n" +
+            "            }\n" +
+            "        }\n" +
+            "        return min;\n" +
+            "    }\n" +
+            "\n" +
+            "}\n";
+
+    private static final String MIN_SEARCH_COMPIL_MISSING_ROW = "package org.progmatic.sourcequiz.classtotest;\n" +
+            "\n" +
+            "public class MinFinder {\n" +
+            "\n" +
+            "    public MinFinder() {\n" +
+            "    }\n" +
+            "\n" +
+            "    public Integer findMin(int[] nums){\n" +
+
+            "        if(nums.length == 0){\n" +
+            "            return null;\n" +
+            "        }\n" +
+            "        for (int i = 1; i < nums.length; i++) {\n" +
+            "            if(nums[i] < min){\n" +
+            "        int min = nums[0];\n" +
+            "            }\n" +
+            "        }\n" +
+            "        return min;\n" +
+            "    }\n" +
+            "\n" +
+            "}\n";
+
+    private static final String MIN_SEARCH_UNIT_TEST = "package org.progmatic.sourcequiz.test;\n" +
+            "\n" +
+            "import org.junit.Assert;\n" +
+            "import org.junit.jupiter.api.Assertions;\n" +
+            "import org.junit.jupiter.api.Test;\n" +
+            "import org.progmatic.sourcequiz.classtotest.MinFinder;\n" +
+            "\n" +
+            "public class MinFinderUnitTest {\n" +
+            "    \n" +
+            "    private MinFinder mf = new MinFinder();\n" +
+            "    \n" +
+            "    @Test\n" +
+            "    void checkSolution() {\n" +
+            "\n" +
+            "\n" +
+            "        Assert.assertEquals(Integer.valueOf(0), mf.findMin(new int[]{0, 1, 2, 3, 5}));\n" +
+            "        Assertions.assertEquals(Integer.valueOf(0), mf.findMin(new int[]{0, 1, 2, 3, 5}));\n" +
+            "        Assertions.assertEquals(Integer.valueOf(1), mf.findMin(new int[]{10, 9, 5, 3, 1}));\n" +
+            "        Assertions.assertEquals(Integer.valueOf(-100), mf.findMin(new int[]{0, -3, 5, 8, -100, 100, 2}));\n" +
+            "        Assertions.assertEquals(Integer.valueOf(1), mf.findMin(new int[]{1, 1, 1}));\n" +
+            "        Assertions.assertEquals(Integer.valueOf(0), mf.findMin(new int[]{0}));\n" +
+            "    }\n" +
+            "\n" +
+            "    @Override\n" +
+            "    protected void finalize() throws Throwable {\n" +
+            "        //System.out.println(\"An instance of MinfinderUntiTest is about to be gc-d\");\n" +
+            "        super.finalize();\n" +
+            "    }\n" +
+            "}\n";
 
     @Autowired
     private MockMvc mockMvc;
@@ -76,6 +221,43 @@ public class QuizEvaluatorTest extends QuizTestBase {
         createEternalQuizWithMockMvc(equizId, mockMvc, objectMapper, questionId);
         assignEternalQuizToClass(equizId, classId, mockMvc, objectMapper);
 
+    }
+
+
+    @Test
+    @WithUserDetails("admin")
+    @Order(10)
+    void createCodeEvalQuestion() throws Exception {
+        QuestionDTO qdto = new QuestionDTO();
+        String questionId = QUESTION_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_ID;
+        String studentId = STUDENT_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_ID;
+        String classId = CLASS_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_ID;
+        String equizId = EQUIZ_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_ID;
+
+        qdto.setId(questionId);
+        qdto.setFeedbackType(FeedbackType.trueFalseFeedback);
+        qdto.setText("text");
+        PossibleAnswerDTO possibleAnswerDTO = possibleAnswerFromSourceCode(MIN_SEARCH_GOOD_STANDARD_ORDER);
+        possibleAnswerDTO.setUnitTestCode(MIN_SEARCH_UNIT_TEST);
+        possibleAnswerDTO.setType(PossibleAnswerType.soruceCodeToOrder_EvalByRun);
+        qdto.getPossibleAnswers().add(possibleAnswerDTO);
+        createQuestionWithMockMvc(qdto, mockMvc, objectMapper);
+        createStudent(studentId, mockMvc, objectMapper);
+        createClass(classId, mockMvc, objectMapper);
+        assignStudentToClass(studentId, classId, mockMvc, objectMapper);
+        createEternalQuizWithMockMvc(equizId, mockMvc, objectMapper, questionId);
+        assignEternalQuizToClass(equizId, classId, mockMvc, objectMapper);
+
+    }
+
+    private PossibleAnswerDTO possibleAnswerFromSourceCode(String sourceCode) {
+        PossibleAnswerDTO ret = new PossibleAnswerDTO();
+        String[] lines = sourceCode.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            PossibleAnswerValueDTO possibleAnswerValueDTO = createPossibleAnswerValueDTO(lines[i], i);
+            ret.getPossibleAnswerValues().add(possibleAnswerValueDTO);
+        }
+        return ret;
     }
 
     @Test
@@ -122,6 +304,96 @@ public class QuizEvaluatorTest extends QuizTestBase {
         AnswerFeedbackDTO answerFeedbackDTO = submitAnswer(resp, mockMvc, objectMapper);
         assertTrue(answerFeedbackDTO.isSuccessFullResult());
         assertEquals(AnswerEvaulationResult.rightAnswer, answerFeedbackDTO.getResult());
+    }
+
+    @Test
+    @WithUserDetails(STUDENT_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_ID)
+    @Order(20)
+    void solveSourceCodeQuestionWell() throws Exception {
+        AnswerFeedbackDTO answerFeedbackDTO = solveSourceCodeQuestion(MIN_SEARCH_GOOD_STANDARD_ORDER);
+        assertTrue(answerFeedbackDTO.isSuccessFullResult());
+        assertEquals(AnswerEvaulationResult.rightAnswer, answerFeedbackDTO.getResult());
+    }
+
+    @Test
+    @WithUserDetails(STUDENT_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_ID)
+    @Order(21)
+    void solveSourceCodeQuestionWellNonStandardOrder() throws Exception {
+        AnswerFeedbackDTO answerFeedbackDTO = solveSourceCodeQuestion(MIN_SEARCH_GOOD_NON_STANDARD_ORDER);
+        assertTrue(answerFeedbackDTO.isSuccessFullResult());
+        assertEquals(AnswerEvaulationResult.rightAnswer, answerFeedbackDTO.getResult());
+    }
+
+    @Test
+    @WithUserDetails(STUDENT_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_ID)
+    @Order(22)
+    void solveSourceCodeQuestionWrong() throws Exception {
+        AnswerFeedbackDTO answerFeedbackDTO = solveSourceCodeQuestion(MIN_SEARCH_BAD);
+        assertTrue(answerFeedbackDTO.isSuccessFullResult());
+        assertEquals(AnswerEvaulationResult.falseAnswer, answerFeedbackDTO.getResult());
+    }
+
+    @Test
+    @WithUserDetails(STUDENT_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_ID)
+    @Order(22)
+    void solveSourceCodeQuestionWrongNoCompile() throws Exception {
+        AnswerFeedbackDTO answerFeedbackDTO = solveSourceCodeQuestion(MIN_SEARCH_COMPIL_ERROR);
+        assertTrue(answerFeedbackDTO.isSuccessFullResult());
+        assertEquals(AnswerEvaulationResult.falseAnswer, answerFeedbackDTO.getResult());
+    }
+
+    @Test
+    @WithUserDetails(STUDENT_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_ID)
+    @Order(22)
+    void solveSourceCodeQuestionWrongMissingRow() throws Exception {
+        AnswerFeedbackDTO answerFeedbackDTO = solveSourceCodeQuestion(MIN_SEARCH_COMPIL_MISSING_ROW);
+        assertTrue(answerFeedbackDTO.isSuccessFullResult());
+        assertEquals(AnswerEvaulationResult.falseAnswer, answerFeedbackDTO.getResult());
+    }
+
+    AnswerFeedbackDTO solveSourceCodeQuestion(String solution) throws Exception {
+        QuestionDTO nextEternalQuiz = getNextEternalQuiz(mockMvc, objectMapper);
+        assertEquals(1, nextEternalQuiz.getPossibleAnswers().size());
+
+        AnswerResponseDTO resp = new AnswerResponseDTO();
+        resp.setQuestionId(nextEternalQuiz.getId());
+        List<PossibleAnswerResponseDTO> possAnswers = new ArrayList<>();
+
+        PossibleAnswerDTO nextPossibleAnswer = nextEternalQuiz.getPossibleAnswers().get(0);
+        PossibleAnswerResponseDTO po1 = new PossibleAnswerResponseDTO();
+        po1.setId(nextPossibleAnswer.getId());
+        po1.setSelectedAnswerIds(new ArrayList<>());
+
+        List<PossibleAnswerValueDTO> possibleAnswerValuesInQuestion = nextPossibleAnswer.getPossibleAnswerValues();
+
+
+        PossibleAnswerDTO possibleAnswerDTO = possibleAnswerFromSourceCode(solution);
+        int order = 0;
+        for (PossibleAnswerValueDTO possibleAnswerValue : possibleAnswerDTO.getPossibleAnswerValues()) {
+            String origId = getId(possibleAnswerValue.getText(), possibleAnswerValuesInQuestion);
+            po1.getSelectedAnswerIds().add(origId);
+        }
+        possAnswers.add(po1);
+        resp.setAnswers(possAnswers);
+        AnswerFeedbackDTO answerFeedbackDTO = submitAnswer(resp, mockMvc, objectMapper);
+        return answerFeedbackDTO;
+    }
+
+
+
+    private String getId(String text, List<PossibleAnswerValueDTO> possibleAnswerValuesInQuestion) {
+        ListIterator<PossibleAnswerValueDTO> iter = possibleAnswerValuesInQuestion.listIterator();
+        String id = "";
+        while(iter.hasNext()){
+            PossibleAnswerValueDTO next = iter.next();
+            if(next.getText().trim().equals(text.trim())){
+                id = next.getId();
+                iter.remove();
+                break;
+            }
+        }
+        assertTrue(StringUtils.isNotBlank(id));
+        return id;
     }
 
     @Test

@@ -30,6 +30,9 @@ public class PossibleAnswerDTO extends BaseEntityDTO {
 
     private Integer order;
 
+    /*Used only if type is soruceCodeToOrder_EvalByRun*/
+    private String unitTestCode;
+
     public String getTextBefore() {
         return textBefore;
     }
@@ -76,5 +79,13 @@ public class PossibleAnswerDTO extends BaseEntityDTO {
 
     public void setOrder(Integer order) {
         this.order = order;
+    }
+
+    public String getUnitTestCode() {
+        return unitTestCode;
+    }
+
+    public void setUnitTestCode(String unitTestCode) {
+        this.unitTestCode = unitTestCode;
     }
 }

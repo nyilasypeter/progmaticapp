@@ -45,6 +45,10 @@ public class PossibleAnswer extends BaseEntity{
     @Column(name = "order_nr")
     private Integer order;
 
+    /*Used only if type is soruceCodeToOrder_EvalByRun*/
+    @Lob
+    private String unitTestCode;
+
     public String getTextBefore() {
         return textBefore;
     }
@@ -101,4 +105,11 @@ public class PossibleAnswer extends BaseEntity{
         this.order = order;
     }
 
+    public String getUnitTestCode() {
+        return unitTestCode;
+    }
+
+    public void setUnitTestCode(String unitTestCode) {
+        this.unitTestCode = unitTestCode;
+    }
 }

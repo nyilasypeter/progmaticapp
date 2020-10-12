@@ -29,15 +29,6 @@ public class PossibleAnswerValue extends BaseEntity{
      * */
     private Integer rightOrder;
 
-    /*
-    * Used only if PossibleAnswerType is soruceCodeToOrder_EvalByRun
-    * */
-    private String sourceCode;
-
-    /*
-     * Used only if PossibleAnswerType is soruceCodeToOrder_EvalByRun
-     * */
-    private String unitTestCode;
     
     @ManyToOne
     private PossibleAnswer possibleAnswer;
@@ -75,22 +66,6 @@ public class PossibleAnswerValue extends BaseEntity{
 
     public void setActualAnswers(Set<ActualAnswerValue> actualAnswers) {
         this.actualAnswers = actualAnswers;
-    }
-
-    public String getSourceCode() {
-        return sourceCode;
-    }
-
-    public void setSourceCode(String sourceCode) {
-        this.sourceCode = sourceCode;
-    }
-
-    public String getUnitTestCode() {
-        return unitTestCode;
-    }
-
-    public void setUnitTestCode(String unitTestCode) {
-        this.unitTestCode = unitTestCode;
     }
 
     public Integer getRightOrder() {

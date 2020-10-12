@@ -6,15 +6,21 @@ import com.progmatic.progmappbe.entities.PossibleAnswer;
 import com.progmatic.progmappbe.entities.PossibleAnswerValue;
 import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
+import com.progmatic.progmappbe.helpers.sourceevaluator.EvaluationResult;
+import com.progmatic.progmappbe.helpers.sourceevaluator.SoruceCodeEvaluator;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("defaultEvaluator")
 public class DefaultEvaluator implements AnswerEvaluator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultEvaluator.class);
     @Override
     @Transactional
     public AnswerEvaulationResult evaluateAnswer(ActualAnswer actAnswer) {
@@ -42,6 +48,8 @@ public class DefaultEvaluator implements AnswerEvaluator {
         switch (origPossibleAnswer.getType()){
             case soruceCodeToOrder_EvalByCompare:
                 return evaluateSourceCodeSimple(origPossibleAnswer, selectedAnswerValues);
+            case soruceCodeToOrder_EvalByRun:
+                return evaluateSourceCodeComplex(origPossibleAnswer, selectedAnswerValues);
             case radioButtons:
             case dropdown:
             case checkboxList:
@@ -70,6 +78,31 @@ public class DefaultEvaluator implements AnswerEvaluator {
             }
         }
         return AnswerEvaulationResult.rightAnswer;
+    }
+
+    private AnswerEvaulationResult evaluateSourceCodeComplex(PossibleAnswer origPossibleAnswer, Set<ActualAnswerValue> selectedAnswerVals){
+        AnswerEvaulationResult answerEvaulationResult = evaluateSourceCodeSimple(origPossibleAnswer, selectedAnswerVals);
+        if(answerEvaulationResult.isWrongAnswer()){
+            LOG.debug("source code was not the exact same, as the reference code. Shall evaluate based on the unit test.");
+            List<ActualAnswerValue> selectedAnswerValues = new ArrayList<>(selectedAnswerVals);
+            Collections.sort(selectedAnswerValues, Comparator.comparing(ActualAnswerValue::getSelectedOrder));
+            String suggestedAnswer = selectedAnswerValues.stream()
+                    .map(actualAnswerValue -> actualAnswerValue.getPossibleAnswerValue().getText())
+                    .collect(Collectors.joining("\n"));
+            String unitTest = origPossibleAnswer.getUnitTestCode();
+            SoruceCodeEvaluator soruceCodeEvaluator = new SoruceCodeEvaluator();
+            EvaluationResult evaluationResult = soruceCodeEvaluator.evaluateSourceCode(suggestedAnswer, unitTest);
+            if(evaluationResult.isSuccessfull()){
+                LOG.debug("Result evaulation based on unit test: successfull");
+                return AnswerEvaulationResult.rightAnswer;
+            }
+            LOG.debug("Result Evaluating a sourcecode: not successfull. Details:  " + evaluationResult.toString());
+            return AnswerEvaulationResult.falseAnswer;
+        }
+        else{
+            return answerEvaulationResult;
+        }
+
     }
 
     private AnswerEvaulationResult evaluateAnswerSelectPossibleAnswer(PossibleAnswer origPossibleAnswer, Set<ActualAnswerValue> selectedAnswerValues){

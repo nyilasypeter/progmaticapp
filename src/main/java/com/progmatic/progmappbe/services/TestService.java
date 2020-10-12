@@ -189,7 +189,7 @@ public class TestService {
             else if(possibleAnswerValues.stream().filter(pav -> pav.getRightOrder() != null).count() > 0){
                 possibleAnswer.setType(PossibleAnswerType.soruceCodeToOrder_EvalByCompare);
             }
-            else if(possibleAnswerValues.stream().filter(pav -> StringUtils.isNotBlank(pav.getSourceCode())).count() > 0){
+            else if(StringUtils.isNotBlank(possibleAnswer.getUnitTestCode())){
                 possibleAnswer.setType(PossibleAnswerType.soruceCodeToOrder_EvalByRun);
             }
             else {
@@ -219,14 +219,14 @@ public class TestService {
                 break;
             case soruceCodeToOrder_EvalByCompare:
                 if(possibleAnswer.getPossibleAnswerValues().stream().filter(pav -> pav.getRightOrder() == null).count()  != 0){
-                    result.addErrorMessage("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByCompare_noOrder", resultBuilder.translate("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByCompare_noOrder"));
+                    result.addErrorMessage("progmapp.error.questionvalidation.soruceCodeToOrder_noOrder", resultBuilder.translate("progmapp.error.questionvalidation.soruceCodeToOrder_noOrder"));
                 }
                 break;
             case soruceCodeToOrder_EvalByRun:
-                if(possibleAnswer.getPossibleAnswerValues().stream().filter(pav -> StringUtils.isBlank(pav.getSourceCode())).count()  != 0){
-                    result.addErrorMessage("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_noCode", resultBuilder.translate("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_noCode"));
+                if(possibleAnswer.getPossibleAnswerValues().stream().filter(pav -> pav.getRightOrder() == null).count()  != 0){
+                    result.addErrorMessage("progmapp.error.questionvalidation.soruceCodeToOrder_noOrder", resultBuilder.translate("progmapp.error.questionvalidation.soruceCodeToOrder_noOrder"));
                 }
-                if(possibleAnswer.getPossibleAnswerValues().stream().filter(pav -> StringUtils.isBlank(pav.getUnitTestCode())).count()  != 0){
+                if(StringUtils.isBlank(possibleAnswer.getUnitTestCode())){
                     result.addErrorMessage("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_noCode", resultBuilder.translate("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_noCode"));
                 }
                 break;
