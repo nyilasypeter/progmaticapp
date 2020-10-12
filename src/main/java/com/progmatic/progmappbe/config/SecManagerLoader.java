@@ -12,8 +12,8 @@ import java.util.HashMap;
 public class SecManagerLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        MyClassloader mc = new MyClassloader();
-        mc.getName();
+       MyClassloader mc = new MyClassloader();
+        mc.getParent();
         MyPolicy myPolicy = new MyPolicy();
         Policy.setPolicy(myPolicy);
         SecurityManager securityManager = new SecurityManager();
