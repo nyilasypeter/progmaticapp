@@ -44,6 +44,24 @@ public class SecHelper {
         return false;
     }
 
+    public static boolean hasAnyRole(String... authorities) {
+        boolean ret = false;
+        for (String authority : authorities) {
+            boolean hasThisRole = hasRole((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(), authority);
+            ret = ret || hasThisRole;
+        }
+        return  ret;
+    }
+
+    public static boolean hasAllRole(String... authorities) {
+        boolean ret = true;
+        for (String authority : authorities) {
+            boolean hasThisRole = hasRole((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(), authority);
+            ret = ret && hasThisRole;
+        }
+        return  ret;
+    }
+
     public static boolean hasRole(String authority) {
         return  hasRole((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal(), authority);
     }

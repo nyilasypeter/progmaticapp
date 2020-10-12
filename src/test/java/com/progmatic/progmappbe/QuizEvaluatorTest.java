@@ -280,7 +280,7 @@ public class QuizEvaluatorTest extends QuizTestBase {
         boolean firstAdded = false;
         for (PossibleAnswerValueDTO possibleAnswerValue : nextPossibleAnswer.getPossibleAnswerValues()) {
             assertNull(possibleAnswerValue.getIsRightAnswer());
-            assertNull(possibleAnswerValue.getRightAnswer());
+            assertNull(possibleAnswerValue.getIsRightAnswer());
             assertNull(possibleAnswerValue.getRightOrder());
             if(possibleAnswerValue.getText().equals("első")){
                 if(!firstAdded) {
@@ -416,7 +416,7 @@ public class QuizEvaluatorTest extends QuizTestBase {
         boolean firstAdded = false;
         for (PossibleAnswerValueDTO possibleAnswerValue : nextPossibleAnswer.getPossibleAnswerValues()) {
             assertNull(possibleAnswerValue.getIsRightAnswer());
-            assertNull(possibleAnswerValue.getRightAnswer());
+            assertNull(possibleAnswerValue.getIsRightAnswer());
             assertNull(possibleAnswerValue.getRightOrder());
             if(possibleAnswerValue.getText().equals("első")){
                 if(!firstAdded) {

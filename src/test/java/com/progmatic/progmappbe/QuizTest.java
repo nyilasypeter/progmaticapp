@@ -7,6 +7,7 @@ import com.progmatic.progmappbe.dtos.eternalquiz.*;
 import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerDTO;
 import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerValueDTO;
 import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
+import com.progmatic.progmappbe.dtos.quiz.QuestionSearchDto;
 import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
 import com.progmatic.progmappbe.dtos.user.StudentListDto;
 import com.progmatic.progmappbe.dtos.user.UserSearchResponseDTO;
@@ -49,6 +50,7 @@ public class QuizTest extends QuizTestBase {
 
     @Test
     @WithUserDetails("admin")
+    @Order(1)
     void createQuestion() throws Exception {
         QuestionDTO qdto = createQuestionDTO();
         qdto.setId("micimackoKedvence");
@@ -73,9 +75,28 @@ public class QuizTest extends QuizTestBase {
         //
     }
 
+    @Test
+    @WithUserDetails("admin")
+    @Order(2)
+    void searchQuestion() throws Exception{
+        QuestionSearchDto filter = new QuestionSearchDto();
+        filter.setQuestionText("icim");
+        MvcResult mvcResult = mockMvc.perform(post("/question/search")
+                .with(SecurityMockMvcRequestPostProcessors.csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andReturn();
+        List<QuestionDTO>  resp = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), new TypeReference<List<QuestionDTO>>() { });
+        assertFalse(resp.isEmpty());
+
+    }
+
+
 
     @Test
     @WithUserDetails("admin")
+    @Order(100)
     void updateQuestion() throws Exception {
         QuestionDTO qdto = createQuestionDTO();
         qdto.setId("1");

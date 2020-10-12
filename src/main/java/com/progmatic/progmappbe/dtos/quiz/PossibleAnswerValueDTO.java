@@ -40,14 +40,6 @@ public class PossibleAnswerValueDTO extends BaseEntityDTO {
         this.isRightAnswer = isRightAnswer;
     }
 
-    public Boolean getRightAnswer() {
-        return isRightAnswer;
-    }
-
-    public void setRightAnswer(Boolean rightAnswer) {
-        isRightAnswer = rightAnswer;
-    }
-
     public Integer getRightOrder() {
         return rightOrder;
     }

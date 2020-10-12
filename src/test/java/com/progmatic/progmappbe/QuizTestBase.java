@@ -1,6 +1,5 @@
 package com.progmatic.progmappbe;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.eternalquiz.*;
@@ -19,8 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;

@@ -279,7 +279,7 @@ public class TestService {
         BooleanBuilder whereCondition = new BooleanBuilder();
         QQuestion question = QQuestion.question;
         if(StringUtils.isNotBlank(searchDto.getQuestionText())){
-            whereCondition.and(question.text.contains(searchDto.getQuestionText()));
+            whereCondition.and(question.text.like("%"+searchDto.getQuestionText()+"%"));
         }
         if(StringUtils.isNotBlank(searchDto.getUploader())){
             whereCondition.and(question.createdBy.eq(searchDto.getUploader()));
@@ -303,7 +303,7 @@ public class TestService {
                 .fetch();
 
         List<QuestionDTO> ret = new ArrayList<>();
-        questions.stream().forEach(q -> ret.add(mapper.map(q, QuestionDTO.class)));
+        questions.stream().forEach(q -> ret.add(mapper.map(q, QuestionDTO.class, "mapAll")));
         return ret;
     }
 
@@ -318,7 +318,13 @@ public class TestService {
             return null;
         }
         self.checkHasPermissionToReadQuestion(q);
-        QuestionDTO qdto = mapper.map(q, QuestionDTO.class);
+        QuestionDTO qdto;
+        if(SecHelper.hasAuthority(Privilige.PRIV_CREATE_QUESTION)) {
+            qdto = mapper.map(q, QuestionDTO.class, "mapAll");
+        }
+        else{
+            qdto = mapper.map(q, QuestionDTO.class, "omitIsRightAnswerInfo");
+        }
         return qdto;
     }
 

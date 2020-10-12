@@ -60,7 +60,7 @@ import javax.persistence.*;
     )
 })
 public class Question extends BaseEntity {
-    @Lob
+    @Column(length = 2000)
     private String text;
 
     private String adminDescription;

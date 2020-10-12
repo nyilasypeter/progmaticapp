@@ -46,6 +46,11 @@
         </custom-converters>
     </configuration>
 
+    <mapping map-id="mapAll">
+        <class-a>com.progmatic.progmappbe.entities.Question</class-a>
+        <class-b>com.progmatic.progmappbe.dtos.quiz.QuestionDTO</class-b>
+    </mapping>
+
     <mapping map-id="omitIsRightAnswerInfo">
         <class-a>com.progmatic.progmappbe.entities.Question</class-a>
         <class-b>com.progmatic.progmappbe.dtos.quiz.QuestionDTO</class-b>
