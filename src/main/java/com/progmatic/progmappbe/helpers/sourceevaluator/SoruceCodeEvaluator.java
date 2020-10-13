@@ -32,7 +32,6 @@ public class SoruceCodeEvaluator {
             SummaryGeneratingListener listener = new SummaryGeneratingListener();
             runOne(testClass, listener);
             TestExecutionSummary summary = listener.getSummary();
-            //summary.printTo(new PrintWriter(System.out));
             ret.setUnitTestSuccessfull(isTestSuccesfull(summary));
             mc1 = null;
         }

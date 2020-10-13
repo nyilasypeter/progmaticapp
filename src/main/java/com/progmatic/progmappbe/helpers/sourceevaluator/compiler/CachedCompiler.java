@@ -19,8 +19,10 @@
 package com.progmatic.progmappbe.helpers.sourceevaluator.compiler;
 
 
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.loader.LaunchedURLClassLoader;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
@@ -30,7 +32,9 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.progmatic.progmappbe.helpers.sourceevaluator.compiler.CompilerUtils.*;
 
@@ -138,7 +142,7 @@ public class CachedCompiler implements Closeable {
         MyJavaFileManager fileManager = fileManagerMap.get(classLoader);
         if (fileManager == null) {
             StandardJavaFileManager standardJavaFileManager = s_compiler.getStandardFileManager(null, null, null);
-            fileManagerMap.put(classLoader, fileManager = new MyJavaFileManager(standardJavaFileManager));
+            fileManagerMap.put(classLoader, fileManager = new MyJavaFileManager(classLoader, standardJavaFileManager));
         }
         for (Map.Entry<String, byte[]> entry : compileFromJava(className, javaCode, printWriter, fileManager).entrySet()) {
             String className2 = entry.getKey();

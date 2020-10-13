@@ -33,6 +33,9 @@ import java.util.*;
 public class MyJavaFileManager implements JavaFileManager {
     private final static Unsafe unsafe;
     private static final long OVERRIDE_OFFSET;
+    private final ClassLoader classLoader;
+    private final PackageInternalsFinder finder;
+
 
     static {
         try {
@@ -51,8 +54,10 @@ public class MyJavaFileManager implements JavaFileManager {
     // synchronizing due to ConcurrentModificationException
     private final Map<String, ByteArrayOutputStream> buffers = Collections.synchronizedMap(new LinkedHashMap<>());
 
-    MyJavaFileManager(StandardJavaFileManager fileManager) {
+    MyJavaFileManager(ClassLoader classLoader, StandardJavaFileManager fileManager) {
+        this.classLoader = classLoader;
         this.fileManager = fileManager;
+        finder = new PackageInternalsFinder(this.classLoader);
     }
 
     public Iterable<Set<Location>> listLocationsForModules(final Location location) {
@@ -68,11 +73,24 @@ public class MyJavaFileManager implements JavaFileManager {
     }
 
     public Iterable<JavaFileObject> list(Location location, String packageName, Set<Kind> kinds, boolean recurse) throws IOException {
-        return fileManager.list(location, packageName, kinds, recurse);
+        if (location == StandardLocation.PLATFORM_CLASS_PATH) { // let standard manager hanfle
+            return fileManager.list(location, packageName, kinds, recurse);
+        } else if (location == StandardLocation.CLASS_PATH && kinds.contains(JavaFileObject.Kind.CLASS)) {
+            if (packageName.startsWith("java")) { // a hack to let standard manager handle locations like "java.lang" or "java.util". Prob would make sense to join results of standard manager with those of my finder here
+                return fileManager.list(location, packageName, kinds, recurse);
+            } else { // app specific classes are here
+                return finder.find(packageName);
+            }
+        }
+        return Collections.emptyList();
     }
 
     public String inferBinaryName(Location location, JavaFileObject file) {
-        return fileManager.inferBinaryName(location, file);
+        if (file instanceof CustomJavaFileObject) {
+            return ((CustomJavaFileObject) file).binaryName();
+        } else { // if it's not CustomJavaFileObject, then it's coming from standard file manager - let it handle the file
+            return fileManager.inferBinaryName(location, file);
+        }
     }
 
     public boolean isSameFile(FileObject a, FileObject b) {
@@ -84,7 +102,7 @@ public class MyJavaFileManager implements JavaFileManager {
     }
 
     public boolean hasLocation(Location location) {
-        return fileManager.hasLocation(location);
+        return location == StandardLocation.CLASS_PATH || location == StandardLocation.PLATFORM_CLASS_PATH;
     }
 
     public JavaFileObject getJavaFileForInput(Location location, String className, Kind kind) throws IOException {
