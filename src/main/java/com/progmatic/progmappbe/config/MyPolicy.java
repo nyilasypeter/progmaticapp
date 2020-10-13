@@ -5,6 +5,7 @@ import com.progmatic.progmappbe.helpers.sourceevaluator.MyClassloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FilePermission;
 import java.security.*;
 import java.util.Map;
 
@@ -15,8 +16,11 @@ public class MyPolicy extends Policy {
     @Override
     public boolean implies(ProtectionDomain domain, Permission permission) {
         if(domain.getClassLoader() instanceof MyClassloader){
-            Log.warn("Permission will be denied for: {}", permission.toString() );
-            return false;
+            boolean isOk = fewPermission().implies(permission);
+            if(!isOk){
+                Log.warn("Permission will be denied for: {}", permission.toString() );
+            }
+            return isOk;
         }
         return true;
     }
@@ -26,8 +30,10 @@ public class MyPolicy extends Policy {
         return permissions;
     }
 
-    private PermissionCollection noPermission() {
+    private PermissionCollection fewPermission() {
         Permissions permissions = new Permissions();
+        FilePermission fp = new FilePermission("<<ALL FILES>>", "read");
+        permissions.add(fp);
         return permissions;
     }
 }
