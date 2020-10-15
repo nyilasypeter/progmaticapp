@@ -5,6 +5,7 @@ import com.progmatic.progmappbe.QuizTestBase;
 import com.progmatic.progmappbe.dtos.eternalquiz.AnswerFeedbackDTO;
 import com.progmatic.progmappbe.dtos.eternalquiz.AnswerResponseDTO;
 import com.progmatic.progmappbe.dtos.eternalquiz.PossibleAnswerResponseDTO;
+import com.progmatic.progmappbe.dtos.quiz.OrderLinesQuestionRequestDTO;
 import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerDTO;
 import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerValueDTO;
 import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
@@ -44,6 +45,7 @@ public class QuizEvaluatorTest extends QuizTestBase {
     private static final String SOURCE_CODE_QUESTION_ID = "sourceCodeQuestion1";
     private static final String QUESTION_WTIH_TWO_POOSS_ANSWER = "twopossanswQuestion1";
     private static final String SOURCE_CODE_WITH_EVAL_QUESTION_ID = "sourceCodeWithEvalQuestion1";
+    private static final String SOURCE_CODE_WITH_EVAL_QUESTION_SPEC_ENDPOINT_ID = "sourcEvalQuSpecEndpoint1";
 
     private static final String MIN_SEARCH_GOOD_STANDARD_ORDER = "package org.progmatic.sourcequiz.classtotest;\n" +
             "\n" +
@@ -65,6 +67,24 @@ public class QuizEvaluatorTest extends QuizTestBase {
             "        return min;\n" +
             "    }\n" +
             "\n" +
+            "}\n";
+
+    private static final String MIN_SEARCH_GOOD_STANDARD_ORDER_NO_SPAE = "package org.progmatic.sourcequiz.classtotest;\n" +
+            "public class MinFinder {\n" +
+            "    public MinFinder() {\n" +
+            "    }\n" +
+            "    public Integer findMin(int[] nums){\n" +
+            "        if(nums.length == 0){\n" +
+            "            return null;\n" +
+            "        }\n" +
+            "        int min = nums[0];\n" +
+            "        for (int i = 1; i < nums.length; i++) {\n" +
+            "            if(nums[i] < min){\n" +
+            "                min = nums[i];\n" +
+            "            }\n" +
+            "        }\n" +
+            "        return min;\n" +
+            "    }\n" +
             "}\n";
 
     private static final String MIN_SEARCH_GOOD_NON_STANDARD_ORDER = "package org.progmatic.sourcequiz.classtotest;\n" +
@@ -250,6 +270,30 @@ public class QuizEvaluatorTest extends QuizTestBase {
 
     }
 
+    @Test
+    @WithUserDetails("admin")
+    @Order(11)
+    void createCodeEvalQuestionEndpoint2() throws Exception {
+        OrderLinesQuestionRequestDTO qdto = new OrderLinesQuestionRequestDTO();
+        String questionId = QUESTION_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_SPEC_ENDPOINT_ID;
+        String studentId = STUDENT_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_SPEC_ENDPOINT_ID;
+        String classId = CLASS_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_SPEC_ENDPOINT_ID;
+        String equizId = EQUIZ_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_SPEC_ENDPOINT_ID;
+
+        qdto.setId(questionId);
+        qdto.setFeedbackType(FeedbackType.trueFalseFeedback);
+        qdto.setText("text");
+        qdto.setUnitTest(MIN_SEARCH_UNIT_TEST);
+        qdto.setCode(MIN_SEARCH_GOOD_STANDARD_ORDER);
+        createOrderLinesQuestionWithMockMvc(qdto, mockMvc, objectMapper);
+        createStudent(studentId, mockMvc, objectMapper);
+        createClass(classId, mockMvc, objectMapper);
+        assignStudentToClass(studentId, classId, mockMvc, objectMapper);
+        createEternalQuizWithMockMvc(equizId, mockMvc, objectMapper, questionId);
+        assignEternalQuizToClass(equizId, classId, mockMvc, objectMapper);
+
+    }
+
     private PossibleAnswerDTO possibleAnswerFromSourceCode(String sourceCode) {
         PossibleAnswerDTO ret = new PossibleAnswerDTO();
         String[] lines = sourceCode.split("\n");
@@ -311,6 +355,15 @@ public class QuizEvaluatorTest extends QuizTestBase {
     @Order(20)
     void solveSourceCodeQuestionWell() throws Exception {
         AnswerFeedbackDTO answerFeedbackDTO = solveSourceCodeQuestion(MIN_SEARCH_GOOD_STANDARD_ORDER);
+        assertTrue(answerFeedbackDTO.isSuccessFullResult());
+        assertEquals(AnswerEvaulationResult.rightAnswer, answerFeedbackDTO.getResult());
+    }
+
+    @Test
+    @WithUserDetails(STUDENT_PREFIX + SOURCE_CODE_WITH_EVAL_QUESTION_SPEC_ENDPOINT_ID)
+    @Order(20)
+    void solveSourceCodeQuestionCreatedBySpecEndpointWell() throws Exception {
+        AnswerFeedbackDTO answerFeedbackDTO = solveSourceCodeQuestion(MIN_SEARCH_GOOD_STANDARD_ORDER_NO_SPAE);
         assertTrue(answerFeedbackDTO.isSuccessFullResult());
         assertEquals(AnswerEvaulationResult.rightAnswer, answerFeedbackDTO.getResult());
     }

@@ -7,21 +7,22 @@ package com.progmatic.progmappbe.services;
 
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
-import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerDTO;
-import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerValueDTO;
-import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
-import com.progmatic.progmappbe.dtos.quiz.QuestionSearchDto;
+import com.progmatic.progmappbe.dtos.quiz.*;
 import com.progmatic.progmappbe.entities.*;
+import com.progmatic.progmappbe.entities.enums.AnswerEvaulationResult;
 import com.progmatic.progmappbe.entities.enums.PossibleAnswerType;
 import com.progmatic.progmappbe.exceptions.UnauthorizedException;
 import com.progmatic.progmappbe.helpers.ResultBuilder;
 import com.progmatic.progmappbe.helpers.SecHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.progmatic.progmappbe.helpers.sourceevaluator.EvaluationResult;
+import com.progmatic.progmappbe.helpers.sourceevaluator.SoruceCodeEvaluator;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.commons.lang3.SerializationUtils;
@@ -229,9 +230,38 @@ public class TestService {
                 if(StringUtils.isBlank(possibleAnswer.getUnitTestCode())){
                     result.addErrorMessage("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_noCode", resultBuilder.translate("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_noCode"));
                 }
+                if(result.getErrorMessages().isEmpty()){
+                    runUnitTestOnOrderCode(possibleAnswer, result);
+                }
                 break;
             default:
                 break;
+        }
+    }
+
+    private void runUnitTestOnOrderCode(PossibleAnswer possibleAnswer, BasicResult result) {
+        List<PossibleAnswerValue> orederedAnswerValues = new ArrayList<>(possibleAnswer.getPossibleAnswerValues());
+        Collections.sort(orederedAnswerValues, Comparator.comparing(PossibleAnswerValue::getRightOrder));
+        String suggestedAnswer = orederedAnswerValues.stream()
+                .map(actualAnswerValue -> actualAnswerValue.getText())
+                .collect(Collectors.joining("\n"));
+        String unitTest = possibleAnswer.getUnitTestCode();
+        SoruceCodeEvaluator soruceCodeEvaluator = new SoruceCodeEvaluator();
+        EvaluationResult evaluationResult = soruceCodeEvaluator.evaluateSourceCode(suggestedAnswer, unitTest);
+        if(!evaluationResult.isSuccessfull()){
+            if(!evaluationResult.getCompilationSuccessfull()){
+                result.addErrorMessage(
+                        "progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_noCompile",
+                        resultBuilder.translate("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_noCompile"));
+            }
+            else if(!evaluationResult.getUnitTestSuccessfull()){
+                result.addErrorMessage(
+                        "progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_UnitTest_NotSuccessfull",
+                        resultBuilder.translate("progmapp.error.questionvalidation.soruceCodeToOrder_EvalByRun_UnitTest_NotSuccessfull"));
+            }
+            else {
+                result.addErrorMessage("progmapp.error.szarvanapalcsintaban", resultBuilder.translate("progmapp.error.szarvanapalcsintaban"));
+            }
         }
     }
 
@@ -374,6 +404,26 @@ public class TestService {
 
     }
 
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
+    public EntityCreationResult createOrderLinesQuestion(OrderLinesQuestionRequestDTO oqr) {
+        QuestionDTO questionDTO = new QuestionDTO();
+        mapper.map(oqr, questionDTO);
+        PossibleAnswerDTO po = new PossibleAnswerDTO();
+        questionDTO.getPossibleAnswers().add(po);
+        po.setType(PossibleAnswerType.soruceCodeToOrder_EvalByRun);
+        po.setUnitTestCode(oqr.getUnitTest());
+        String[] codeLines = oqr.getCode().split("\n");
+        int i=1;
+        for (String codeLine : codeLines) {
+            String trimmedLine = codeLine.trim();
+            if(StringUtils.isNotBlank(trimmedLine)) {
+                PossibleAnswerValueDTO pov = new PossibleAnswerValueDTO();
+                pov.setRightOrder(i++);
+                pov.setText(trimmedLine);
+                po.getPossibleAnswerValues().add(pov);
+            }
 
-
+        }
+        return self.createQuestion(questionDTO);
+    }
 }

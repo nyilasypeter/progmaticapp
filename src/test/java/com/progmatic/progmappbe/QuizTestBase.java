@@ -3,6 +3,7 @@ package com.progmatic.progmappbe;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.eternalquiz.*;
+import com.progmatic.progmappbe.dtos.quiz.OrderLinesQuestionRequestDTO;
 import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerDTO;
 import com.progmatic.progmappbe.dtos.quiz.PossibleAnswerValueDTO;
 import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
@@ -57,6 +58,20 @@ public class QuizTestBase {
     protected EntityCreationResult createQuestionWithMockMvc(QuestionDTO qdto, MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {
         MvcResult mvcResult = mockMvc.perform(
                 post("/question")
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(qdto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.successFullResult", Matchers.is(true)))
+                .andExpect(jsonPath("$.idOfCreatedEntity", Matchers.notNullValue()))
+                .andReturn();
+        EntityCreationResult res = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), EntityCreationResult.class);
+        return res;
+    }
+
+    protected EntityCreationResult createOrderLinesQuestionWithMockMvc(OrderLinesQuestionRequestDTO qdto, MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {
+        MvcResult mvcResult = mockMvc.perform(
+                post("/orderlinesquestion")
                         .with(SecurityMockMvcRequestPostProcessors.csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(qdto)))

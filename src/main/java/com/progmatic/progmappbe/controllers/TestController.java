@@ -7,6 +7,7 @@ package com.progmatic.progmappbe.controllers;
 
 import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
+import com.progmatic.progmappbe.dtos.quiz.OrderLinesQuestionRequestDTO;
 import com.progmatic.progmappbe.dtos.quiz.QuestionDTO;
 import com.progmatic.progmappbe.dtos.quiz.QuestionSearchDto;
 import com.progmatic.progmappbe.services.TestService;
@@ -37,6 +38,11 @@ public class TestController {
     @PostMapping(path = "/question")
     public EntityCreationResult createQuestion(@RequestBody QuestionDTO q){
         return testService.createQuestion(q);
+    }
+
+    @PostMapping(path = "/orderlinesquestion")
+    public EntityCreationResult createOrderLinesQuestion(@RequestBody OrderLinesQuestionRequestDTO q){
+        return testService.createOrderLinesQuestion(q);
     }
 
     @PutMapping(path = "/question")
