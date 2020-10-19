@@ -410,8 +410,13 @@ public class TestService {
         mapper.map(oqr, questionDTO);
         PossibleAnswerDTO po = new PossibleAnswerDTO();
         questionDTO.getPossibleAnswers().add(po);
-        po.setType(PossibleAnswerType.soruceCodeToOrder_EvalByRun);
-        po.setUnitTestCode(oqr.getUnitTest());
+        if(StringUtils.isNotBlank(oqr.getUnitTest())){
+            po.setType(PossibleAnswerType.soruceCodeToOrder_EvalByRun);
+            po.setUnitTestCode(oqr.getUnitTest());
+        }
+        else{
+            po.setType(PossibleAnswerType.soruceCodeToOrder_EvalByCompare);
+        }
         String[] codeLines = oqr.getCode().split("\n");
         int i=1;
         for (String codeLine : codeLines) {

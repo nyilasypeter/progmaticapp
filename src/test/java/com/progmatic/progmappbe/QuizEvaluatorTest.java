@@ -46,6 +46,7 @@ public class QuizEvaluatorTest extends QuizTestBase {
     private static final String QUESTION_WTIH_TWO_POOSS_ANSWER = "twopossanswQuestion1";
     private static final String SOURCE_CODE_WITH_EVAL_QUESTION_ID = "sourceCodeWithEvalQuestion1";
     private static final String SOURCE_CODE_WITH_EVAL_QUESTION_SPEC_ENDPOINT_ID = "sourcEvalQuSpecEndpoint1";
+    private static final String SOURCE_CODE_QUESTION_SPEC_ENDPOINT_ID = "sourcQuSpecEndpoint1";
 
     private static final String MIN_SEARCH_GOOD_STANDARD_ORDER = "package org.progmatic.sourcequiz.classtotest;\n" +
             "\n" +
@@ -294,6 +295,29 @@ public class QuizEvaluatorTest extends QuizTestBase {
 
     }
 
+    @Test
+    @WithUserDetails("admin")
+    @Order(12)
+    void createOrderQuestionSpecEndpoint() throws Exception {
+        OrderLinesQuestionRequestDTO qdto = new OrderLinesQuestionRequestDTO();
+        String questionId = QUESTION_PREFIX + SOURCE_CODE_QUESTION_SPEC_ENDPOINT_ID;
+        String studentId = STUDENT_PREFIX + SOURCE_CODE_QUESTION_SPEC_ENDPOINT_ID;
+        String classId = CLASS_PREFIX + SOURCE_CODE_QUESTION_SPEC_ENDPOINT_ID;
+        String equizId = EQUIZ_PREFIX + SOURCE_CODE_QUESTION_SPEC_ENDPOINT_ID;
+
+        qdto.setId(questionId);
+        qdto.setFeedbackType(FeedbackType.trueFalseFeedback);
+        qdto.setText("text");
+        qdto.setCode(MIN_SEARCH_GOOD_STANDARD_ORDER);
+        createOrderLinesQuestionWithMockMvc(qdto, mockMvc, objectMapper);
+        createStudent(studentId, mockMvc, objectMapper);
+        createClass(classId, mockMvc, objectMapper);
+        assignStudentToClass(studentId, classId, mockMvc, objectMapper);
+        createEternalQuizWithMockMvc(equizId, mockMvc, objectMapper, questionId);
+        assignEternalQuizToClass(equizId, classId, mockMvc, objectMapper);
+
+    }
+
     private PossibleAnswerDTO possibleAnswerFromSourceCode(String sourceCode) {
         PossibleAnswerDTO ret = new PossibleAnswerDTO();
         String[] lines = sourceCode.split("\n");
@@ -355,6 +379,15 @@ public class QuizEvaluatorTest extends QuizTestBase {
     @Order(20)
     void solveSourceCodeQuestionWell() throws Exception {
         AnswerFeedbackDTO answerFeedbackDTO = solveSourceCodeQuestion(MIN_SEARCH_GOOD_STANDARD_ORDER);
+        assertTrue(answerFeedbackDTO.isSuccessFullResult());
+        assertEquals(AnswerEvaulationResult.rightAnswer, answerFeedbackDTO.getResult());
+    }
+
+    @Test
+    @WithUserDetails(STUDENT_PREFIX + SOURCE_CODE_QUESTION_SPEC_ENDPOINT_ID)
+    @Order(20)
+    void solveOrderquestionSpecEndpointWell() throws Exception {
+        AnswerFeedbackDTO answerFeedbackDTO = solveSourceCodeQuestion(MIN_SEARCH_GOOD_STANDARD_ORDER_NO_SPAE);
         assertTrue(answerFeedbackDTO.isSuccessFullResult());
         assertEquals(AnswerEvaulationResult.rightAnswer, answerFeedbackDTO.getResult());
     }

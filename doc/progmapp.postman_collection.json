@@ -2109,6 +2109,106 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Modify mail template",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ac972697-293d-48ce-ae28-f997abe46aba",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "50b84500-b920-423a-bbea-f54680023340",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\n        \"id\": \"MAIL_TEMPLATE_STUDENT_REGISTRATION\",\n        \"body\": \"Kedves [(${recipient.name})]!  \\n\\n A https://progmapp.herokuapp.com/registration linken, az alábbi tokennel: [(${registrationLink})] tudsz regisztrálni a Progmatic-ba.\",\n        \"subject\": \"progmatic regisztráció\",\n        \"cc\": null,\n        \"html\": false\n    }"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/mailtemplate",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"mailtemplate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find mail templates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9421d0c5-ad55-4918-8c60-9d59e2c6e262",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"result length > 0\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.length).to.gt(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{progmappbe_host}}/mailtemplate",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"mailtemplate"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -2558,6 +2658,68 @@
 					"response": []
 				},
 				{
+					"name": "Create order code question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "45f4d7b6-4c1f-436e-8f69-d1d55ad0fb5e",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6676cc03-c526-494c-a853-ebefbabc4867",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": \"sorrend2\",\n\t\"text\": \"Tedd sorrendbe a minimumkeresés algoritmusának sorait!\",\n\t\"feedbackType\": \"trueFalseFeedback\",\n\t\"possibleAnswers\": [{\n\t\t\"type\": \"soruceCodeToOrder_EvalByRun\",\n\t\t\"possibleAnswerValues\": [{\n\n\t\t\t\"text\": \"package org.progmatic.sourcequiz.classtotest;\",\n\t\t\t\"rightOrder\": 0\n\t\t}, {\n\n\t\t\t\"text\": \"\",\n\t\t\t\"rightOrder\": 1\n\t\t}, {\n\n\t\t\t\"text\": \"public class MinFinder {\",\n\t\t\t\"rightOrder\": 2\n\t\t}, {\n\n\t\t\t\"text\": \"\",\n\t\t\t\"rightOrder\": 3\n\t\t}, {\n\n\t\t\t\"text\": \"public MinFinder() {\",\n\t\t\t\"rightOrder\": 4\n\t\t}, {\n\n\t\t\t\"text\": \"    }\",\n\t\t\t\"rightOrder\": 5\n\t\t}, {\n\n\t\t\t\"text\": \"\",\n\t\t\t\"rightOrder\": 6\n\t\t}, {\n\n\t\t\t\"text\": \"public Integer findMin(int[] nums){\",\n\t\t\t\"rightOrder\": 7\n\t\t}, {\n\n\t\t\t\"text\": \"if(nums.length == 0){\",\n\t\t\t\"rightOrder\": 8\n\t\t}, {\n\n\t\t\t\"text\": \"return null;\",\n\t\t\t\"rightOrder\": 9\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 10\n\t\t}, {\n\n\t\t\t\"text\": \"int min = nums[0];\",\n\t\t\t\"rightOrder\": 11\n\t\t}, {\n\n\t\t\t\"text\": \"for (int i = 1; i < nums.length; i++) {\",\n\t\t\t\"rightOrder\": 12\n\t\t}, {\n\n\t\t\t\"text\": \"if(nums[i] < min){\",\n\t\t\t\"rightOrder\": 13\n\t\t}, {\n\n\t\t\t\"text\": \" min = nums[i];\",\n\t\t\t\"rightOrder\": 14\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 15\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 16\n\t\t}, {\n\n\t\t\t\"text\": \"return min;\",\n\t\t\t\"rightOrder\": 17\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 18\n\t\t}, {\n\n\t\t\t\"text\": \"\",\n\t\t\t\"rightOrder\": 19\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 20\n\t\t}],\n\t\t\"unitTestCode\": \"package org.progmatic.sourcequiz.test;import org.junit.jupiter.api.Assertions;import org.junit.jupiter.api.Test;import org.progmatic.sourcequiz.classtotest.MinFinder;public class MinFinderUnitTest {        private MinFinder mf = new MinFinder();        @Test    void checkSolution() {        Assertions.assertEquals(Integer.valueOf(0), mf.findMin(new int[]{0, 1, 2, 3, 5}));        Assertions.assertEquals(Integer.valueOf(0), mf.findMin(new int[]{0, 1, 2, 3, 5}));        Assertions.assertEquals(Integer.valueOf(1), mf.findMin(new int[]{10, 9, 5, 3, 1}));        Assertions.assertEquals(Integer.valueOf(-100), mf.findMin(new int[]{0, -3, 5, 8, -100, 100, 2}));        Assertions.assertEquals(Integer.valueOf(1), mf.findMin(new int[]{1, 1, 1}));        Assertions.assertEquals(Integer.valueOf(0), mf.findMin(new int[]{0}));    }}\"\n\t}]\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create question Copy 4",
 					"event": [
 						{
@@ -2620,7 +2782,7 @@
 					"response": []
 				},
 				{
-					"name": "Create class Copy",
+					"name": "Create class mk",
 					"event": [
 						{
 							"listen": "test",
@@ -2666,7 +2828,7 @@
 					"response": []
 				},
 				{
-					"name": "Create student (Mézga Aladár) Copy",
+					"name": "Create student (Mézga Kriszta - mk)",
 					"event": [
 						{
 							"listen": "test",
@@ -2769,7 +2931,7 @@
 					"response": []
 				},
 				{
-					"name": "Create eternal quiz Copy",
+					"name": "Create eternal quiz mk",
 					"event": [
 						{
 							"listen": "test",
@@ -2867,6 +3029,1274 @@
 								"eternalquiz",
 								"quiz",
 								"class"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "sourceCodeEvalTest",
+			"item": [
+				{
+					"name": "Get CSRF value",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2c7a84c5-3b72-41a9-9e63-644d644be214",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8ca2d9d2-535b-4c5c-8865-a8e3ab84bd21",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d3b0e2b2-7191-4d40-a74a-8b6d0d08aa43",
+								"exec": [
+									"let userName = pm.environment.get(\"adminusername\");",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.loginName).to.eql(userName);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "{{adminusername}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{adminuserpassword}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/login",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF value",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2c7a84c5-3b72-41a9-9e63-644d644be214",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8ca2d9d2-535b-4c5c-8865-a8e3ab84bd21",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create order code question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "45f4d7b6-4c1f-436e-8f69-d1d55ad0fb5e",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6676cc03-c526-494c-a853-ebefbabc4867",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": \"sorrend2\",\n\t\"text\": \"Tedd sorrendbe a minimumkeresés algoritmusának sorait!\",\n\t\"feedbackType\": \"trueFalseFeedback\",\n\t\"possibleAnswers\": [{\n\t\t\"type\": \"soruceCodeToOrder_EvalByRun\",\n\t\t\"possibleAnswerValues\": [{\n\n\t\t\t\"text\": \"package org.progmatic.sourcequiz.classtotest;\",\n\t\t\t\"rightOrder\": 0\n\t\t}, {\n\n\t\t\t\"text\": \"\",\n\t\t\t\"rightOrder\": 1\n\t\t}, {\n\n\t\t\t\"text\": \"public class MinFinder {\",\n\t\t\t\"rightOrder\": 2\n\t\t}, {\n\n\t\t\t\"text\": \"\",\n\t\t\t\"rightOrder\": 3\n\t\t}, {\n\n\t\t\t\"text\": \"public MinFinder() {\",\n\t\t\t\"rightOrder\": 4\n\t\t}, {\n\n\t\t\t\"text\": \"    }\",\n\t\t\t\"rightOrder\": 5\n\t\t}, {\n\n\t\t\t\"text\": \"\",\n\t\t\t\"rightOrder\": 6\n\t\t}, {\n\n\t\t\t\"text\": \"public Integer findMin(int[] nums){\",\n\t\t\t\"rightOrder\": 7\n\t\t}, {\n\n\t\t\t\"text\": \"if(nums.length == 0){\",\n\t\t\t\"rightOrder\": 8\n\t\t}, {\n\n\t\t\t\"text\": \"return null;\",\n\t\t\t\"rightOrder\": 9\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 10\n\t\t}, {\n\n\t\t\t\"text\": \"int min = nums[0];\",\n\t\t\t\"rightOrder\": 11\n\t\t}, {\n\n\t\t\t\"text\": \"for (int i = 1; i < nums.length; i++) {\",\n\t\t\t\"rightOrder\": 12\n\t\t}, {\n\n\t\t\t\"text\": \"if(nums[i] < min){\",\n\t\t\t\"rightOrder\": 13\n\t\t}, {\n\n\t\t\t\"text\": \" min = nums[i];\",\n\t\t\t\"rightOrder\": 14\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 15\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 16\n\t\t}, {\n\n\t\t\t\"text\": \"return min;\",\n\t\t\t\"rightOrder\": 17\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 18\n\t\t}, {\n\n\t\t\t\"text\": \"\",\n\t\t\t\"rightOrder\": 19\n\t\t}, {\n\n\t\t\t\"text\": \"}\",\n\t\t\t\"rightOrder\": 20\n\t\t}],\n\t\t\"unitTestCode\": \"package org.progmatic.sourcequiz.test;import org.junit.jupiter.api.Assertions;import org.junit.jupiter.api.Test;import org.progmatic.sourcequiz.classtotest.MinFinder;public class MinFinderUnitTest {        private MinFinder mf = new MinFinder();        @Test    void checkSolution() {        Assertions.assertEquals(Integer.valueOf(0), mf.findMin(new int[]{0, 1, 2, 3, 5}));        Assertions.assertEquals(Integer.valueOf(0), mf.findMin(new int[]{0, 1, 2, 3, 5}));        Assertions.assertEquals(Integer.valueOf(1), mf.findMin(new int[]{10, 9, 5, 3, 1}));        Assertions.assertEquals(Integer.valueOf(-100), mf.findMin(new int[]{0, -3, 5, 8, -100, 100, 2}));        Assertions.assertEquals(Integer.valueOf(1), mf.findMin(new int[]{1, 1, 1}));        Assertions.assertEquals(Integer.valueOf(0), mf.findMin(new int[]{0}));    }}\"\n\t}]\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create class mk",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bbf0a030-89f5-46c9-a634-8701bcb48ed8",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"mk\",\n    \"year\": 2020,\n    \"semester\": \"autumn\",\n    \"isActive\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create student (Mézga Kriszta - mk)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4508eca1-3483-4528-8019-12fc22fcb520",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mézga Kriszta\",\n    \"loginName\": \"mk\",\n    \"emailAddress\": \"mezgaaladar@gmail.com\",\n    \"password\": \"mk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/student",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add student to class Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3e89c015-d3e6-4446-84b1-a058a5070c96",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idList\": [\n        \"mk\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class/mk/students",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class",
+								"mk",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create eternal quiz mk",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6441b360-038b-405a-9c5a-58f1f223018c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"mk\",\n    \"questionIds\": [\n        \"sorrend2\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign class to Eternal Quiz Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f3759584-b1fe-4566-8f4b-2383da0bb221",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"eternalQuizId\": \"mk\",\n   \"schoolClassId\": \"mk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/quiz/class",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"quiz",
+								"class"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "sourceCodeEvalTestSimpleEndpoint",
+			"item": [
+				{
+					"name": "Get CSRF value",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "68de98c4-b3be-468f-85f7-ecc2b865bfac",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f7e66f30-d7e2-4eab-80ba-e7bf5a11523c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1e9531fc-ceae-4d15-ba8a-a111d496d3bb",
+								"exec": [
+									"let userName = pm.environment.get(\"adminusername\");",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.loginName).to.eql(userName);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "{{adminusername}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{adminuserpassword}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/login",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF value",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f4fa5a47-f8eb-4ee8-8dbe-580363b94d51",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "8805c14f-20a4-4516-a5a9-e34186de414d",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create order code question",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6839b62a-c4ec-4970-864d-93b1e482d19a",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "f8cf4e7a-5ed6-411b-aa0b-3c0e032ebb68",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"sorrendlinker\",\n    \"text\": \"Tedd sorrendbe a lineáris keresés algoritmusának sorait!\",\n    \"feedbackType\": \"trueFalseFeedback\",\n    \"code\": \"package org.progmatic.sourcequiz.classtotest;\\n\\npublic class LinearFinder {\\n    public int firstIndexOfVal(int[] array, int value){\\n        for (int i = 0; i < array.length; i++) {\\n            if(value == array[i]){\\n                return i;\\n            }\\n        }\\n        return -1;\\n    }\\n}\\n\",\n    \"unitTest\": \"package org.progmatic.sourcequiz.test;\\n\\nimport org.junit.jupiter.api.Test;\\nimport org.progmatic.sourcequiz.classtotest.LinearFinder;\\nimport static org.junit.jupiter.api.Assertions.*;\\n\\n\\npublic class LinearFinderUnitTest {\\n\\n    LinearFinder lf = new LinearFinder();\\n\\n    @Test\\n    void checkSolution() {\\n        assertEquals(0, lf.firstIndexOfVal(new int[]{3, 5, 3, 1, 0, -2}, 3));\\n        assertEquals(4, lf.firstIndexOfVal(new int[]{3, 5, 3, 1, 0, -2}, 0));\\n        assertEquals(-1, lf.firstIndexOfVal(new int[]{3, 5, 3, 1, 0, -2}, 30));\\n        assertEquals(2, lf.firstIndexOfVal(new int[]{2, 5, 3, 1, 0, -2}, 3));\\n        assertEquals(-1, lf.firstIndexOfVal(new int[]{}, 3));\\n        assertEquals(1, lf.firstIndexOfVal(new int[]{2, 5, 5, 5, 0, -2}, 5));\\n    }\\n}\\n\"\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/orderlinesquestion",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"orderlinesquestion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create order code question Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "59ca9a36-4df3-4800-90f5-a70087402ea6",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "2c811403-fd10-420b-86c7-77827e1ecab3",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"sorrendminker\",\n    \"text\": \"Tedd sorrendbe a minimumkeresés algoritmusának sorait!\",\n    \"feedbackType\": \"trueFalseFeedback\",\n    \"code\": \"package org.progmatic.sourcequiz.classtotest;\\npublic class MinFinder {\\n    public Integer findMin(int[] nums){\\n        if(nums.length == 0){\\n            return null;\\n        }\\n        int min = nums[0];\\n        for (int i = 1; i < nums.length; i++) {\\n            if(nums[i] < min){\\n                min = nums[i];\\n            }\\n        }\\n        return min;\\n    }\\n}\",\n    \"unitTest\": \"package org.progmatic.sourcequiz.test;\\n\\nimport org.junit.jupiter.api.Assertions;\\nimport org.junit.jupiter.api.Test;\\nimport org.progmatic.sourcequiz.classtotest.MinFinder;\\n\\npublic class MinFinderUnitTest {\\n\\n    private MinFinder mf = new MinFinder();\\n    \\n    @Test\\n    void checkSolution() {\\n        Assertions.assertEquals(0, mf.findMin(new int[]{0, 1, 2, 3, 5}));\\n        Assertions.assertEquals(0, mf.findMin(new int[]{0, 1, 2, 3, 5}));\\n        Assertions.assertEquals(1, mf.findMin(new int[]{10, 9, 5, 3, 1}));\\n        Assertions.assertEquals(-100, mf.findMin(new int[]{0, -3, 5, 8, -100, 100, 2}));\\n        Assertions.assertEquals(1, mf.findMin(new int[]{1, 1, 1}));\\n        Assertions.assertEquals(0, mf.findMin(new int[]{0}));\\n    }\\n\\n}\\n\"\n}"
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/orderlinesquestion",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"orderlinesquestion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create class mk",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9d0060d4-b50d-4ba5-af79-c5fe58291cb5",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"mk\",\n    \"year\": 2020,\n    \"semester\": \"autumn\",\n    \"isActive\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create student (Mézga Kriszta - mk)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a5889ed5-ad7c-4400-bd3f-e2139467ca69",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mézga Kriszta\",\n    \"loginName\": \"mk\",\n    \"emailAddress\": \"mezgaaladar@gmail.com\",\n    \"password\": \"mk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/student",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add student to class Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c3bf523e-7c3a-44ed-9250-299a60593af6",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"idList\": [\n        \"mk\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/class/mk/students",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"class",
+								"mk",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create eternal quiz mk",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "40296fee-441c-42be-bb28-fd648ab58fa5",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"mk\",\n    \"questionIds\": [\n        \"sorrendlinker\",\n        \"sorrendminker\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign class to Eternal Quiz Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bb739327-1ab3-48dc-ac79-99a0e3177335",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"successFullResult == true\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.successFullResult).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"type": "text",
+								"value": "{{csrf_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"eternalQuizId\": \"mk\",\n   \"schoolClassId\": \"mk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/quiz/class",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"quiz",
+								"class"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "solveEvalTest",
+			"item": [
+				{
+					"name": "Login as mk",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ddf6ef60-2a0e-422f-98f0-d72581cf1f3a",
+								"exec": [
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.loginName).to.eql(\"mezgaaladar\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}"
+							},
+							{
+								"key": "",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "mk",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "mk",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/login",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get CSRF value after login Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87476440-b7c2-4349-99dd-3490e5cf3f2b",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad79c695-a113-45b3-9d65-34210be3ee43",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.environment.set(\"csrf_token\", pm.response.text());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/csrf",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get next eternal quiz",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "95c64ebf-39e7-4436-b1fb-5fafba35cf23",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"id is not null\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).not.equal(null);",
+									"});",
+									"",
+									"pm.test(\"possibleAnswers is not empty\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.possibleAnswers.length).to.be.above(0);",
+									"});",
+									"",
+									"pm.variables.set(\"questionToAnswer\", JSON.stringify(pm.response.json()));",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/question",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"question"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "quizanswer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b6b70c7-3e03-4286-8997-ff0f975821da",
+								"exec": [
+									"//let question = JSON.parse(pm.variables.get('questionToAnswer')).id;",
+									"//pm.variables.set(\"questionId\",question.id);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7b4f3b3c-3328-4254-a46f-ceab98d69d2c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"questionId\": \"sorrend2\",\n    \"answers\": [\n        {\n            \"id\": \"fb2a234b-b953-42a9-a484-dd27cd5d694b\",\n            \"selectedAnswerIds\": [\n                \"d9e37e56-31f8-4690-91cd-7c891d80c5a0\",\n                \"a9f383a1-71b8-4980-8109-d15267a0216a\",\n                \"1b30449d-b289-4063-a389-517d36d23e9b\",\n                \"ff5ef76c-b438-4022-9f63-380dcf2ee766\",\n                \"aca06a1e-d1a4-4afb-baa8-a28ca8efbd79\",\n                \"a8a6fd77-a2f4-4715-85c0-ed5ace8c9c0f\",\n                \"4eab1900-d0fa-4b70-979f-c12cdefaa2ad\",\n                \"897935a3-0386-4f3f-952d-d8aab2707afa\",\n                \"7b858fbf-651c-4a99-acbd-0e242ae8cd98\",\n                \"ee6f9115-3903-47d2-9be3-0f7dee14a7a2\",\n                \"b353f7bc-052b-4cd1-8151-9c64c9c2399c\",\n                \"72d82bec-3571-43ca-98bb-4bc5d6cf99e8\",\n                \"c75094af-4e47-4226-8809-0b9fbb2ae5c6\",\n                \"ab29fb6c-2e48-4ed8-bd47-86d6af92022c\",\n                \"3f1afa5c-c0bd-4b4d-90b6-b1f51eb7198b\",\n                \"8f8f5083-7ce4-4421-906c-41ab60b49300\",\n                \"657d8a54-30ed-4108-acfd-e4604d0ef905\",\n                \"6b6b8925-5d5a-40ae-833e-6b7f58b4fa5d\",\n                \"de78bc2d-3fe3-453d-94c7-3cdeb180c239\",\n                \"d249d81b-2e71-48ca-bf8f-2369a49795b0\",\n                \"1dac83b3-9666-426a-847b-ac2f8ac6d660\"\n            ]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/answer",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"answer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "quizanswer on Heroku",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1e434a89-60ac-4297-988d-119d18d33bae",
+								"exec": [
+									"//let question = JSON.parse(pm.variables.get('questionToAnswer')).id;",
+									"//pm.variables.set(\"questionId\",question.id);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "5337bde8-1528-4f8a-8003-56df9513e229",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRF-TOKEN",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"questionId\": \"sorrend2\",\n    \"answers\": [\n        {\n            \"id\": \"e17e4b48-5add-42ee-b6c6-03ee00ec2a2f\",\n            \"selectedAnswerIds\": [\n                \"3ca5bdee-67c1-42dc-b035-d63cbefd129d\",\n                \"5fe16bc3-2ed4-463e-8741-f95091108990\",\n                \"ac4be9af-b1f9-4585-9078-e5066be4165b\",\n                \"33afc40e-2b1c-46ec-9f8e-55eda8242d7c\",\n                \"3440cacf-f0f3-4dff-9a52-1c6d30fd3371\",\n                \"f991e0d6-05d7-432f-8138-d5abff4bcd9a\",\n                \"b00b74d4-055f-4cbf-8870-dfd2b9262d3a\",\n                \"6311b341-b080-4b94-b1eb-a190896af40b\",\n                \"d8680b75-4972-40e1-96e2-c9b2c9062e74\",\n                \"d15f74c7-051e-47e7-af0d-c2aa071e88aa\",\n                \"2cb35d09-39f7-4af4-9990-80e0e242ad75\",\n                \"8474f2fc-f347-4123-8410-9a8d328f9116\",\n                \"fd040e43-10da-4bdc-a683-23ea0d908c8b\",\n                \"5295a82c-eead-427c-82bf-b1db0d2ed3f0\",\n                \"f7b72a3b-f07d-4ca8-8029-bbaeb60a1f4c\",\n                \"ae7bc32c-062b-4d04-bd1e-3700f75a6767\",\n                \"941dfc44-c85d-4dd0-ba73-51e46932efce\",\n                \"b8b7043c-a974-4c4e-8416-dd05d4cd820c\",\n                \"a8ecd31b-3941-4317-a213-e900978a8356\",\n                \"dc19e70e-b535-447e-8b68-cd4f33967ac6\",\n                \"048b105b-8da1-4910-8b68-f0b81c327336\"\n            ]\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{progmappbe_host}}/eternalquiz/answer",
+							"host": [
+								"{{progmappbe_host}}"
+							],
+							"path": [
+								"eternalquiz",
+								"answer"
 							]
 						}
 					},

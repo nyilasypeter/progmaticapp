@@ -20,7 +20,6 @@ public class OrderLinesQuestionRequestDTO extends BaseEntityRequestDto {
     @NotEmpty
     private String code;
 
-    @NotEmpty
     private String unitTest;
 
     public String getText() {
