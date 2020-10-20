@@ -170,11 +170,18 @@ public class EternalQuizService {
         for (SchoolClass schoolClass : schoolClasses) {
             for (User student : schoolClass.getStudents()) {
                 for (Question question : questions) {
-                    EternalQuizAnswer ea = new EternalQuizAnswer();
-                    ea.setHasAnswer(false);
-                    ea.setQuestion(question);
-                    ea.setStudent(student);
-                    em.persist(ea);
+                    Long count = em.createQuery("select count(e) from EternalQuizAnswer e where e.question.id = :questionId and e.student.id = :studentId", Long.class)
+                            .setParameter("questionId", question.getId())
+                            .setParameter("studentId", student.getId())
+                            .getSingleResult();
+                    if(count == 0){
+                        EternalQuizAnswer ea = new EternalQuizAnswer();
+                        ea.setHasAnswer(false);
+                        ea.setQuestion(question);
+                        ea.setStudent(student);
+                        em.persist(ea);
+                    }
+
                 }
             }
         }
