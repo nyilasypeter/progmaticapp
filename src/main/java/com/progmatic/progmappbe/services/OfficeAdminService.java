@@ -42,18 +42,22 @@ public class OfficeAdminService {
 
     private ResultBuilder resultBuilder;
 
+    private EternalQuizService eternalQuizService;
+
 
     @Autowired
     public OfficeAdminService(DozerBeanMapper mapper,
                               PasswordEncoder passwordEncoder,
                               RoleAutoDao roleAutoDao,
                               MailHelper mailHelper,
-                              ResultBuilder resultBuilder) {
+                              ResultBuilder resultBuilder,
+                              EternalQuizService eternalQuizService) {
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
         this.roleAutoDao = roleAutoDao;
         this.mailHelper = mailHelper;
         this.resultBuilder = resultBuilder;
+        this.eternalQuizService = eternalQuizService;
     }
 
 
@@ -200,16 +204,10 @@ public class OfficeAdminService {
             Set<Question> questions = eternalQuiz.getQuestions();
             for (User student : students) {
                 for (Question question : questions) {
-                    EternalQuizAnswer ea = new EternalQuizAnswer();
-                    ea.setHasAnswer(false);
-                    ea.setQuestion(question);
-                    ea.setStudent(student);
-                    em.persist(ea);
+                    eternalQuizService.cretaEternalQuizAnswer(question, student);
                 }
             }
         }
-
-
     }
 
     @Transactional
