@@ -204,7 +204,7 @@ public class OfficeAdminService {
             Set<Question> questions = eternalQuiz.getQuestions();
             for (User student : students) {
                 for (Question question : questions) {
-                    eternalQuizService.cretaEternalQuizAnswer(question, student);
+                    eternalQuizService.createEternalQuizAnswerIfDoesNotAlreadyExist(question, student);
                 }
             }
         }

@@ -130,7 +130,7 @@ public class EternalQuizService {
         Set<SchoolClass> schoolClasses = eternalQuiz.getSchoolClasses();
         for (SchoolClass schoolClass : schoolClasses) {
             for (User student : schoolClass.getStudents()) {
-                self.cretaEternalQuizAnswer(question, student);
+                self.createEternalQuizAnswerIfDoesNotAlreadyExist(question, student);
             }
         }
     }
@@ -166,7 +166,7 @@ public class EternalQuizService {
         for (SchoolClass schoolClass : schoolClasses) {
             for (User student : schoolClass.getStudents()) {
                 for (Question question : questions) {
-                    self.cretaEternalQuizAnswer(question, student);
+                    self.createEternalQuizAnswerIfDoesNotAlreadyExist(question, student);
                 }
             }
         }
@@ -174,7 +174,7 @@ public class EternalQuizService {
 
     @Transactional
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CRUD_ETERNAL_QUIZ + "')")
-    public void cretaEternalQuizAnswer(Question question, User student){
+    public void createEternalQuizAnswerIfDoesNotAlreadyExist(Question question, User student){
         Long count = em.createQuery("select count(e) from EternalQuizAnswer e where e.question.id = :questionId and e.student.id = :studentId", Long.class)
                 .setParameter("questionId", question.getId())
                 .setParameter("studentId", student.getId())
