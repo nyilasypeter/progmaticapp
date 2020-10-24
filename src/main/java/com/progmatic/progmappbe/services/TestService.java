@@ -65,7 +65,7 @@ public class TestService {
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
     @Transactional
     public EntityCreationResult createQuestion(QuestionDTO q) {
-        Question question = mapper.map(q, Question.class);
+        Question question = mapper.map(q, Question.class, "convertMdToTHML");
         EntityCreationResult ret = new EntityCreationResult();
         for (PossibleAnswer possibleAnswer : question.getPossibleAnswers()) {
             possibleAnswer.setQuestion(question);
@@ -89,7 +89,7 @@ public class TestService {
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
     @Transactional
     public BasicResult updateQuestion(QuestionDTO q) {
-        Question updatedQuestion = mapper.map(q, Question.class);
+        Question updatedQuestion = mapper.map(q, Question.class, "convertMdToTHML");
         BasicResult ret = new BasicResult();
         //checkUpdateQuestion(updatedQuestion);
         if(!ret.getErrorMessages().isEmpty()){
@@ -407,7 +407,7 @@ public class TestService {
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
     public EntityCreationResult createOrderLinesQuestion(OrderLinesQuestionRequestDTO oqr) {
         QuestionDTO questionDTO = new QuestionDTO();
-        mapper.map(oqr, questionDTO);
+        mapper.map(oqr, questionDTO, "convertMdToTHMLOrderLine");
         PossibleAnswerDTO po = new PossibleAnswerDTO();
         questionDTO.getPossibleAnswers().add(po);
         if(StringUtils.isNotBlank(oqr.getUnitTest())){

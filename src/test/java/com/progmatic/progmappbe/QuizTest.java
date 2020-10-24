@@ -130,12 +130,12 @@ public class QuizTest extends QuizTestBase {
         ListIterator<PossibleAnswerDTO> polit = qdto2.getPossibleAnswers().listIterator();
         while(polit.hasNext()){
             PossibleAnswerDTO next = polit.next();
-            if(next.getTextBefore().equals("Mi a legeslegeslegkedvesebb?")){
+            if(next.getTextBefore().contains("Mi a legeslegeslegkedvesebb?")){
                 polit.remove();
             }
         }
         //update some fields of Első gkedevesebb PossibleAnswer
-        PossibleAnswerDTO paDto = qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Első legkedevesebb")).findFirst().get();
+        PossibleAnswerDTO paDto = qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().contains("Első legkedevesebb")).findFirst().get();
         paDto.setTextBefore("1. legkedvesebb");
         PossibleAnswerValueDTO kenyér = paDto.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("kenyér")).findFirst().get();
         kenyér.setText("zsömle");
@@ -151,7 +151,7 @@ public class QuizTest extends QuizTestBase {
         paDto.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("bor", false));
 
         //add a new possible answer value to Második legkedevesebb
-        PossibleAnswerDTO paDto2 = qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Második legkedevesebb")).findFirst().get();
+        PossibleAnswerDTO paDto2 = qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().contains("<p>Második legkedevesebb</p>")).findFirst().get();
         paDto2.getPossibleAnswerValues().add(createPossibleAnswerValueDTO("spenót", false));
 
         PossibleAnswerDTO newpaDto = new PossibleAnswerDTO();
@@ -191,14 +191,14 @@ public class QuizTest extends QuizTestBase {
         Optional<PossibleAnswerValueDTO> zsomle = possibleAnswerDTO.getPossibleAnswerValues().stream().filter(pv -> pv.getText().equals("zsömle")).findFirst();
         assertTrue(zsomle.isPresent());
 
-        PossibleAnswerDTO possibleAnswerDTO2 = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Második legkedevesebb")).findFirst().get();
+        PossibleAnswerDTO possibleAnswerDTO2 = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().contains("Második legkedevesebb")).findFirst().get();
         assertEquals(5, possibleAnswerDTO2.getPossibleAnswerValues().size());
 
-        PossibleAnswerDTO possibleAnswerDTO3 = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("No és a harmadik?")).findFirst().get();
+        PossibleAnswerDTO possibleAnswerDTO3 = qdto3.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().contains("No és a harmadik?")).findFirst().get();
         assertEquals(2, possibleAnswerDTO3.getPossibleAnswerValues().size());
 
         //check that Mi a legeslegeslegkedvesebb? was indeed deleted
-        assertFalse(qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().equals("Mi a legeslegeslegkedvesebb?")).findFirst().isPresent());
+        assertFalse(qdto2.getPossibleAnswers().stream().filter(pa -> pa.getTextBefore().contains("Mi a legeslegeslegkedvesebb?")).findFirst().isPresent());
         
 
     }

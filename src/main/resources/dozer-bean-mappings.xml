@@ -46,6 +46,41 @@
         </custom-converters>
     </configuration>
 
+    <mapping map-id="convertMdToTHMLOrderLine">
+        <class-a>com.progmatic.progmappbe.dtos.quiz.OrderLinesQuestionRequestDTO</class-a>
+        <class-b>com.progmatic.progmappbe.dtos.quiz.QuestionDTO</class-b>
+        <field custom-converter="com.progmatic.progmappbe.helpers.MarkdownHelper" type="one-way">
+            <a>text</a>
+            <b>text</b>
+        </field>
+    </mapping>
+
+    <mapping map-id="convertMdToTHML">
+        <class-a>com.progmatic.progmappbe.dtos.quiz.QuestionDTO</class-a>
+        <class-b>com.progmatic.progmappbe.entities.Question</class-b>
+        <field custom-converter="com.progmatic.progmappbe.helpers.MarkdownHelper" type="one-way">
+            <a>text</a>
+            <b>text</b>
+        </field>
+        <field map-id="convertMdToTHML2" type="one-way" >
+            <a>possibleAnswers</a>
+            <b>possibleAnswers</b>
+        </field>
+    </mapping>
+
+    <mapping map-id="convertMdToTHML2">
+        <class-a>com.progmatic.progmappbe.dtos.quiz.PossibleAnswerDTO</class-a>
+        <class-b>com.progmatic.progmappbe.entities.PossibleAnswer</class-b>
+        <field custom-converter="com.progmatic.progmappbe.helpers.MarkdownHelper" type="one-way">
+            <a>textBefore</a>
+            <b>textBefore</b>
+        </field>
+        <field custom-converter="com.progmatic.progmappbe.helpers.MarkdownHelper" type="one-way">
+            <a>textAfter</a>
+            <b>textAfter</b>
+        </field>
+    </mapping>
+
     <mapping map-id="mapAll">
         <class-a>com.progmatic.progmappbe.entities.Question</class-a>
         <class-b>com.progmatic.progmappbe.dtos.quiz.QuestionDTO</class-b>
