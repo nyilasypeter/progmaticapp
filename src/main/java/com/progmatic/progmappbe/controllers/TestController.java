@@ -65,6 +65,11 @@ public class TestController {
         return testService.copyQuestion(questionId);
     }
 
+    @DeleteMapping(path = "question/{questionId}")
+    public BasicResult deleteQuestion(@PathVariable("questionId") String questionId){
+        return testService.deleteQuestion(questionId);
+    }
+
     @PostMapping(path = "/question/{questionId}/imagefile")
     public BasicResult uplaoFileToQuestion(
             @PathVariable("questionId") String questionId,

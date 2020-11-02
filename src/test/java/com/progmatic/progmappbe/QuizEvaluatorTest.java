@@ -2,6 +2,7 @@ package com.progmatic.progmappbe.helpers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.progmatic.progmappbe.QuizTestBase;
+import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.eternalquiz.AnswerFeedbackDTO;
 import com.progmatic.progmappbe.dtos.eternalquiz.AnswerResponseDTO;
 import com.progmatic.progmappbe.dtos.eternalquiz.PossibleAnswerResponseDTO;
@@ -344,6 +345,14 @@ public class QuizEvaluatorTest extends QuizTestBase {
         createEternalQuizWithMockMvc(equizId2, mockMvc, objectMapper, questionId);
         assignEternalQuizToClass(equizId2, classId, mockMvc, objectMapper);
 
+    }
+
+    @Test
+    @WithUserDetails("admin")
+    @Order(14)
+    void tryToDeleteQuestionAssignedToEquiz() throws Exception {
+        BasicResult basicResult = deleteQuestion(QUESTION_PREFIX + SOURCE_CODE_QUESTION_AASSIGNED_TWICE, mockMvc, objectMapper);
+        assertFalse(basicResult.isSuccessFullResult());
     }
 
     private PossibleAnswerDTO possibleAnswerFromSourceCode(String sourceCode) {

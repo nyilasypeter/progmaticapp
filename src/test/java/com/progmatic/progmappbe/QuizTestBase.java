@@ -1,6 +1,7 @@
 package com.progmatic.progmappbe;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.progmatic.progmappbe.dtos.BasicResult;
 import com.progmatic.progmappbe.dtos.EntityCreationResult;
 import com.progmatic.progmappbe.dtos.eternalquiz.*;
 import com.progmatic.progmappbe.dtos.quiz.OrderLinesQuestionRequestDTO;
@@ -66,6 +67,16 @@ public class QuizTestBase {
                 .andExpect(jsonPath("$.idOfCreatedEntity", Matchers.notNullValue()))
                 .andReturn();
         EntityCreationResult res = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), EntityCreationResult.class);
+        return res;
+    }
+
+    protected BasicResult deleteQuestion(String questionId, MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {
+        MvcResult mvcResult = mockMvc.perform(
+                delete("/question/" + questionId)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andReturn();
+        BasicResult res = objectMapper.readValue(mvcResult.getResponse().getContentAsString(Charset.forName("UTF-8")), BasicResult.class);
         return res;
     }
 

@@ -93,6 +93,19 @@ public class QuizTest extends QuizTestBase {
     }
 
 
+    @Test
+    @WithUserDetails("admin")
+    @Order(10)
+    void createQuestionDeleteQuestion() throws Exception {
+        String myId = UUID.randomUUID().toString();
+        QuestionDTO questionDTO = createQuestionDTO();
+        questionDTO.setId(myId);
+        EntityCreationResult questionWithMockMvc = createQuestionWithMockMvc(questionDTO, mockMvc, objectMapper);
+        assertTrue(questionWithMockMvc.isSuccessFullResult());
+        BasicResult deleteResult = deleteQuestion(myId, mockMvc, objectMapper);
+        assertTrue(deleteResult.isSuccessFullResult());
+    }
+
 
     @Test
     @WithUserDetails("admin")

@@ -267,9 +267,29 @@ public class TestService {
 
     @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_QUESTION + "')")
     @Transactional
-    public String modifyQuestion(QuestionDTO q) {
-        return null;
+    public BasicResult deleteQuestion(String id){
+        Question question = em.find(Question.class, id);
+        if(question == null){
+            return resultBuilder.errorResult("progmapp.error.iddoesnotexist", id);
+        }
+        if(!question.getEternalQuizs().isEmpty()){
+            return resultBuilder.errorResult("progmapp.error.deleteQuestion.hasEternalQuiz");
+        }
+        if(!question.getQuestionInTests().isEmpty()){
+            return resultBuilder.errorResult("progmapp.error.deleteQuestion.isInTest");
+        }
+        Set<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
+        for (PossibleAnswer possibleAnswer : possibleAnswers) {
+            Set<PossibleAnswerValue> possibleAnswerValues = possibleAnswer.getPossibleAnswerValues();
+            for (PossibleAnswerValue possibleAnswerValue : possibleAnswerValues) {
+                em.remove(possibleAnswerValue);
+            }
+            em.remove(possibleAnswer);
+        }
+        em.remove(question);
+        return resultBuilder.okResult();
     }
+
 
     /**
      * Copies a question and returns the id of the copy.
