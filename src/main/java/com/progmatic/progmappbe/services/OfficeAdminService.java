@@ -254,6 +254,103 @@ public class OfficeAdminService {
         return resultBuilder.okEntityCreateResult(newUser);
     }
 
+    @Transactional
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_STUDENT + "')")
+    public BasicResult modifyStudent(UserModificationDTO udto) {
+        return modifyUser(udto, true);
+    }
+
+    @Transactional
+    @PreAuthorize("hasAuthority('" + Privilige.PRIV_CREATE_USER + "')")
+    public BasicResult modifyUser(UserModificationDTO udto) {
+        return modifyUser(udto, false);
+    }
+
+    private BasicResult modifyUser(UserModificationDTO modUserDTO, boolean isStudent) {
+        User user = em.find(User.class, modUserDTO.getLoginName());
+        if (user == null) {
+            return resultBuilder.errorEntityCreateResult(
+                    "progmapp.error.iddoesnotexist",
+                    modUserDTO.getLoginName(),
+                    resultBuilder.translate("progmapp.entity.user"));
+        }
+        if(modUserDTO.getAccountNonLocked() != null){
+            user.setAccountNonLocked(modUserDTO.getAccountNonLocked());
+        }
+        if(StringUtils.isNotBlank(modUserDTO.getPassword())){
+            user.setPassword(passwordEncoder.encode(modUserDTO.getPassword()));
+        }
+        if(StringUtils.isNotBlank(modUserDTO.getEmailAddress())){
+            user.setEmailAddress(modUserDTO.getEmailAddress());
+        }
+        if(StringUtils.isNotBlank(modUserDTO.getName())){
+            user.setName(modUserDTO.getName());
+        }
+        if(modUserDTO.getBirthDate() != null){
+            user.setBirthDate(modUserDTO.getBirthDate());
+        }
+        BasicResult basicResult = resultBuilder.okResult();
+        //students roles cannot be changed
+        if (!isStudent) {
+            addNewRules(modUserDTO, user);
+            removeDeletedRoles(modUserDTO, user, basicResult);
+        }
+        else if(modUserDTO.getRoles() != null && !modUserDTO.getRoles().isEmpty()){
+            basicResult.addNote(resultBuilder.translate("progmapp.warning.updateuser.student.cannotchangerole"));
+
+        }
+        return basicResult;
+    }
+
+
+    private void removeDeletedRoles(UserModificationDTO modUserDTO, User user, BasicResult basicResult) {
+        for (Role role : user.getRoles()) {
+            if(!modUserDtoContainsRole(modUserDTO, role)){
+                //admin role cannot be deleted
+                if(!Role.ROLE_ADMIN.equals(role.getName())){
+                    removeRoleFromUser(role, user);
+                }
+                else{
+                    basicResult.addNote(resultBuilder.translate("progmapp.warning.updateuser.admminroleCannotBeDeleted"));
+                }
+            }
+        }
+    }
+
+    private void removeRoleFromUser(Role role, User user) {
+        Iterator<User> iterator = role.getUsers().iterator();
+        while(iterator.hasNext()){
+            User actUser = iterator.next();
+            if(actUser.getId().equals(user.getId())){
+                iterator.remove();
+            }
+        }
+    }
+
+    private void addNewRules(UserModificationDTO modUserDTO, User user) {
+        for (RoleDTO rdto : modUserDTO.getRoles()) {
+            Role role = roleAutoDao.findByName(rdto.getName());
+            if(!roleContainsUser(role, user)){
+                role.addUser(user);
+                user.addRole(role);
+            }
+        }
+    }
+
+    private boolean modUserDtoContainsRole(UserModificationDTO modUserDTO, Role role) {
+        for (RoleDTO modUserDTORole : modUserDTO.getRoles()) {
+            if(modUserDTORole.getName().equals(role.getName())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean roleContainsUser(Role role, User user) {
+        return role.getUsers().stream().filter(u -> u.getLoginName().equals(user.getLoginName())).findFirst().isPresent();
+    }
+
+
     private void setRegLinkAndSendMail(User newUser) {
         String token = UUID.randomUUID().toString();
         newUser.setRegistrationToken(token);
@@ -287,6 +384,9 @@ public class OfficeAdminService {
         QPrivilige qPrivilige = QPrivilige.privilige;
         if (StringUtils.isNotBlank(requestDTO.getName())) {
             whereCondition.and(qUser.name.contains(requestDTO.getName()));
+        }
+        if (StringUtils.isNotBlank(requestDTO.getLoginName())) {
+            whereCondition.and(qUser.id.contains(requestDTO.getLoginName()));
         }
         if (requestDTO.isHasUnfinishedRegistration() != null) {
             if (requestDTO.isHasUnfinishedRegistration()) {
@@ -345,4 +445,6 @@ public class OfficeAdminService {
         mapper.map(mailTemplateDTO, mailTemplate);
         return resultBuilder.okResult();
     }
+
+
 }

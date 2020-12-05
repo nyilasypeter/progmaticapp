@@ -3,10 +3,7 @@ package com.progmatic.progmappbe.controllers;
 import com.progmatic.progmappbe.dtos.*;
 import com.progmatic.progmappbe.dtos.schoolclass.SchoolClassDTO;
 import com.progmatic.progmappbe.dtos.template.MailTemplateDTO;
-import com.progmatic.progmappbe.dtos.user.UserSearchResponseDTO;
-import com.progmatic.progmappbe.dtos.user.StudentListDto;
-import com.progmatic.progmappbe.dtos.user.UserDTO;
-import com.progmatic.progmappbe.dtos.user.UserSearchRequestDTO;
+import com.progmatic.progmappbe.dtos.user.*;
 import com.progmatic.progmappbe.services.OfficeAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +36,11 @@ public class OfficeAdminController {
         return officeAdminService.createStudent(udto);
     }
 
+    @PutMapping("/student")
+    public BasicResult modifyStudent(@RequestBody @Valid UserModificationDTO udto){
+        return officeAdminService.modifyStudent(udto);
+    }
+
     @GetMapping("/user")
     public List<UserSearchResponseDTO> searchUser(UserSearchRequestDTO requestDTO){
         return officeAdminService.searchUser(requestDTO);
@@ -47,6 +49,11 @@ public class OfficeAdminController {
     @PostMapping("/user")
     public EntityCreationResult createUser(@RequestBody @Valid  UserDTO udto){
         return officeAdminService.createUser(udto);
+    }
+
+    @PutMapping("/user")
+    public BasicResult modifyUser(@RequestBody @Valid UserModificationDTO udto){
+        return officeAdminService.modifyUser(udto);
     }
 
     @PutMapping("/class/{classId}/students")
